@@ -64,7 +64,7 @@ const AboutUs = () => {
                 </div>
 
                 {/* Call to Action */}
-                <div className="mt-6 border-t pt-4 flex justify-between items-center">
+                <div className="mt-6 border-t pt-4 flex flex-col md:flex-row justify-between items-center">
                     <p className="text-sm text-gray-500">
                         Need legal assistance? Book an appointment today.
                     </p>
