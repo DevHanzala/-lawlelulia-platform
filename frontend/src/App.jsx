@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from './pages/Home';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
+import Profile from './pages/Profile';
 
 function App() {
 
@@ -22,6 +23,7 @@ function App() {
             <div className="flex-1 p-4 bg-gray-50">
               <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/profile" element={<Profile />} />
               </Routes>
             </div>
 
