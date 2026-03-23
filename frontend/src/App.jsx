@@ -1,13 +1,16 @@
 import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from './pages/Home';
 
 function App() {
 
   return (
     <>
-      <div className="bg-gray-200 text-3xl font-bold text-center p-4">
-
-       lawlelulia-platform
-      </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }
