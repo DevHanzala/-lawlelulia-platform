@@ -8,6 +8,7 @@ import AboutUs from './pages/Aboutus';
 import { useState } from 'react';
 import SignUp from './pages/SignUp';
 import { useLocation } from "react-router-dom";
+import Login from './pages/Login';
 
 const hideLayouts = ["/login", "/signup"];
 
@@ -39,6 +40,7 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/aboutus" element={<AboutUs />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/login" element={<Login />} />
             </Routes>
           </div>
 
