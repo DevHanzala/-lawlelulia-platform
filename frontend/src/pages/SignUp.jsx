@@ -16,9 +16,9 @@ const SignUp = () => {
                 <Link className="text-blue-800">Signup</Link>
             </div>
             {/* Form + Image */}
-            <div className="w-full flex justify-evenly p-8 ">
+            <div className="w-full block md:flex md:justify-evenly p-8 ">
                 {/* Form */}
-                <div className="w-1/3 p-4">
+                <div className="w-3/4 mx-auto md:w-1/3 p-4">
                     <h5 className="text-2xl font-medium">Create Your Account</h5>
                     <p className="text-sm text-gray-500">Join Lawlelulia and book your appointment today</p>
 
@@ -91,7 +91,7 @@ const SignUp = () => {
                 </div>
 
                 {/* Image */}
-                <div className="w-1/3 mt-25">
+                <div className="w-3/4 mt-25 mx-auto md:w-1/3">
                     <div className="flex">
                     <img className="w-20 h-65 mt-10 relative z-10" src={CharacterIcon} />
                     <img className="w-40 h-75 relative z-10" src={DeviceIcon} />

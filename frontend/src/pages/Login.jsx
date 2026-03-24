@@ -16,9 +16,9 @@ const Login = () => {
                 <Link className="text-blue-800">Login</Link>
             </div>
             {/* Form + Image */}
-            <div className="w-full flex justify-evenly p-8 ">
+            <div className="w-full block md:flex md:justify-evenly p-8">
                 {/* Form */}
-                <div className="w-1/3 p-4">
+                <div className="w-3/4 mx-auto md:w-1/3 p-4">
                     <h5 className="text-2xl font-medium">Welcome Back</h5>
                     <p className="text-sm text-gray-500">Schedule your appointment and get expert advice</p>
 
@@ -78,7 +78,7 @@ const Login = () => {
                 </div>
 
                 {/* Image */}
-                <div className="w-1/3 mt-10">
+                <div className="w-3/4 mt-25 mx-auto md:w-1/3">
                     <div className="flex">
                         <img className="w-32 h-65 mt-20 relative z-10" src={CharacterIcon} />
                         <img className="w-40 h-85 relative z-10" src={DeviceIcon} />
