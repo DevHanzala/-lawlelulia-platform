@@ -26,28 +26,28 @@ const SignUp = () => {
                         type="text"
                         placeholder="Fullname"
                         value={""}
-                        className="w-full border border-gray-300 p-2 rounded-md text-sm mt-4"
+                        className="w-full border border-gray-300 p-2 rounded-md text-sm mt-6"
                     />
 
                     <input
                         type="email"
                         placeholder="Email"
                         value={""}
-                        className="w-full border border-gray-300 p-2 rounded-md text-sm mt-2"
+                        className="w-full border border-gray-300 p-2 rounded-md text-sm mt-4"
                     />
 
                     <input
                         type="password"
                         placeholder="Password"
                         value={""}
-                        className="w-full border border-gray-300 p-2 rounded-md text-sm mt-2"
+                        className="w-full border border-gray-300 p-2 rounded-md text-sm mt-4"
                     />
 
                     <input
                         type="password"
                         placeholder="Confirm Password"
                         value={""}
-                        className="w-full border border-gray-300 p-2 rounded-md text-sm mt-2"
+                        className="w-full border border-gray-300 p-2 rounded-md text-sm mt-4"
                     />
 
                     {/* Remember check + forgot password */}
