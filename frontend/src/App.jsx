@@ -33,7 +33,7 @@ function App() {
           {!hideLayout && (<Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />)}
 
           {/* Pages */}
-          <div className="flex-1 p-4 bg-gray-50">
+          <div className={`${hideLayout ? "w-full h-screen" : "flex-1 p-4 bg-gray-50"}`}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/profile" element={<Profile />} />
