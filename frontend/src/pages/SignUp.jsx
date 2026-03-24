@@ -4,6 +4,7 @@ import CharacterIcon from "../assests/Character.png"
 import DeviceIcon from "../assests/Device.png"
 import PlantIcon from "../assests/Plant.png"
 import ShadowIcon from "../assests/Shadow.png"
+import Footer from "../components/Footer";
 
 const SignUp = () => {
     return (
@@ -99,6 +100,9 @@ const SignUp = () => {
                     <img className="w-70 -mt-2" src={ShadowIcon} />
                 </div>
             </div>
+
+            {/* Footer */}
+            <Footer />
         </div>
     )
 }

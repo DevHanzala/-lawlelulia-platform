@@ -4,6 +4,7 @@ import CharacterIcon from "../assests/ladyCharacter.png"
 import DeviceIcon from "../assests/keyDevice.png"
 import PlantIcon from "../assests/Leaves.png"
 import floorIcon from "../assests/Floor.png"
+import Footer from "../components/Footer";
 
 const Login = () => {
     return (
@@ -86,6 +87,9 @@ const Login = () => {
                     <img className="w-86 -mt-3" src={floorIcon} />
                 </div>
             </div>
+
+            {/* Footer */}
+            <Footer />
         </div>
     )
 }
