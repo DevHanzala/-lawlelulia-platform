@@ -9,10 +9,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
         <>
             {/* Sidebar */}
             <div
-                className={`bg-white w-48 min-h-screen border border-gray-300 border-solid
-          fixed top-0 left-0 z-50 transform transition-transform duration-300
-          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-          md:relative md:translate-x-0 md:block`}>
+                className={`bg-white w-48 h-screen border-r border-gray-300 border-solid
+    fixed top-0 left-0 z-50 transform transition-transform duration-300
+    ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+    md:sticky md:translate-x-0 md:block`}
+            >
 
                 {/* Platform name */}
                 <div className="flex flex-col p-2 border-b border-solid border-gray-300">
