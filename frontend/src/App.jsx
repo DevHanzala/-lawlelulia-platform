@@ -10,6 +10,7 @@ import SignUp from './pages/SignUp';
 import { useLocation } from "react-router-dom";
 import Login from './pages/Login';
 import Bookings from './pages/Bookings';
+import Appointments from './pages/Appointments';
 
 const hideLayouts = ["/login", "/signup"];
 
@@ -43,6 +44,7 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/aboutus" element={<AboutUs />} />
               <Route path="/bookings" element={<Bookings />} />
+              <Route path="/appointments" element={<Appointments />} />
             </Routes>
           </div>
 
