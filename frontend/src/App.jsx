@@ -9,6 +9,7 @@ import { useState } from 'react';
 import SignUp from './pages/SignUp';
 import { useLocation } from "react-router-dom";
 import Login from './pages/Login';
+import Bookings from './pages/Bookings';
 
 const hideLayouts = ["/login", "/signup"];
 
@@ -37,10 +38,11 @@ function App() {
           <div className={`${hideLayout ? "w-full h-screen" : "flex-1 p-4 bg-gray-50"}`}>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/aboutus" element={<AboutUs />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/aboutus" element={<AboutUs />} />
+              <Route path="/bookings" element={<Bookings />} />
             </Routes>
           </div>
 
