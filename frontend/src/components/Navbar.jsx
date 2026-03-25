@@ -16,7 +16,7 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
                 <Link to="/" className="hover:text-gray-300">Home</Link>
                 <Link to="/appointments" className="hover:text-gray-300">Appointments</Link>
                 <Link to="/bookings" className="hover:text-gray-300">Bookings</Link>
-                <Link to="/about" className="hover:text-gray-300">About Us</Link>
+                <Link to="/aboutus" className="hover:text-gray-300">About Us</Link>
             </div>
 
             {/* Welcome Text */}
