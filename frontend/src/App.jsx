@@ -4,7 +4,7 @@ import Home from './pages/Home';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import Profile from './pages/Profile';
-import AboutUs from './pages/Aboutus';
+import AboutUs from './pages/AboutUs';
 import { useState } from 'react';
 import SignUp from './pages/SignUp';
 import { useLocation } from "react-router-dom";
