@@ -9,18 +9,17 @@ const Footer = () => {
                 <div className="flex flex-col flex-[2] p-8">
                     <div className="flex items-center space-x-2">
                         <div className="w-8 h-8 rounded-full bg-white flex justify-center items-center font-semibold text-2xl text-black">
-                            L
+                            C
                         </div>
                         <div className="mt-1 font-semibold tracking-wide">
-                            awlelulia
+                            ocolaw.ai
                         </div>
                     </div>
 
                     <p className="text-sm mt-3 text-gray-400 leading-relaxed">
-                        Lorem ipsum dolor sit amet consectetur adipisicing eli
-                        Lorem ipsum dolor sit amet consectetur adipisicing eli
-                        Lorem ipsum dolor sit amet consectetur adipisicing eli
-                        Lorem ipsum dolor sit amet consectetur adipisicing eli.
+                        I am a dedicated legal professional with experience in handling a wide
+                        range of legal matters. My goal is to provide reliable, transparent,
+                        and efficient legal services to my clients.
                     </p>
                 </div>
 

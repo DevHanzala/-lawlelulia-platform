@@ -6,9 +6,9 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
             {/* Logo */}
             <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 rounded-full bg-white flex justify-center items-center font-semibold text-2xl">
-                    L
+                    C
                 </div>
-                <div className="text-white mt-1">awlelulia</div>
+                <div className="text-white mt-1">ocolaw.ai</div>
             </div>
 
             {/* Nav links */}
