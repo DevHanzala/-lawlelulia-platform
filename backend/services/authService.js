@@ -28,7 +28,7 @@ export const signUpOtp = async (fullName, email, password) => {
 
     // Save OTP in separate collection
     const otpEntry = await Otp.create({
-        userId: user._id,
+        email,
         otp: otpCode,
         expiresAt: new Date(Date.now() + 10 * 60 * 1000) // 10 minutes expiry
     });
