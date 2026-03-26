@@ -7,6 +7,12 @@ import { HttpError } from "../exception/HttpError.js";
 // Service: Sign up and send OTP
 export const signUpOtp = async (fullName, email, password) => {
 
+    //validate parameters
+    if (!fullName) throw new HttpError("Fullname is required", 400);
+    if (!email) throw new HttpError("email is required", 400);
+    if (!password) throw new HttpError("password is required", 400);
+
+
     // Check if user exists
     let user = await User.findOne({ email });
 
@@ -52,6 +58,45 @@ export const signUpOtp = async (fullName, email, password) => {
     return {
         user: {
             email: user.email
+        }
+    };
+};
+
+
+//Service: verify user otp
+export const verifySignUpToken = async (email, otp) => {
+
+    //  Validate params
+    if (!email) throw new HttpError("Email is required", 400);
+    if (!otp) throw new HttpError("Otp is missing", 400);
+
+    // Get latest OTP for this email
+    const userOtp = await Otp.findOne({ email })
+        .sort({ createdAt: -1 });
+
+    //check otp existence
+    if (!userOtp) throw new HttpError("Please generate OTP first", 400);
+    // Compare OTP
+    if (userOtp.otp !== otp) throw new HttpError("Otp is invalid", 400);
+    // Check expiry
+    if (userOtp.expiresAt < new Date()) throw new HttpError("Otp is expired", 400);
+
+
+    //  Find user
+    const user = await User.findOne({ email });
+    if (!user) throw new HttpError("User not found", 404);
+
+    // Update verification status
+    user.isVerified = true;
+    await user.save();
+
+    // delete used OTP
+    await userOtp.deleteOne();
+
+    return {
+        user: {
+            email: user.email,
+            isVerified: user.isVerified
         }
     };
 };
