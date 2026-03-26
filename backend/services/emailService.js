@@ -1,4 +1,4 @@
-import { transporter } from "../config/mailer";
+import { transporter } from "../config/mailer.js";
 
 // Service:  send verification email to users
 export async function sendVerificationEmail(to, fullname, otpcode) {
