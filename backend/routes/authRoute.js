@@ -1,11 +1,11 @@
 import express from "express";
 import {
-  signup,
+  signUpOtp,
 } from "../controllers/authController.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const router = express.Router();
 
-router.post("/signup", asyncHandler(signup));
+router.post("/signup-sendotp", asyncHandler(signUpOtp));
 
 export default router;
