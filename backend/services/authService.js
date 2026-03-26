@@ -2,41 +2,53 @@ import User from "../models/User.js";
 import Otp from "../models/Otp.js";
 import bcrypt from "bcrypt";
 import { sendVerificationEmail } from "./emailService.js";
+import { HttpError } from "../exception/HttpError.js";
 
 // Service: Sign up and send OTP
 export const signUpOtp = async (fullName, email, password) => {
 
     // Check if user exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-        throw new Error("User already exists");
+    let user = await User.findOne({ email });
+
+    if (user) {
+        // prevent existing verified user
+        if (user.isVerified) {
+            throw new HttpError("User already exists", 400);
+        }
+
+        // update details of non verified users
+        user.fullName = fullName;
+        user.password = await bcrypt.hash(password, 10);
+        await user.save();
+
+    } else {
+        // Create new user
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        user = await User.create({
+            fullName,
+            email,
+            password: hashedPassword,
+            isVerified: false
+        });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create user
-    const user = await User.create({
-        fullName,
-        email,
-        password: hashedPassword,
-        isVerified: false
-    });
-
-    // Generate 6-digit OTP
+    // Generate OTP
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Save OTP in separate collection
-    const otpEntry = await Otp.create({
+    // Delete old OTPs for this email (important)
+    await Otp.deleteMany({ email });
+
+    // Save new OTP
+    await Otp.create({
         email,
         otp: otpCode,
-        expiresAt: new Date(Date.now() + 10 * 60 * 1000) // 10 minutes expiry
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000)
     });
 
-    // Send OTP email
+    // Send OTP
     await sendVerificationEmail(email, fullName, otpCode);
 
-    // Return email
     return {
         user: {
             email: user.email
