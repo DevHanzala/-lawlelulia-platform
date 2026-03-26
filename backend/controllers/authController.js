@@ -5,6 +5,6 @@ import { success } from "../utils/apiResponse.js";
 // Route: Signup
 export const signUpOtp = asyncHandler(async (req, res) => {
     const { fullname, email, password } = req.body;
-    const data = authService.signUpOtp(fullname, email, password);
+    const data = await authService.signUpOtp(fullname, email, password);
     return success(res, "OTP sent", data);
 })
