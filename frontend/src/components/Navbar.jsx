@@ -4,10 +4,11 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
     return (
         <nav className="w-full bg-[#0A0F1C] flex p-2 justify-between items-center">
             {/* Logo */}
-            <div className="flex items-center space-x-2">
+            <a href="/" className="flex items-center space-x-2">
                 <div className="w-8 h-8 rounded-full bg-white flex justify-center items-center font-semibold text-2xl">C</div>
-                <div className="text-white mt-1">ocolaw.ai</div>
-            </div>
+                <span className="text-white mt-1">ocolaw.ai</span>
+            </a>
+           
 
             {/* Nav links */}
             <div className="hidden md:flex space-x-6 text-white text-xs font-semibold">

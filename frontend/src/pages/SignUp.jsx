@@ -9,20 +9,7 @@ const SignUp = () => {
     return (
         <div className="w-full min-h-screen flex flex-col">
 
-            {/* Top bar */}
-            <div className="bg-blue-50 p-3 flex items-center justify-between px-10">
-                <div className="flex items-center text-black font-medium text-sm">
-                    <p>Home &gt;&nbsp;</p>
-                    <span className="text-blue-800">Signup</span>
-                </div>
-                {/* Back to Home button */}
-                <Link
-                    to="/"
-                    className="text-xs px-3 py-1.5 bg-[#0A0F1C] text-white rounded-md hover:bg-gray-800 transition"
-                >
-                    ← Back to Home
-                </Link>
-            </div>
+
 
             {/* Form + Image */}
             <div className="flex-1 w-full flex flex-col md:flex-row md:justify-evenly items-center p-8 gap-8">

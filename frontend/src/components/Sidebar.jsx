@@ -15,7 +15,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
             >
                 <div className="flex flex-col p-2 border-b border-solid border-gray-300">
                     <div className="flex justify-between">
-                        <h5 className="font-semibold text-md">Cocolaw.ai</h5>
+                        <a href="/">
+                            <h5 className="font-semibold text-md">Cocolaw.ai</h5>
+                        </a>
                         {sidebarOpen ? (
                             <button className="text-black font-bold text-lg" onClick={() => setSidebarOpen(false)}>×</button>
                         ) : null}
