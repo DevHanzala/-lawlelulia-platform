@@ -6,7 +6,7 @@ const Footer = () => {
             <div className="flex justify-evenly bg-[#0A0F1C]">
 
                 {/* Logo + Text */}
-                <div className="flex flex-col flex-[2] p-8">
+                <div className="flex flex-col flex-2 p-8">
                     <div className="flex items-center space-x-2">
                         <div className="w-8 h-8 rounded-full bg-white flex justify-center items-center font-semibold text-2xl text-black">
                             C

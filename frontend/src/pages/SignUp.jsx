@@ -4,107 +4,85 @@ import CharacterIcon from "../assests/Character.png"
 import DeviceIcon from "../assests/Device.png"
 import PlantIcon from "../assests/Plant.png"
 import ShadowIcon from "../assests/Shadow.png"
-import Footer from "../components/Footer";
 
 const SignUp = () => {
     return (
-        <div className="w-full">
+        <div className="w-full min-h-screen flex flex-col">
 
             {/* Top bar */}
-            <div className="bg-blue-50 p-4 flex text-black font-medium text-sm">
-                <p className="ml-10">Home {'>'}  </p>
-                <Link className="text-blue-800">Signup</Link>
+            <div className="bg-blue-50 p-3 flex items-center justify-between px-10">
+                <div className="flex items-center text-black font-medium text-sm">
+                    <p>Home &gt;&nbsp;</p>
+                    <span className="text-blue-800">Signup</span>
+                </div>
+                {/* Back to Home button */}
+                <Link
+                    to="/"
+                    className="text-xs px-3 py-1.5 bg-[#0A0F1C] text-white rounded-md hover:bg-gray-800 transition"
+                >
+                    ← Back to Home
+                </Link>
             </div>
+
             {/* Form + Image */}
-            <div className="w-full block md:flex md:justify-evenly p-8 ">
+            <div className="flex-1 w-full flex flex-col md:flex-row md:justify-evenly items-center p-8 gap-8">
+
                 {/* Form */}
-                <div className="w-3/4 mx-auto md:w-1/3 p-4">
+                <div className="w-full max-w-sm p-4">
+                    {/* Brand name → home */}
+                    <Link to="/" className="inline-flex items-center space-x-2 mb-6 group">
+                        <div className="w-7 h-7 rounded-full bg-[#0A0F1C] flex justify-center items-center font-semibold text-white text-lg">C</div>
+                        <span className="font-semibold text-[#0A0F1C] group-hover:underline">ocolaw.ai</span>
+                    </Link>
+
                     <h5 className="text-2xl font-medium">Create Your Account</h5>
-                    <p className="text-sm text-gray-500">Join Lawlelulia and book your appointment today</p>
+                    <p className="text-sm text-gray-500">Join CoCoLaw.ai and get expert legal guidance today</p>
 
-                    {/* Form Fields */}
-                    <input
-                        type="text"
-                        placeholder="Fullname"
-                        value={""}
-                        className="w-full border border-gray-300 p-2 rounded-md text-sm mt-6"
-                    />
+                    <input type="text" placeholder="Full Name" className="w-full border border-gray-300 p-2 rounded-md text-sm mt-6 outline-none focus:ring-2 focus:ring-blue-800" />
+                    <input type="email" placeholder="Email" className="w-full border border-gray-300 p-2 rounded-md text-sm mt-4 outline-none focus:ring-2 focus:ring-blue-800" />
+                    <input type="password" placeholder="Password" className="w-full border border-gray-300 p-2 rounded-md text-sm mt-4 outline-none focus:ring-2 focus:ring-blue-800" />
+                    <input type="password" placeholder="Confirm Password" className="w-full border border-gray-300 p-2 rounded-md text-sm mt-4 outline-none focus:ring-2 focus:ring-blue-800" />
 
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={""}
-                        className="w-full border border-gray-300 p-2 rounded-md text-sm mt-4"
-                    />
-
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={""}
-                        className="w-full border border-gray-300 p-2 rounded-md text-sm mt-4"
-                    />
-
-                    <input
-                        type="password"
-                        placeholder="Confirm Password"
-                        value={""}
-                        className="w-full border border-gray-300 p-2 rounded-md text-sm mt-4"
-                    />
-
-                    {/* Remember check + forgot password */}
                     <div className="flex items-center justify-between mt-2">
-                        {/* Remember Me */}
                         <label className="flex items-center gap-2 text-xs">
                             <input type="checkbox" className="cursor-pointer" />
-                            Remember me
+                            I agree to the Terms & Conditions
                         </label>
-                        {/* Forgot Password */}
-                        <a
-                            href="/forgot-password"
-                            className="text-sm text-blue-800 hover:underline"
-                        >
-                            Forgot password?
-                        </a>
                     </div>
 
-                    {/*Create Button */}
-                    <button className="w-full mt-4 text-center p-2 bg-blue-800 text-white rounded-md ">Create Account</button>
-
-                    {/* Divider */}
-                    <div className="flex items-center my-4">
-                        <div className="flex-grow h-px bg-gray-300"></div>
-                        <span className="px-3 text-sm text-gray-500">
-                            or Continue
-                        </span>
-                        <div className="flex-grow h-px bg-gray-300"></div>
-                    </div>
-
-                    {/* Google Button */}
-                    <button className="w-full mt-4 flex items-center justify-center gap-2 p-2 border border-gray-300 text-gray-800 rounded-md text-sm">
-                        <img src={googleIcon} alt="Google" className="w-5 h-5" />
-                        <span>Sign in with google</span>
+                    <button className="w-full mt-4 text-center p-2 bg-blue-800 text-white rounded-md hover:bg-blue-900 transition">
+                        Create Account
                     </button>
 
-                    <p className="mt-4 text-sm">Already have an account?
-                        <span><Link className="text-blue-800"> Login here</Link></span>
+                    <div className="flex items-center my-4">
+                        <div className="grow h-px bg-gray-300"></div>
+                        <span className="px-3 text-sm text-gray-500">or Continue</span>
+                        <div className="grow h-px bg-gray-300"></div>
+                    </div>
+
+                    <button className="w-full flex items-center justify-center gap-2 p-2 border border-gray-300 text-gray-800 rounded-md text-sm hover:bg-gray-50 transition">
+                        <img src={googleIcon} alt="Google" className="w-5 h-5" />
+                        <span>Sign in with Google</span>
+                    </button>
+
+                    <p className="mt-4 text-sm">
+                        Already have an account?{" "}
+                        <Link to="/login" className="text-blue-800 hover:underline">Login here</Link>
                     </p>
                 </div>
 
-                {/* Image */}
-                <div className="w-3/4 mt-25 mx-auto md:w-1/3">
-                    <div className="flex">
-                    <img className="w-20 h-65 mt-10 relative z-10" src={CharacterIcon} />
-                    <img className="w-40 h-75 relative z-10" src={DeviceIcon} />
-                    <img className="w-24 h-48 mt-27 -ml-6 relative z-10" src={PlantIcon} />
+                {/* Illustration */}
+                <div className="hidden md:flex flex-col items-center">
+                    <div className="flex items-end">
+                        <img className="w-20 h-64 relative z-10" src={CharacterIcon} alt="" />
+                        <img className="w-40 h-72 relative z-10" src={DeviceIcon} alt="" />
+                        <img className="w-24 h-48 -ml-6 relative z-10" src={PlantIcon} alt="" />
                     </div>
-                    <img className="w-70 -mt-2" src={ShadowIcon} />
+                    <img className="w-72 -mt-2" src={ShadowIcon} alt="" />
                 </div>
             </div>
-
-            {/* Footer */}
-            <Footer />
         </div>
-    )
-}
+    );
+};
 
 export default SignUp;

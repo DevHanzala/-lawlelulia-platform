@@ -19,7 +19,7 @@ const Appointments = () => {
                     <h5 className="text-lg font-medium ">Appointment History</h5>
                     <p className="text-xs text-gray-400 border-b py-2">View your appointment history</p>
 
-                    <div className="space-y-3 h-[300px] overflow-y-auto">
+                    <div className="space-y-3 h-75 overflow-y-auto">
                         <AppointmentCard name="Cocolaw Admin" date="Feb 10" time="10:30 AM" status="completed" />
                         <AppointmentCard name="Cocolaw Admin" date="Feb 09" time="02:00 PM" status="completed" />
                         <AppointmentCard name="Cocolaw Admin" date="Feb 09" time="02:00 PM" status="completed" />
@@ -32,7 +32,7 @@ const Appointments = () => {
                     <h5 className="text-lg font-medium">Upcoming Appointments</h5>
                     <p className="text-xs text-gray-400 border-b py-2">Check your upcoming appointments</p>
 
-                    <div className="space-y-3 h-[300px] overflow-y-auto">
+                    <div className="space-y-3 h-75 overflow-y-auto">
                         <AppointmentCard name="Cocolaw Admin" date="Feb 12" time="09:00 AM" status="confirmed" />
                         <AppointmentCard name="Cocolaw Admin" date="Feb 12" time="11:30 AM" status="pending" />
                     </div>

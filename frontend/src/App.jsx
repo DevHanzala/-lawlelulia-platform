@@ -11,7 +11,7 @@ import { useLocation } from "react-router-dom";
 import Login from './pages/Login';
 import Bookings from './pages/Bookings';
 import Appointments from './pages/Appointments';
-
+import Services from './pages/Services';
 const hideLayouts = ["/login", "/signup"];
 
 function App() {
@@ -45,6 +45,7 @@ function App() {
               <Route path="/aboutus" element={<AboutUs />} />
               <Route path="/bookings" element={<Bookings />} />
               <Route path="/appointments" element={<Appointments />} />
+              <Route path="/services" element={<Services />} />
             </Routes>
           </div>
 

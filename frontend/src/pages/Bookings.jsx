@@ -136,7 +136,7 @@ const Bookings = () => {
                 <input
                     type="text"
                     placeholder="Special Request (Optional)"
-                    className="w-3/5 md:w-1/3 text-xs p-4 border-2 border-gray-300 rounded-md outline-none text-sm "
+                    className="w-3/5 md:w-1/3  p-4 border-2 border-gray-300 rounded-md outline-none text-sm "
                 />
                 {/* Appointment Button */}
                 <button
