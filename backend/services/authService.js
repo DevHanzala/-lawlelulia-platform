@@ -3,6 +3,8 @@ import Otp from "../models/Otp.js";
 import bcrypt from "bcrypt";
 import { sendVerificationEmail } from "./emailService.js";
 import { HttpError } from "../exception/HttpError.js";
+import generateToken from "../utils/generateToken.js";
+
 
 // Service: Sign up and send OTP
 export const signUpOtp = async (fullName, email, password) => {
@@ -97,6 +99,40 @@ export const verifySignUpToken = async (email, otp) => {
         user: {
             email: user.email,
             isVerified: user.isVerified
+        }
+    };
+};
+
+
+// Service: login
+export const login = async (email, password) => {
+
+    // Validate parameters
+    if (!email) throw new HttpError("Email is required", 400);
+    if (!password) throw new HttpError("Password is required", 400);
+
+    // Find user
+    const user = await User.findOne({ email });
+
+    // Check email existence
+    if (!user) throw new HttpError("Email is not registered", 404);
+    // Check verification
+    if (!user.isVerified) throw new HttpError("Complete signup first", 400);
+    // Compare password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) throw new HttpError("Invalid credentials", 400);
+
+    // Generate JWT
+    const token = generateToken(user);
+
+    // 6️⃣ Return response
+    return {
+        message: "Login successful",
+        token,
+        user: {
+            _id: user._id,
+            fullName: user.fullName,
+            email: user.email
         }
     };
 };
