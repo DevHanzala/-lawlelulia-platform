@@ -15,3 +15,10 @@ export const verifySignUpToken = asyncHandler(async (req, res) => {
     const data = await authService.verifySignUpToken(email, otp);
     return success(res, "OTP verified successfully", data);
 })
+
+//Route: login 
+export const login = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+    const data = await authService.login(email, password);
+    return success(res, "OTP verified successfully", data);
+})
