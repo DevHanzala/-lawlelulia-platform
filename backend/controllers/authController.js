@@ -22,3 +22,10 @@ export const login = asyncHandler(async (req, res) => {
     const data = await authService.login(email, password);
     return success(res, "OTP verified successfully", data);
 })
+
+//Route: Forgot password Otp generation 
+export const forgotPasswordOtp = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    const data = await authService.forgotPasswordOtp(email);
+    return success(res, "OTP verified successfully", data);
+})
