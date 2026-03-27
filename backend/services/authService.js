@@ -125,7 +125,7 @@ export const login = async (email, password) => {
     // Generate JWT
     const token = generateToken(user);
 
-    // 6️⃣ Return response
+    // Return response
     return {
         message: "Login successful",
         token,
