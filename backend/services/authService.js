@@ -1,7 +1,7 @@
 import User from "../models/User.js";
 import Otp from "../models/Otp.js";
 import bcrypt from "bcrypt";
-import { sendVerificationEmail } from "./emailService.js";
+import { sendEmail } from "./emailService.js";
 import { HttpError } from "../exception/HttpError.js";
 import generateToken from "../utils/generateToken.js";
 
@@ -55,7 +55,7 @@ export const signUpOtp = async (fullName, email, password) => {
     });
 
     // Send OTP
-    await sendVerificationEmail(email, fullName, otpCode);
+    await sendEmail(email, fullName, otpCode, "VERIFY");
 
     return {
         user: {
@@ -132,6 +132,45 @@ export const login = async (email, password) => {
         user: {
             _id: user._id,
             fullName: user.fullName,
+            email: user.email
+        }
+    };
+};
+
+// Service: forgot password otp generation
+export const forgotPasswordOtp = async (email) => {
+
+    // validate parameters
+    if (!email) throw new HttpError("Email is required", 400);
+
+    // Find user
+    const user = await User.findOne({ email });
+
+    // Check email existence
+    if (!user) throw new HttpError("Email doesn't exist", 404);
+
+    //check verified
+    if (!user.isVerified) throw new HttpError("Complete signup first", 400);
+
+    // Generate OTP
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Delete old OTPs
+    await Otp.deleteMany({ email });
+
+    // Save new OTP
+    await Otp.create({
+        email,
+        otp: otpCode,
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000)
+    });
+
+    // Send email
+    await sendEmail(email, user.fullName, otpCode, "RESET");
+
+    return {
+        message: "OTP sent successfully",
+        user: {
             email: user.email
         }
     };
