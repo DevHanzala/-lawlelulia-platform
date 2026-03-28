@@ -28,9 +28,13 @@ const userSchema = new mongoose.Schema({
 
     password: {
         type: String,
-        required: [true, "Password is required"],
+        required: false, // not required for Google-auth users
         minlength: [8, "Password must be at least 8 characters"]
     },
+    googleId: {
+  type: String,
+  default: null
+},
 
     isVerified: {
         type: Boolean,

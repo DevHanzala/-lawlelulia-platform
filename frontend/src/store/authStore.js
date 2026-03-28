@@ -83,6 +83,12 @@ const useAuthStore = create(
         }
       },
 
+setGoogleAuth: (token, user) => {
+  const expiresAt = Date.now() + SESSION_DURATION_MS;
+  localStorage.setItem("cocolaw_token", token);
+  set({ user, token, expiresAt, error: null });
+},
+
       // Forgot Password — Step 1: Send OTP
       forgotSendOtp: async (email) => {
         set({ loading: true, error: null });
