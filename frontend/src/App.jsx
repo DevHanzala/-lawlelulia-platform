@@ -12,6 +12,7 @@ import Login from './pages/Login';
 import Bookings from './pages/Bookings';
 import Appointments from './pages/Appointments';
 import Services from './pages/Services';
+import Dashboard from './pages/Dashboard';
 const hideLayouts = ["/login", "/signup"];
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
               <Route path="/bookings" element={<Bookings />} />
               <Route path="/appointments" element={<Appointments />} />
               <Route path="/services" element={<Services />} />
+              <Route path="/dashboard" element={<Dashboard />} />
             </Routes>
           </div>
 
