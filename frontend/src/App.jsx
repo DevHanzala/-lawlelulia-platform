@@ -13,7 +13,11 @@ import Bookings from './pages/Bookings';
 import Appointments from './pages/Appointments';
 import Services from './pages/Services';
 import Dashboard from './pages/Dashboard';
-const hideLayouts = ["/login", "/signup"];
+import ForgotPassword from './pages/ForgotPassword';
+import ForgotPasswordVerify from './pages/ForgotPasswordVerify';
+import ResetPassword from './pages/ResetPassword';
+import PublicRoute from './guards/PublicRoute';
+const hideLayouts = ["/login", "/signup", "/forgot-password", "/forgot-password/verify", "/forgot-password/reset"];
 
 function App() {
 
@@ -42,6 +46,9 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+              <Route path="/forgot-password/verify" element={<PublicRoute><ForgotPasswordVerify /></PublicRoute>} />
+              <Route path="/forgot-password/reset" element={<PublicRoute><ResetPassword /></PublicRoute>} />   
               <Route path="/profile" element={<Profile />} />
               <Route path="/aboutus" element={<AboutUs />} />
               <Route path="/bookings" element={<Bookings />} />
