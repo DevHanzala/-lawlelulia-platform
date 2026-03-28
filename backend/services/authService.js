@@ -202,3 +202,53 @@ export const forgotPasswordOtp = async (email) => {
         }
     };
 };
+
+
+// Service: Verify OTP for forgot password
+export const verifyForgotPasswordOtp = async (email, otp) => {
+  if (!email) throw new HttpError("Email is required", 400);
+  if (!otp) throw new HttpError("OTP is required", 400);
+
+  const userOtp = await Otp.findOne({ email }).sort({ createdAt: -1 });
+  if (!userOtp) throw new HttpError("Please generate OTP first", 400);
+  if (userOtp.otp !== otp) throw new HttpError("OTP is invalid", 400);
+  if (userOtp.expiresAt < new Date()) throw new HttpError("OTP is expired", 400);
+
+  const user = await getUserByEmail(email);
+  if (!user) throw new HttpError("User not found", 404);
+  ensureVerified(user);
+
+  // Mark OTP as verified (don't delete yet — needed for reset step)
+  userOtp.verified = true;
+  await userOtp.save();
+
+  return { message: "OTP verified", email };
+};
+
+// Service: Reset password
+export const resetPassword = async (email, newPassword) => {
+  if (!email) throw new HttpError("Email is required", 400);
+  if (!newPassword) throw new HttpError("New password is required", 400);
+  if (newPassword.length < 8) throw new HttpError("Password must be at least 8 characters", 400);
+
+  // Confirm a verified OTP exists
+  const userOtp = await Otp.findOne({ email, verified: true });
+  if (!userOtp) throw new HttpError("Please verify OTP before resetting password", 400);
+
+  const user = await getUserByEmail(email);
+  if (!user) throw new HttpError("User not found", 404);
+
+  user.password = await bcrypt.hash(newPassword, 10);
+  await user.save();
+
+  await Otp.deleteMany({ email }); // clean up
+
+  return { message: "Password reset successful" };
+};
+
+// Service: Get current user
+export const getMe = async (userId) => {
+  const user = await User.findById(userId).select("-password");
+  if (!user) throw new HttpError("User not found", 404);
+  return { user };
+};
