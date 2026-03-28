@@ -19,14 +19,6 @@ const appointmentSchema = new mongoose.Schema({
         },
         default: "pending"
     },
-    specialRequest: {
-        type: String,
-        trim: true,
-    },
-    cancellationReason: {
-        type: String,
-        trim: true
-    }
 }, { timestamps: true });
 
 // prevent double booking of same slot
