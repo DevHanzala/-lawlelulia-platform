@@ -41,11 +41,16 @@ const SignUp = () => {
     }
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
+  };
+
+
   const displayError = localError || error;
 
   return (
     <div className="w-full min-h-screen flex flex-col">
-    
+
 
       <div className="flex-1 w-full flex flex-col md:flex-row md:justify-evenly items-center p-8 gap-8">
         <div className="w-full max-w-sm p-4">
@@ -93,7 +98,7 @@ const SignUp = () => {
               {displayError && <p className="text-red-500 text-xs mb-3 bg-red-50 p-2 rounded">{displayError}</p>}
 
               <input type="text" placeholder="6-digit OTP" value={otp} maxLength={6}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}  
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
                 className="w-full border border-gray-300 p-2.5 rounded-md text-sm text-center tracking-widest  outline-none focus:ring-2 focus:ring-[#0A0F1C]" />
 
               <button onClick={handleVerifyOtp} disabled={loading || otp.length !== 6}
@@ -121,9 +126,12 @@ const SignUp = () => {
             <div className="grow h-px bg-gray-300"></div>
           </div>
 
-          <button className="w-full flex items-center justify-center gap-2 p-2 border border-gray-300 text-gray-800 rounded-md text-sm hover:bg-gray-50 transition">
+          <button
+            onClick={handleGoogleLogin}
+            className="w-full flex items-center justify-center gap-2 p-2 border border-gray-300 text-gray-800 rounded-md text-sm hover:bg-gray-50 transition"
+          >
             <img src={googleIcon} alt="Google" className="w-5 h-5" />
-            <span>Sign in with Google</span>
+            <span>Sign up with Google</span>
           </button>
 
           <p className="mt-4 text-sm">

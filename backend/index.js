@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
+import passport from "./config/passport.js";
+import googleAuthRoute from "./routes/googleAuthRoute.js";
 import authRoutes from "./routes/authRoute.js";
 import globalExceptionHandler from "./exception/globalExceptionHandler.js";
 
@@ -17,6 +19,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/auth", googleAuthRoute);
 
 app.get("/", (req, res) => {
   res.send("API running...");

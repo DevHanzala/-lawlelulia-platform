@@ -17,7 +17,12 @@ import ForgotPassword from './pages/ForgotPassword';
 import ForgotPasswordVerify from './pages/ForgotPasswordVerify';
 import ResetPassword from './pages/ResetPassword';
 import PublicRoute from './guards/PublicRoute';
-const hideLayouts = ["/login", "/signup", "/forgot-password", "/forgot-password/verify", "/forgot-password/reset"];
+import GoogleAuthCallback from './pages/GoogleAuthCallback';
+const hideLayouts = [
+  "/login", "/signup",
+  "/forgot-password", "/forgot-password/verify", "/forgot-password/reset",
+  "/auth/google/callback"  
+];
 
 function App() {
 
@@ -46,6 +51,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
               <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
               <Route path="/forgot-password/verify" element={<PublicRoute><ForgotPasswordVerify /></PublicRoute>} />
               <Route path="/forgot-password/reset" element={<PublicRoute><ResetPassword /></PublicRoute>} />   

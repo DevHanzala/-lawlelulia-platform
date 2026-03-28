@@ -24,9 +24,13 @@ const Login = () => {
     }
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
+  };
+
   return (
     <div className="w-full min-h-screen flex flex-col">
-     
+
 
       <div className="flex-1 w-full flex flex-col md:flex-row md:justify-evenly items-center p-8 gap-8">
         <div className="w-full max-w-sm p-4">
@@ -76,11 +80,13 @@ const Login = () => {
             <div className="grow h-px bg-gray-300"></div>
           </div>
 
-          <button className="w-full flex items-center justify-center gap-2 p-2 border border-gray-300 text-gray-800 rounded-md text-sm hover:bg-gray-50 transition">
+          <button
+            onClick={handleGoogleLogin}
+            className="w-full flex items-center justify-center gap-2 p-2 border border-gray-300 text-gray-800 rounded-md text-sm hover:bg-gray-50 transition"
+          >
             <img src={googleIcon} alt="Google" className="w-5 h-5" />
             <span>Sign in with Google</span>
           </button>
-
           <p className="mt-4 text-sm">
             Don't have an account?{" "}
             <Link to="/signup" className="text-[#0A0F1C] font-semibold hover:underline">Register here</Link>
