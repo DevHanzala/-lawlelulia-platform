@@ -6,6 +6,8 @@ import passport from "./config/passport.js";
 import googleAuthRoute from "./routes/googleAuthRoute.js";
 import authRoutes from "./routes/authRoute.js";
 import globalExceptionHandler from "./exception/globalExceptionHandler.js";
+import slotRoute from "./routes/slotRoute.js";
+import appointmentRoute from "./routes/appointmentRoute.js";
 
 dotenv.config();
 
@@ -20,6 +22,8 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", googleAuthRoute);
+app.use("/api/slot", slotRoute);
+app.use("/api/appointment", appointmentRoute);
 
 app.get("/", (req, res) => {
   res.send("API running...");
