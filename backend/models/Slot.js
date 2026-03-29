@@ -1,10 +1,6 @@
 import mongoose from "mongoose";
 
 const slotSchema = new mongoose.Schema({
-    date: {
-        type: Date,
-        required: [true, "Date is required"]
-    },
 
     startTime: {
         type: Date,
