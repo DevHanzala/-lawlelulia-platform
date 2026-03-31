@@ -52,7 +52,8 @@ export const signUpOtp = async (fullName, email, password) => {
             fullName,
             email,
             password: hashedPassword,
-            isVerified: false
+            isVerified: false,
+            role: "user" // default role
         });
     }
 
@@ -160,7 +161,8 @@ export const login = async (email, password) => {
         user: {
             _id: user._id,
             fullName: user.fullName,
-            email: user.email
+            email: user.email,
+            role: user.role
         }
     };
 };
@@ -250,5 +252,10 @@ export const resetPassword = async (email, newPassword) => {
 export const getMe = async (userId) => {
   const user = await User.findById(userId).select("-password");
   if (!user) throw new HttpError("User not found", 404);
-  return { user };
+  return {  user: {
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role  
+    } };
 };

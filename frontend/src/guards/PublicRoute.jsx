@@ -2,13 +2,13 @@ import { Navigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 
 const PublicRoute = ({ children }) => {
-  const { isAuthenticated } = useAuthStore();
+    const { isAuthenticated } = useAuthStore();
 
-  if (isAuthenticated()) {
-    return <Navigate to="/" replace />;
-  }
+    if (isAuthenticated()) {
+        return <Navigate to="/" replace />;
+    }
 
-  return children;
+    return children;
 };
 
 export default PublicRoute;

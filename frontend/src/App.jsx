@@ -17,57 +17,58 @@ import ForgotPassword from './pages/ForgotPassword';
 import ForgotPasswordVerify from './pages/ForgotPasswordVerify';
 import ResetPassword from './pages/ResetPassword';
 import PublicRoute from './guards/PublicRoute';
+import AuthGuard from './guards/AuthGuard';
 import GoogleAuthCallback from './pages/GoogleAuthCallback';
+
 const hideLayouts = [
-  "/login", "/signup",
-  "/forgot-password", "/forgot-password/verify", "/forgot-password/reset",
-  "/auth/google/callback"  
+    "/login", "/signup",
+    "/forgot-password", "/forgot-password/verify", "/forgot-password/reset",
+    "/auth/google/callback"
 ];
 
 function App() {
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const location = useLocation();
+    const hideLayout = hideLayouts.includes(location.pathname);
 
-  //toggle state for sidebar
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const location = useLocation(); //get current location
+    return (
+        <div className="flex min-h-screen">
+            {!hideLayout && (
+                <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+            )}
 
-  //boolean state for hiding
-  const hideLayout = hideLayouts.includes(location.pathname);
+            <div className="flex-1 flex flex-col">
+                {!hideLayout && (
+                    <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+                )}
 
-  return (
-    <>
+                <div className={`${hideLayout ? "w-full h-screen" : "flex-1 p-4 bg-gray-50"}`}>
+                    <Routes>
+                        {/* Public routes */}
+                        <Route path="/" element={<Home />} />
+                        <Route path="/aboutus" element={<AboutUs />} />
+                        <Route path="/services" element={<Services />} />
 
-      <div className="flex min-h-screen">
-        {/* Sidebar */}
-        {!hideLayout && (<Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />)}
+                        {/* Auth routes */}
+                        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+                        <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
+                        <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
+                        <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+                        <Route path="/forgot-password/verify" element={<PublicRoute><ForgotPasswordVerify /></PublicRoute>} />
+                        <Route path="/forgot-password/reset" element={<PublicRoute><ResetPassword /></PublicRoute>} />
 
-        {/* Main content area */}
-        <div className="flex-1 flex flex-col">
-          {/* Navbar */}
-          {!hideLayout && (<Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />)}
+                        {/* User + Admin routes (must be logged in) */}
+                        <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
+                        <Route path="/bookings" element={<AuthGuard><Bookings /></AuthGuard>} />
 
-          {/* Pages */}
-          <div className={`${hideLayout ? "w-full h-screen" : "flex-1 p-4 bg-gray-50"}`}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
-              <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
-              <Route path="/forgot-password/verify" element={<PublicRoute><ForgotPasswordVerify /></PublicRoute>} />
-              <Route path="/forgot-password/reset" element={<PublicRoute><ResetPassword /></PublicRoute>} />   
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/aboutus" element={<AboutUs />} />
-              <Route path="/bookings" element={<Bookings />} />
-              <Route path="/appointments" element={<Appointments />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-            </Routes>
-          </div>
-
+                        {/* Admin only routes */}
+                        <Route path="/appointments" element={<AuthGuard adminOnly><Appointments /></AuthGuard>} />
+                        <Route path="/dashboard" element={<AuthGuard adminOnly><Dashboard /></AuthGuard>} />
+                    </Routes>
+                </div>
+            </div>
         </div>
-      </div>
-    </>
-  )
+    );
 }
 
-export default App
+export default App;

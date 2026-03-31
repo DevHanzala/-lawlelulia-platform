@@ -20,6 +20,7 @@ router.get(
       _id: req.user._id,
       fullName: req.user.fullName,
       email: req.user.email,
+      role: req.user.role
     };
 
     // Redirect to frontend with token in URL — frontend will grab and store it
