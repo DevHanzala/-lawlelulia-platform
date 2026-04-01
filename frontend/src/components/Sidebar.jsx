@@ -21,7 +21,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 
     return (
         <>
-            {/* Overlay — tap outside to close on mobile */}
+            {/* Overlay */}
             {sidebarOpen && (
                 <div
                     className="fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden"
@@ -30,14 +30,15 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
             )}
 
             <div
-                className={`bg-white w-56 h-screen border-r border-gray-300
+                className={`bg-white w-56 border-r border-gray-300
                 fixed top-0 left-0 z-50 transform transition-transform duration-300
-                flex flex-col
+                flex flex-col overflow-y-auto
                 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
                 md:sticky md:translate-x-0 md:flex`}
+                style={{ height: '100%', maxHeight: '-webkit-fill-available' }}
             >
                 {/* Brand */}
-                <div className="flex flex-col p-3 border-b border-gray-300">
+                <div className="flex flex-col p-3 border-b border-gray-300 shrink-0">
                     <div className="flex justify-between items-center">
                         <Link to="/" onClick={handleClose}>
                             <h5 className="font-semibold text-md">Cocolaw.ai</h5>
@@ -51,16 +52,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                     </div>
                     <p className="text-gray-500 text-xs">Law Management</p>
                     {authed && (
-                        <span className={`mt-1 text-xs px-2 py-0.5 rounded-full w-fit font-medium ${
-                            isAdmin ? "bg-[#0A0F1C] text-white" : "bg-[#0A0F1C] text-white"
-                        }`}>
+                        <span className="mt-1 text-xs px-2 py-0.5 rounded-full w-fit font-medium bg-[#0A0F1C] text-white">
                             {isAdmin ? "Admin" : "User"}
                         </span>
                     )}
                 </div>
 
-                {/* Nav Links — scrollable middle section */}
-                <div className="flex flex-col mt-4 font-semibold text-sm space-y-1 flex-1 overflow-y-auto">
+                {/* Nav Links */}
+                <div className="flex flex-col mt-4 font-semibold text-sm space-y-1 shrink-0">
 
                     {/* Home — everyone */}
                     <Link to="/" onClick={handleClose}
@@ -120,8 +119,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                     </Link>
                 </div>
 
-                {/* Bottom auth section — mobile only */}
-                <div className="border-t border-gray-200 p-3 md:hidden">
+                {/* Auth section — inline after nav, always visible */}
+                <div className="border-t border-gray-200 p-3 mt-6 md:hidden shrink-0">
                     {authed ? (
                         <div className="flex flex-col space-y-2">
                             {/* User info */}
@@ -165,6 +164,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                         </div>
                     )}
                 </div>
+
             </div>
         </>
     );
