@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {Chatbot} from "react-chatbot-kit";
+import { Chatbot } from "react-chatbot-kit";
 import "react-chatbot-kit/build/main.css";
 import config from "../utils/config";
 import MessageParser from "../utils/MessageParser";
@@ -16,18 +16,26 @@ const Bot = () => {
                 onClick={() => setOpen(!open)}
                 className="bg-[#0A0F1C] text-white px-4 py-2 rounded-full shadow-lg"
             >
-                {open ? "Close" : "Chat"}
+                {open ? null : (
+                    <>
+                        <span>💬</span>
+                        <span className="text-sm font-medium">Ask CoCoLaw AI</span>
+                    </>
+                )}
             </button>
 
             {open && (
-                <div className="mt-3 w-[350px] h-[500px] bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200">
+                <div className="mt-3 w-full h-full bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200">
                     {/* Header */}
-                    <div className="bg-[#0A0F1C] text-white px-4 py-3 text-sm font-semibold">
-                        CoCoLaw AI Assistant
+                    <div className="bg-[#0A0F1C] flex justify-between text-white px-4 py-3 text-sm font-semibold">
+                        <p>CoCoLaw AI</p>
+                        <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-200">
+                            &times;
+                        </button>
                     </div>
 
                     {/* Chatbot */}
-                    <div className="h-[calc(100%-48px)]">
+                    <div className="h-full">
                         <Chatbot
                             config={config}
                             messageParser={MessageParser}
