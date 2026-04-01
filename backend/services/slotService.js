@@ -1,24 +1,24 @@
 import { HttpError } from "../exception/HttpError.js";
 import Slot from "../models/Slot.js";
+import Appointment from "../models/Appointment.js";
 
 // Service: Create a new slot
 export const createSlot = async (startTime, endTime, user) => {
-
-    // Admin check
     if (user.role !== "admin") {
         throw new HttpError("Unauthorized: Admins only", 403);
     }
 
-    // Convert to Date objects (ensure proper type)
     const startDate = new Date(startTime);
     const endDate = new Date(endTime);
 
-    // Validate time
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        throw new HttpError("Invalid date format", 400);
+    }
+
     if (endDate <= startDate) {
         throw new HttpError("Start time must be before end time", 400);
     }
 
-    // Overlap check using the correct fields
     const overlappingSlot = await Slot.findOne({
         startTime: { $lt: endDate },
         endTime: { $gt: startDate }
@@ -28,7 +28,6 @@ export const createSlot = async (startTime, endTime, user) => {
         throw new HttpError("Slot overlaps with an existing slot", 400);
     }
 
-    // Create the new slot
     const newSlot = await Slot.create({
         startTime: startDate,
         endTime: endDate
@@ -38,29 +37,46 @@ export const createSlot = async (startTime, endTime, user) => {
 };
 
 
-// Service:  get all slots for a specific date
 export const getSlotsByDate = async (date, user) => {
-
-    // Admin check
-    if (user.role !== "admin") throw new HttpError("Unauthorized: Admins only", 403);
-
-    // Convert input to Date
     const targetDate = new Date(date);
 
-    // Normalize to start of the day
-    const startOfDay = new Date(targetDate);
-    startOfDay.setHours(0, 0, 0, 0);
+    const startOfDay = new Date(Date.UTC(
+        targetDate.getUTCFullYear(),
+        targetDate.getUTCMonth(),
+        targetDate.getUTCDate(),
+        0, 0, 0, 0
+    ));
 
-    // Normalize to end of the day
-    const endOfDay = new Date(targetDate);
-    endOfDay.setHours(23, 59, 59, 999);
+    const endOfDay = new Date(Date.UTC(
+        targetDate.getUTCFullYear(),
+        targetDate.getUTCMonth(),
+        targetDate.getUTCDate(),
+        23, 59, 59, 999
+    ));
 
-    // Query slots within that day
     const slots = await Slot.find({
         startTime: { $gte: startOfDay, $lte: endOfDay }
-    }).sort({ startTime: 1 }); // optional: sort by startTime
+    }).sort({ startTime: 1 });
 
-    return slots;
+    // Attach appointment info to every slot
+    const slotsWithAppointments = await Promise.all(
+        slots.map(async (slot) => {
+            const slotObj = slot.toObject();
+            // Find appointment for this slot regardless of isBooked
+            const appointment = await Appointment.findOne({ slot: slot._id })
+                .select("_id status user")
+                .populate("user", "fullName email");
+            slotObj.appointment = appointment || null;
+            return slotObj;
+        })
+    );
+
+    // Users only see available slots (no appointment or cancelled appointment)
+    if (user.role !== "admin") {
+        return slotsWithAppointments.filter(s => !s.isBooked);
+    }
+
+    return slotsWithAppointments;
 };
 
 // Service: Find slot by ID and update isBooked status if it matches current value
