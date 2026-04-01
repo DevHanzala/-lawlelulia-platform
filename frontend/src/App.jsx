@@ -19,6 +19,7 @@ import ResetPassword from './pages/ResetPassword';
 import PublicRoute from './guards/PublicRoute';
 import AuthGuard from './guards/AuthGuard';
 import GoogleAuthCallback from './pages/GoogleAuthCallback';
+import Bot from './components/Bot';
 
 const hideLayouts = [
     "/login", "/signup",
@@ -65,6 +66,7 @@ function App() {
                         <Route path="/appointments" element={<AuthGuard adminOnly><Appointments /></AuthGuard>} />
                         <Route path="/dashboard" element={<AuthGuard adminOnly><Dashboard /></AuthGuard>} />
                     </Routes>
+                   {!hideLayout && <Bot /> }
                 </div>
             </div>
         </div>
