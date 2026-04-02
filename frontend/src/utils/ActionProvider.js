@@ -13,7 +13,7 @@ class ActionProvider {
             console.log("API response:", response);
 
             // Use the API response or fallback
-            const botReply = response.data.reply || "Sorry, I couldn't answer that.";
+            const botReply = response.data.data || "Sorry, I couldn't answer that.";
 
             // Create chatbot message
             const botMessage = this.createChatBotMessage(botReply);
