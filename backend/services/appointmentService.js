@@ -1,9 +1,10 @@
 import { HttpError } from "../exception/HttpError.js";
 import Appointment from "../models/Appointment.js";
+import { getCaseById } from "./caseService.js";
 import { findSlotByIdAndUpdateBookedStatus } from "./slotService.js";
 
 // Service: schedule a new appointment
-export const createAppointment = async (slotId, user) => {
+export const createAppointment = async (slotId, caseId, user) => {
 
     // check admin trying to book appointment
     if (user.role === "admin") throw new HttpError("Admin cannot book his own appointments", 403);
@@ -13,16 +14,20 @@ export const createAppointment = async (slotId, user) => {
 
     if (!slot) throw new HttpError("Slot not found or already booked", 400);
 
+    // Check for caseId 
+     getCaseById(caseId, user); // Will throw if case not found or doesn't belong to user
+
     // Create appointment
     const newAppointment = await Appointment.create({
         slot: slot._id,
+        case: caseId,
         user: user._id
     });
 
     return newAppointment
 };
 
-
+// Service: Update appointment status (admin only)
 export const updateAppointmentStatus = async (appointmentId, status, user) => {
     if (user.role !== "admin") throw new HttpError("Unauthorized: Admins only", 403);
 

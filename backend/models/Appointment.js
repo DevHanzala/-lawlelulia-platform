@@ -11,6 +11,11 @@ const appointmentSchema = new mongoose.Schema({
         ref: "Slot",
         required: [true, "Slot is required for appointment"]
     },
+    case: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Case",
+        required: [true, "Case is required for appointment"]
+    },
     status: {
         type: String,
         enum: {
