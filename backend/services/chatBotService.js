@@ -28,6 +28,8 @@ Assistant:
 
     // Max retry attempts for API call
     let attempts = 3;
+    // Variable to hold the chatbot reply
+    let reply;
 
     while (attempts > 0) {
         try {
@@ -37,7 +39,7 @@ Assistant:
                 contents: fullPrompt,
             });
 
-            const reply = response.text || "Sorry, I couldn't understand.";
+             reply = response.text || "Sorry, I couldn't understand.";
             return reply;
 
         } catch (error) {
@@ -46,10 +48,8 @@ Assistant:
 
             // If no attempts left → throw error
             if (attempts === 0) {
-                throw new HttpError(
-                    "Chatbot is busy right now. Please try again.",
-                    500
-                );
+                  reply = "Chatbot is busy right now. Please try again."
+                 return reply;   
             }
 
             // wait before retry (1 sec → 2 sec → 3 sec)
