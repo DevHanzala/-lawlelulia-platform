@@ -21,7 +21,7 @@ const appointmentSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
-// prevent double booking of same slot
-appointmentSchema.index({ slot: 1, status: 1 }, { unique: true });
+// FIXED: Only one appointment per slot total (not per status)
+appointmentSchema.index({ slot: 1 }, { unique: true });
 
 export default mongoose.model("Appointment", appointmentSchema);

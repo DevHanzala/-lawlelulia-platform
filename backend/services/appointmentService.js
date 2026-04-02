@@ -22,27 +22,29 @@ export const createAppointment = async (slotId, user) => {
     return newAppointment
 };
 
-// Service: update appointment status (admin only)
+
 export const updateAppointmentStatus = async (appointmentId, status, user) => {
-    // Admin check
     if (user.role !== "admin") throw new HttpError("Unauthorized: Admins only", 403);
 
-    // Find appointment
     const appointment = await Appointment.findById(appointmentId);
     if (!appointment) throw new HttpError("Appointment not found", 404);
 
-    // Validate status
-    const validStatuses = ["confirmed", "cancelled"];
+    const validStatuses = ["confirmed", "cancelled", "pending"];
     if (!validStatuses.includes(status)) {
-        throw new HttpError(`Invalid status value`, 400);
+        throw new HttpError("Invalid status value", 400);
     }
 
-    // Update status
+    const previousStatus = appointment.status;
     appointment.status = status;
 
-    // Free slot if cancelled
-    if (status === "cancelled") {
+    // If cancelling — free the slot so others can book
+    if (status === "cancelled" && previousStatus !== "cancelled") {
         await findSlotByIdAndUpdateBookedStatus(appointment.slot, true, false);
+    }
+
+    // If un-cancelling (going back to confirmed/pending) — rebook the slot
+    if (previousStatus === "cancelled" && status !== "cancelled") {
+        await findSlotByIdAndUpdateBookedStatus(appointment.slot, false, true);
     }
 
     return await appointment.save();
