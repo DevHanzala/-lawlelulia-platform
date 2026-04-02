@@ -35,7 +35,7 @@ const Bot = () => {
                     </div>
 
                     {/* Chatbot */}
-                    <div className="h-full">
+                    <div className="w-full h-full">
                         <Chatbot
                             config={config}
                             messageParser={MessageParser}
