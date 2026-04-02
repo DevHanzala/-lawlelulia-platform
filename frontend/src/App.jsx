@@ -2,6 +2,7 @@ import './App.css'
 import { Routes, Route } from "react-router-dom";
 import Home from './pages/Home';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
 import Profile from './pages/Profile';
 import AboutUs from './pages/AboutUs';
@@ -20,32 +21,49 @@ import PublicRoute from './guards/PublicRoute';
 import AuthGuard from './guards/AuthGuard';
 import GoogleAuthCallback from './pages/GoogleAuthCallback';
 import Bot from './components/Bot';
-
+import ScrollToTop from './components/ScrollToTop';
+// Pages where entire layout (navbar + sidebar) is hidden
 const hideLayouts = [
     "/login", "/signup",
     "/forgot-password", "/forgot-password/verify", "/forgot-password/reset",
     "/auth/google/callback"
 ];
 
+// Pages where sidebar is hidden but navbar stays
+// Home, About Us, Services take full width
+const hideSidebar = ["/", "/aboutus", "/services"];
+
 function App() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const location = useLocation();
+
     const hideLayout = hideLayouts.includes(location.pathname);
+    const noSidebar = hideSidebar.includes(location.pathname);
 
     return (
         <div className="flex min-h-screen">
-            {!hideLayout && (
-                <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-            )}
 
-            <div className="flex-1 flex flex-col">
+            <ScrollToTop />
+            {/* Sidebar — hidden on auth pages AND full-width pages */}
+            {!hideLayout && (
+    <Sidebar
+        sidebarOpen={sidebarOpen}
+       setSidebarOpen={setSidebarOpen}
+         hideOnDesktop={noSidebar}
+     />
+ )}
+
+            <div className="flex-1 flex flex-col min-w-0">
+
+                {/* Navbar — hidden only on auth pages */}
                 {!hideLayout && (
                     <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
                 )}
 
-                <div className={`${hideLayout ? "w-full h-screen" : "flex-1 p-4 bg-gray-50"}`}>
+                {/* Page content */}
+                <div className={`${hideLayout ? "w-full h-screen" : "flex-1 bg-gray-50"} ${!hideLayout && !noSidebar ? "p-4" : ""}`}>
                     <Routes>
-                        {/* Public routes */}
+                        {/* Full-width public routes — no sidebar */}
                         <Route path="/" element={<Home />} />
                         <Route path="/aboutus" element={<AboutUs />} />
                         <Route path="/services" element={<Services />} />
@@ -58,7 +76,7 @@ function App() {
                         <Route path="/forgot-password/verify" element={<PublicRoute><ForgotPasswordVerify /></PublicRoute>} />
                         <Route path="/forgot-password/reset" element={<PublicRoute><ResetPassword /></PublicRoute>} />
 
-                        {/* User + Admin routes (must be logged in) */}
+                        {/* User routes (logged in, non-admin) */}
                         <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
                         <Route path="/bookings" element={<AuthGuard><Bookings /></AuthGuard>} />
 
@@ -66,8 +84,10 @@ function App() {
                         <Route path="/appointments" element={<AuthGuard adminOnly><Appointments /></AuthGuard>} />
                         <Route path="/dashboard" element={<AuthGuard adminOnly><Dashboard /></AuthGuard>} />
                     </Routes>
-                   {!hideLayout && <Bot /> }
+
+                    {!hideLayout && <Bot />}
                 </div>
+                {!hideLayout && <Footer />}
             </div>
         </div>
     );

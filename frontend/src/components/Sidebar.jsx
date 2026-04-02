@@ -2,14 +2,23 @@ import Icon1 from "../assests/Icon-1.png"
 import Icon2 from "../assests/Icon-2.png"
 import Icon3 from "../assests/Icon-3.png"
 import Icon4 from "../assests/Icon-3.png"
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import useAuthStore from "../store/authStore";
+import { useEffect } from "react";
 
-const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
+
+const Sidebar = ({ sidebarOpen, setSidebarOpen, hideOnDesktop }) => {
     const { user, isAuthenticated, logout } = useAuthStore();
     const navigate = useNavigate();
+    const location = useLocation();
     const authed = isAuthenticated();
     const isAdmin = authed && user?.role === "admin";
+
+    useEffect(() => {
+        setSidebarOpen(false);
+    }, [location.pathname]);
+
+
 
     const handleLogout = async () => {
         await logout();
@@ -19,9 +28,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 
     const handleClose = () => setSidebarOpen(false);
 
+    const isActive = (path) => location.pathname === path;
+
+    const linkClass = (path) =>
+        `flex items-center space-x-3 px-3 py-2 rounded-lg font-medium cursor-pointer transition text-sm ${isActive(path)
+            ? "bg-[#0A0F1C] text-white"
+            : "hover:bg-gray-100 text-gray-700"
+        }`;
+
     return (
         <>
-            {/* Overlay */}
+            {/* Overlay — mobile only */}
             {sidebarOpen && (
                 <div
                     className="fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden"
@@ -30,100 +47,89 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
             )}
 
             <div
-                className={`bg-white w-56 border-r border-gray-300
-                fixed top-0 left-0 z-50 transform transition-transform duration-300
-                flex flex-col overflow-y-auto
-                ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-                md:sticky md:translate-x-0 md:flex`}
-                style={{ height: '100%', maxHeight: '-webkit-fill-available' }}
+                className={`bg-white w-56 border-r border-gray-200
+                  fixed top-0 left-0 z-50 transform transition-transform duration-300 ease-in-out
+    flex flex-col
+    ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+    ${hideOnDesktop
+                        ? "md:hidden"
+                        : "md:sticky md:top-0 md:translate-x-0 md:flex md:h-screen"
+                    }
+    `}
+                style={{ height: "100dvh" }}
             >
                 {/* Brand */}
-                <div className="flex flex-col p-3 border-b border-gray-300 shrink-0">
+                <div className="flex flex-col p-3 border-b border-gray-200 shrink-0">
                     <div className="flex justify-between items-center">
                         <Link to="/" onClick={handleClose}>
-                            <h5 className="font-semibold text-md">Cocolaw.ai</h5>
+                            <h5 className="font-bold text-sm text-[#0A0F1C]">Cocolaw.ai</h5>
                         </Link>
                         <button
-                            className="md:hidden text-black font-bold text-xl px-1"
+                            className="md:hidden w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 font-bold text-lg hover:bg-gray-200 transition"
                             onClick={handleClose}
                         >
                             ×
                         </button>
                     </div>
-                    <p className="text-gray-500 text-xs">Law Management</p>
+                    <p className="text-gray-400 text-xs mt-0.5">Law Management</p>
                     {authed && (
-                        <span className="mt-1 text-xs px-2 py-0.5 rounded-full w-fit font-medium bg-[#0A0F1C] text-white">
+                        <span className="mt-1.5 text-xs px-2 py-0.5 rounded-full w-fit font-semibold bg-[#0A0F1C] text-white">
                             {isAdmin ? "Admin" : "User"}
                         </span>
                     )}
                 </div>
 
                 {/* Nav Links */}
-                <div className="flex flex-col mt-4 font-semibold text-sm space-y-1 shrink-0">
+                <nav className="flex flex-col mt-3 text-sm space-y-0.5 flex-1 overflow-y-auto px-2 pb-2">
 
-                    {/* Home — everyone */}
-                    <Link to="/" onClick={handleClose}
-                        className="flex space-x-4 ml-4 hover:bg-gray-200 p-2 rounded cursor-pointer">
-                        <img className="w-4 h-4" src={Icon1} alt="" />
+                    <Link to="/" onClick={handleClose} className={linkClass("/")}>
+                        <img className="w-4 h-4 opacity-70" src={Icon2} alt="" />
                         <p>Home</p>
                     </Link>
 
-                    {/* Dashboard — admin only */}
+                    <Link to="/aboutus" onClick={handleClose} className={linkClass("/aboutus")}>
+                        <img className="w-4 h-4 opacity-70" src={Icon2} alt="" />
+                        <p>About Us</p>
+                    </Link>
+
+                    <Link to="/services" onClick={handleClose} className={linkClass("/services")}>
+                        <img className="w-4 h-4 opacity-70" src={Icon2} alt="" />
+                        <p>Services</p>
+                    </Link>
+
                     {isAdmin && (
-                        <Link to="/dashboard" onClick={handleClose}
-                            className="flex space-x-4 ml-4 hover:bg-gray-200 p-2 rounded cursor-pointer">
-                            <img className="w-4 h-4" src={Icon1} alt="" />
+                        <Link to="/dashboard" onClick={handleClose} className={linkClass("/dashboard")}>
+                            <img className="w-4 h-4 opacity-70" src={Icon1} alt="" />
                             <p>Dashboard</p>
                         </Link>
                     )}
 
-                    {/* Appointments — admin only */}
                     {isAdmin && (
-                        <Link to="/appointments" onClick={handleClose}
-                            className="flex space-x-4 ml-4 hover:bg-gray-200 p-2 rounded cursor-pointer">
-                            <img className="w-4 h-4" src={Icon2} alt="" />
+                        <Link to="/appointments" onClick={handleClose} className={linkClass("/appointments")}>
+                            <img className="w-4 h-4 opacity-70" src={Icon2} alt="" />
                             <p>Appointments</p>
                         </Link>
                     )}
 
-                    {/* Bookings — logged in users */}
-                    {authed && (
-                        <Link to="/bookings" onClick={handleClose}
-                            className="flex space-x-4 ml-4 hover:bg-gray-200 p-2 rounded cursor-pointer">
-                            <img className="w-4 h-4" src={Icon3} alt="" />
+                    {authed && !isAdmin && (
+                        <Link to="/bookings" onClick={handleClose} className={linkClass("/bookings")}>
+                            <img className="w-4 h-4 opacity-70" src={Icon3} alt="" />
                             <p>Bookings</p>
                         </Link>
                     )}
 
-                    {/* Profile — logged in users */}
                     {authed && (
-                        <Link to="/profile" onClick={handleClose}
-                            className="flex space-x-4 ml-4 hover:bg-gray-200 p-2 rounded cursor-pointer">
-                            <img className="w-4 h-4" src={Icon4} alt="" />
+                        <Link to="/profile" onClick={handleClose} className={linkClass("/profile")}>
+                            <img className="w-4 h-4 opacity-70" src={Icon4} alt="" />
                             <p>Profile</p>
                         </Link>
                     )}
+                </nav>
 
-                    {/* About Us — everyone */}
-                    <Link to="/aboutus" onClick={handleClose}
-                        className="flex space-x-4 ml-4 hover:bg-gray-200 p-2 rounded cursor-pointer">
-                        <img className="w-4 h-4" src={Icon4} alt="" />
-                        <p>About Us</p>
-                    </Link>
-
-                    {/* Services — everyone */}
-                    <Link to="/services" onClick={handleClose}
-                        className="flex space-x-4 ml-4 hover:bg-gray-200 p-2 rounded cursor-pointer">
-                        <img className="w-4 h-4" src={Icon4} alt="" />
-                        <p>Services</p>
-                    </Link>
-                </div>
-
-                {/* Auth section — inline after nav, always visible */}
-                <div className="border-t border-gray-200 p-3 mt-6 md:hidden shrink-0">
+                {/* Bottom auth section */}
+                <div className="border-t border-gray-200 p-3 shrink-0">
                     {authed ? (
                         <div className="flex flex-col space-y-2">
-                            {/* User info */}
                             <div className="flex items-center space-x-2 px-1 py-1">
                                 <div className="w-8 h-8 rounded-full bg-[#0A0F1C] flex items-center justify-center text-white text-sm font-bold shrink-0">
                                     {user?.fullName?.charAt(0).toUpperCase()}
@@ -137,10 +143,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                                     </p>
                                 </div>
                             </div>
-                            {/* Logout button */}
                             <button
                                 onClick={handleLogout}
-                                className="w-full text-xs px-3 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 transition text-left font-semibold"
+                                className="w-full text-xs px-3 py-2 bg-gray-50 border border-gray-200 text-gray-600 rounded-lg hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition font-semibold text-left"
                             >
                                 🚪 Logout
                             </button>
@@ -150,21 +155,20 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                             <Link
                                 to="/login"
                                 onClick={handleClose}
-                                className="w-full text-xs px-3 py-2 border border-[#0A0F1C] text-[#0A0F1C] rounded-md text-center font-semibold hover:bg-gray-50 transition"
+                                className="w-full text-xs px-3 py-2 border border-[#0A0F1C] text-[#0A0F1C] rounded-lg text-center font-semibold hover:bg-gray-50 transition"
                             >
                                 Login
                             </Link>
                             <Link
                                 to="/signup"
                                 onClick={handleClose}
-                                className="w-full text-xs px-3 py-2 bg-[#0A0F1C] text-white rounded-md text-center font-semibold hover:bg-gray-800 transition"
+                                className="w-full text-xs px-3 py-2 bg-[#0A0F1C] text-white rounded-lg text-center font-semibold hover:bg-gray-800 transition"
                             >
                                 Sign Up
                             </Link>
                         </div>
                     )}
                 </div>
-
             </div>
         </>
     );
