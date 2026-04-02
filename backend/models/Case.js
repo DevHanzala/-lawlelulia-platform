@@ -24,6 +24,4 @@ const caseSchema = new mongoose.Schema({
     timestamps: true // Optional: adds createdAt and updatedAt
 });
 
-// Create and export the model
-const Case = mongoose.model('Case', caseSchema);
-module.exports = Case;
+export default mongoose.model("Case", caseSchema);
