@@ -9,6 +9,7 @@ import globalExceptionHandler from "./exception/globalExceptionHandler.js";
 import slotRoute from "./routes/slotRoute.js";
 import appointmentRoute from "./routes/appointmentRoute.js";
 import chatBotRoute from "./routes/chatBotRoutes.js";
+import caseRoutes from "./routes/caseRoutes.js";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use("/api/auth", googleAuthRoute);
 app.use("/api/slot", slotRoute);
 app.use("/api/appointment", appointmentRoute);
 app.use("/api/chatbot", chatBotRoute);
+app.use("/api/case", caseRoutes);
 
 app.get("/", (req, res) => {
   res.send("API running...");
