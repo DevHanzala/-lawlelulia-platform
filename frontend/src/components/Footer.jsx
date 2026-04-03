@@ -21,7 +21,6 @@ const Footer = () => {
         { label: "Submit Feedback",  path: "/feedback" },
         { label: "Report an Issue",  path: "/support" },
         { label: "FAQs",             path: "/support" },
-        { label: "Privacy Policy",   path: "/privacy" },
         { label: "Terms of Service", path: "/terms" },
     ];
 

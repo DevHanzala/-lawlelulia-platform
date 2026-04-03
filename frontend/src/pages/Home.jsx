@@ -71,7 +71,7 @@ const features = [
 ];
 
 const howItWorks = [
-    { num: "01", title: "Describe Your Situation", desc: "Clearly articulate your legal issue in plain English. No legal jargon required — our AI understands natural language.", icon: "💬" },
+    { num: "01", title: "Describe Your Situation", desc: "Clearly articulate your legal issue in plain English. No legal jargon required  our AI understands natural language.", icon: "💬" },
     { num: "02", title: "AI Legal Analysis", desc: "Our AI rigorously analyzes your facts against relevant laws, rules, and jurisdiction-specific precedents.", icon: "⚖️" },
     { num: "03", title: "Receive Actionable Outputs", desc: "Get court-ready drafts, essential checklists, filing deadlines, and strategic options tailored to your case.", icon: "📄" },
     { num: "04", title: "File with Confidence", desc: "Refine your case through guided Q&A and submit documents with full understanding of what you're filing.", icon: "✅" },
@@ -160,7 +160,7 @@ const Home = () => {
                         Pro Se Litigants Face an Uphill Battle
                     </h2>
                     <p className="text-gray-500 text-sm text-center max-w-2xl mx-auto mb-10" data-reveal>
-                        Millions of Americans navigate courts alone every year. Without legal representation, even valid cases fail — not because of weak facts, but due to procedural mistakes.
+                        Millions of Americans navigate courts alone every year. Without legal representation, even valid cases fail  not because of weak facts, but due to procedural mistakes.
                     </p>
                     <div className="grid md:grid-cols-3 gap-6">
                         {[
