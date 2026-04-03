@@ -2,29 +2,44 @@ import { HttpError } from "../exception/HttpError.js";
 import Appointment from "../models/Appointment.js";
 import { getCaseById } from "./caseService.js";
 import { findSlotByIdAndUpdateBookedStatus } from "./slotService.js";
+import { uploadToDrive } from "./uploadService.js";
 
 // Service: schedule a new appointment
-export const createAppointment = async (slotId, caseId, user) => {
+export const createAppointment = async (slotId, caseId, file, user) => {
 
     // check admin trying to book appointment
-    if (user.role === "admin") throw new HttpError("Admin cannot book his own appointments", 403);
+    if (user.role === "admin") {
+        throw new HttpError(403, "Admin cannot book his own appointments");
+    }
 
     // Atomic slot booking to prevent race condition
     const slot = await findSlotByIdAndUpdateBookedStatus(slotId, false, true);
+    if (!slot) throw new HttpError(400, "Slot not found or already booked");
 
-    if (!slot) throw new HttpError("Slot not found or already booked", 400);
+    // Check case ownership
+    await getCaseById(caseId, user);
 
-    // Check for caseId 
-     getCaseById(caseId, user); // Will throw if case not found or doesn't belong to user
+    let fileData = {};
+
+    // Handle file upload if exists
+    if (file) {
+        const uploaded = await uploadToDrive(file);
+
+        fileData = {
+            fileId: uploaded.fileId,
+            fileUrl: uploaded.url
+        };
+    }
 
     // Create appointment
     const newAppointment = await Appointment.create({
         slot: slot._id,
         case: caseId,
-        user: user._id
+        user: user._id,
+        ...fileData
     });
 
-    return newAppointment
+    return newAppointment;
 };
 
 // Service: Update appointment status (admin only)
