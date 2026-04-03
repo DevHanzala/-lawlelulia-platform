@@ -36,17 +36,26 @@ export const createSlot = async (startTime, endTime, user) => {
     return { newSlot };
 };
 
-
+// Service: Get all slots for a specific date
 export const getSlotsByDate = async (date, user) => {
     const targetDate = new Date(date);
 
+    const now = new Date();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // strip time
+
+    // If requested date is in the past
+    if (targetDate < today) {
+        throw new Error("Please enter next date");
+    }
+
+    // Start and end of the requested date in UTC
     const startOfDay = new Date(Date.UTC(
         targetDate.getUTCFullYear(),
         targetDate.getUTCMonth(),
         targetDate.getUTCDate(),
         0, 0, 0, 0
     ));
-
     const endOfDay = new Date(Date.UTC(
         targetDate.getUTCFullYear(),
         targetDate.getUTCMonth(),
@@ -54,15 +63,18 @@ export const getSlotsByDate = async (date, user) => {
         23, 59, 59, 999
     ));
 
-    const slots = await Slot.find({
+    // Fetch all slots for that date
+    let slots = await Slot.find({
         startTime: { $gte: startOfDay, $lte: endOfDay }
     }).sort({ startTime: 1 });
 
-    // Attach appointment info to every slot
+    // Filter out slots whose **endTime has passed**
+    slots = slots.filter(slot => slot.endTime > now);
+
+    // Attach appointment info
     const slotsWithAppointments = await Promise.all(
         slots.map(async (slot) => {
             const slotObj = slot.toObject();
-            // Find appointment for this slot regardless of isBooked
             const appointment = await Appointment.findOne({ slot: slot._id })
                 .select("_id status user")
                 .populate("user", "fullName email");
@@ -71,9 +83,9 @@ export const getSlotsByDate = async (date, user) => {
         })
     );
 
-    // Users only see available slots (no appointment or cancelled appointment)
+    // If user is not admin, filter out booked slots
     if (user.role !== "admin") {
-        return slotsWithAppointments.filter(s => !s.isBooked);
+        slotsWithAppointments = slotsWithAppointments.filter(s => !s.isBooked);
     }
 
     return slotsWithAppointments;
