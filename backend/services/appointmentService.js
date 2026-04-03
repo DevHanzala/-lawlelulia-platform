@@ -2,7 +2,7 @@ import { HttpError } from "../exception/HttpError.js";
 import Appointment from "../models/Appointment.js";
 import { getCaseById } from "./caseService.js";
 import { findSlotByIdAndUpdateBookedStatus } from "./slotService.js";
-import { uploadToDrive } from "./uploadService.js";
+import { uploadToDrive } from "./fileService.js";
 
 // Service: schedule a new appointment
 export const createAppointment = async (slotId, caseId, file, user) => {

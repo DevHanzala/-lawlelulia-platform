@@ -7,7 +7,7 @@ import {
 } from "../controllers/appointmentController.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { protect } from "../middleware/authMiddleware.js";
-import { fileUpload } from "../middleware/fileUploadMiddleware.js";
+import { fileUpload } from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
 
