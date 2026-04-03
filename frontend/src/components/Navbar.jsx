@@ -42,6 +42,7 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
                 )}
                 <Link to="/services" className={navLinkClass("/services")}>Services</Link>
                 <Link to="/aboutus" className={navLinkClass("/aboutus")}>About Us</Link>
+                <Link to="/profile" className={navLinkClass("/profile")}>Profile</Link>
             </div>
 
             {/* Right side */}

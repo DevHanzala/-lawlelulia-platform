@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-
+import {
+    Scale, Gavel, 
+} from "lucide-react";
 /* ─── Scroll-reveal hook ─────────────────────────────────────── */
 function useReveal() {
     useEffect(() => {
@@ -15,29 +17,6 @@ function useReveal() {
 }
 
 /* ─── SVG assets ─────────────────────────────────────────────── */
-const ScalesSVG = () => (
-    <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-        <circle cx="60" cy="18" r="5" fill="currentColor" opacity="0.8"/>
-        <rect x="58" y="22" width="4" height="36" fill="currentColor" opacity="0.6"/>
-        <line x1="60" y1="38" x2="22" y2="52" stroke="currentColor" strokeWidth="2" opacity="0.6"/>
-        <line x1="60" y1="38" x2="98" y2="52" stroke="currentColor" strokeWidth="2" opacity="0.6"/>
-        <ellipse cx="22" cy="62" rx="16" ry="8" fill="currentColor" opacity="0.15" stroke="currentColor" strokeWidth="1.5"/>
-        <ellipse cx="98" cy="52" rx="16" ry="8" fill="currentColor" opacity="0.25" stroke="currentColor" strokeWidth="1.5"/>
-        <rect x="57" y="58" width="6" height="30" fill="currentColor" opacity="0.4"/>
-        <rect x="40" y="88" width="40" height="4" rx="2" fill="currentColor" opacity="0.5"/>
-        <text x="22" y="65" textAnchor="middle" fill="currentColor" fontSize="7" opacity="0.7">PRO SE</text>
-        <text x="98" y="55" textAnchor="middle" fill="currentColor" fontSize="7" opacity="0.7">ATTY</text>
-    </svg>
-);
-
-const GavelSVG = () => (
-    <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-        <rect x="10" y="28" width="36" height="16" rx="4" transform="rotate(-65 50 3)" fill="currentColor" opacity="0.7"/>
-        <rect x="38" y="8" width="14" height="28" rx="3" transform="rotate(-45 38 8)" fill="currentColor" opacity="0.4"/>
-        <line x1="8" y1="72" x2="48" y2="32" stroke="currentColor" strokeWidth="5" strokeLinecap="round" opacity="0.3"/>
-        <line x1="2" y1="74" x2="74" y2="74" stroke="currentColor" strokeWidth="3" strokeLinecap="round" opacity="0.5"/>
-    </svg>
-);
 
 const ShieldSVG = () => (
     <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
@@ -122,12 +101,13 @@ const Home = () => {
             <section className="relative bg-[#0A0F1C] text-white overflow-hidden" style={{ borderBottom: "3px solid #1e2740" }}>
                 <HeroPattern />
 
-                <div className="absolute right-8 top-1/2 -translate-y-1/2 w-48 h-48 text-white opacity-20 hidden lg:block pointer-events-none">
-                    <ScalesSVG />
-                </div>
-                <div className="absolute left-6 bottom-24 w-24 h-24 text-white opacity-20 hidden lg:block pointer-events-none">
-                    <GavelSVG />
-                </div>
+               <div className="absolute right-8 top-1/2 -translate-y-1 hidden lg:block pointer-events-none opacity-5">
+    <Scale size={250} color="white" strokeWidth={0.8} />
+</div>
+
+<div className="absolute left-6 bottom-24 hidden lg:block pointer-events-none opacity-5">
+    <Gavel size={200} color="white" strokeWidth={0.8} />
+</div>
 
                 <div className="relative z-10 text-center py-24 px-6 max-w-4xl mx-auto">
                     <div className="inline-block mb-4 px-4 py-1.5 rounded-full border border-gray-600 text-xs uppercase tracking-widest text-gray-400 animate-fadein">
@@ -251,8 +231,8 @@ const Home = () => {
 
             {/* ── HOW IT WORKS ── */}
             <section className="px-6 md:px-16 py-16 bg-[#0A0F1C] text-white relative overflow-hidden" style={{ borderTop: "3px solid #1e2740", borderBottom: "3px solid #1e2740" }}>
-                <div className="absolute right-0 top-0 bottom-0 w-64 opacity-20 flex items-center justify-center pointer-events-none lg:flex">
-                    <div className="w-48 h-48 text-white"><ScalesSVG /></div>
+                <div className="absolute right-0 top-0 bottom-0 w-64 opacity-5 flex items-center justify-center pointer-events-none lg:flex">
+                    <div className="w-48 h-48 text-white"><Scale size={200} color="white" strokeWidth={0.8} /></div>
                 </div>
                 <div className="max-w-5xl mx-auto relative z-10">
                     <h2 className="text-2xl md:text-3xl font-bold text-center mb-2" data-reveal>How It Works</h2>
@@ -327,8 +307,8 @@ const Home = () => {
                 <div className="absolute inset-0 opacity-5 pointer-events-none">
                     <HeroPattern />
                 </div>
-                <div className="absolute left-0 top-0 bottom-0 w-48 opacity-20 hidden lg:flex items-center justify-center pointer-events-none">
-                    <div className="w-36 h-36 text-white"><GavelSVG /></div>
+                <div className="absolute left-0 top-0 bottom-0 w-48 opacity-5 hidden lg:flex items-center justify-center pointer-events-none">
+                    <div className="w-36 h-36 text-white"><Gavel size={200} color="white" strokeWidth={0.8} /></div>
                 </div>
                 <div className="max-w-5xl mx-auto relative z-10">
                     <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 text-center mb-2" data-reveal>What We Offer</p>

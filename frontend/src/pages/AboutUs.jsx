@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-
+import {Scale} from "lucide-react";
 function useReveal() {
     useEffect(() => {
         const els = document.querySelectorAll("[data-reveal]");
@@ -13,18 +13,6 @@ function useReveal() {
     }, []);
 }
 
-const ScalesSVG = () => (
-    <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-        <circle cx="60" cy="18" r="5" fill="currentColor" opacity="0.8"/>
-        <rect x="58" y="22" width="4" height="36" fill="currentColor" opacity="0.6"/>
-        <line x1="60" y1="38" x2="22" y2="52" stroke="currentColor" strokeWidth="2" opacity="0.6"/>
-        <line x1="60" y1="38" x2="98" y2="52" stroke="currentColor" strokeWidth="2" opacity="0.6"/>
-        <ellipse cx="22" cy="62" rx="16" ry="8" fill="currentColor" opacity="0.15" stroke="currentColor" strokeWidth="1.5"/>
-        <ellipse cx="98" cy="52" rx="16" ry="8" fill="currentColor" opacity="0.25" stroke="currentColor" strokeWidth="1.5"/>
-        <rect x="57" y="58" width="6" height="30" fill="currentColor" opacity="0.4"/>
-        <rect x="40" y="88" width="40" height="4" rx="2" fill="currentColor" opacity="0.5"/>
-    </svg>
-);
 
 const painPoints = [
     { title: "Lack of Substantive Legal Knowledge", desc: "Insufficient understanding of relevant laws and legal principles to frame a compelling case." },
@@ -54,8 +42,8 @@ const AboutUs = () => {
 
             {/* ── HEADER ── */}
             <div className="bg-[#0A0F1C] text-white text-center py-16 px-6 relative overflow-hidden" style={{ borderBottom: "3px solid #1e2740" }}>
-                <div className="absolute right-8 top-1/2 -translate-y-1/2 w-40 h-40 text-white opacity-20 hidden lg:block pointer-events-none">
-                    <ScalesSVG />
+                <div className="absolute right-18 top-1/2 -translate-y-1/2 w-40 h-40 text-white opacity-5 hidden lg:block pointer-events-none">
+                    <Scale size={200} color="white" strokeWidth={0.8} />
                 </div>
                 <div className="relative z-10">
                     <p className="text-xs uppercase tracking-widest text-gray-500 mb-2 animate-fadein">Our Story</p>

@@ -32,6 +32,7 @@ const hideLayouts = [
 // Pages where sidebar is hidden but navbar stays
 // Home, About Us, Services take full width
 const hideSidebar = ["/", "/aboutus", "/services"];
+const hideNavbarFooter = ["/dashboard", "/appointments ", "/profile", "/bookings"];
 
 function App() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -39,7 +40,7 @@ function App() {
 
     const hideLayout = hideLayouts.includes(location.pathname);
     const noSidebar = hideSidebar.includes(location.pathname);
-
+const hideNavFoot = hideNavbarFooter.includes(location.pathname);
     return (
         <div className="flex min-h-screen">
 
@@ -56,7 +57,7 @@ function App() {
             <div className="flex-1 flex flex-col min-w-0">
 
                 {/* Navbar — hidden only on auth pages */}
-                {!hideLayout && (
+                {!hideLayout && !hideNavFoot && (
                     <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
                 )}
 
@@ -87,7 +88,7 @@ function App() {
 
                     {!hideLayout && <Bot />}
                 </div>
-                {!hideLayout && <Footer />}
+                {!hideLayout && !hideNavFoot && <Footer />}
             </div>
         </div>
     );
