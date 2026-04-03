@@ -4,9 +4,9 @@ import { success } from "../utils/apiResponse.js";
 
 // Controller: schedule a new appointment
 export const createAppointment = asyncHandler(async (req, res) => {
-    const { slotId, caseId } = req.body;
+    const { slotId, caseId, file } = req.body;
     const { user } = req;
-    const newAppointment = await appointmentService.createAppointment(slotId, caseId, user);
+    const newAppointment = await appointmentService.createAppointment(slotId, caseId, file, user);
     return success(res, "Appointment scheduled successfully", newAppointment);
 });
 
