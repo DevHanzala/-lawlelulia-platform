@@ -4,7 +4,8 @@ import { success } from "../utils/apiResponse.js";
 
 // Controller: schedule a new appointment
 export const createAppointment = asyncHandler(async (req, res) => {
-    const { slotId, caseId, file } = req.body;
+    const { slotId, caseId } = req.body;
+    const file = req.file; // multer will attach the uploaded file to req
     const { user } = req;
     const newAppointment = await appointmentService.createAppointment(slotId, caseId, file, user);
     return success(res, "Appointment scheduled successfully", newAppointment);
