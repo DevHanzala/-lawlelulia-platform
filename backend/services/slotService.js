@@ -46,7 +46,7 @@ export const getSlotsByDate = async (date, user) => {
 
     // If requested date is in the past
     if (targetDate < today) {
-        throw new Error("Please enter next date");
+        throw new HttpError("Please enter next date", 400);
     }
 
     // Start and end of the requested date in UTC
