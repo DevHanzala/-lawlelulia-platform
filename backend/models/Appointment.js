@@ -16,6 +16,12 @@ const appointmentSchema = new mongoose.Schema({
         ref: "Case",
         required: [true, "Case is required for appointment"]
     },
+    fileId: {
+        type: String
+    },
+    fileUrl: {
+        type: String
+    },
     status: {
         type: String,
         enum: {
