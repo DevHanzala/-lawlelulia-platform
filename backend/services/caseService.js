@@ -18,6 +18,8 @@ export const getCaseById = async (caseId, user) => {
 // Service: Create a new case
 export const createNewCase = async (caseTitle, caseDescription, user) => {
 
+    if(user.role === "admin") throw new HttpError(403, "Admins cannot create cases");
+
     // Input validation
     if (!caseTitle || caseTitle.length < 3 || caseTitle.length > 50) {
         throw new HttpError(400, "Case title must be 3-50 characters long");
