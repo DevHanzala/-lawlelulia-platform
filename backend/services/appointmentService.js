@@ -9,12 +9,12 @@ export const createAppointment = async (slotId, caseId, file, user) => {
 
     // check admin trying to book appointment
     if (user.role === "admin") {
-        throw new HttpError(403, "Admin cannot book his own appointments");
+        throw new HttpError("Admin cannot book his own appointments", 403);
     }
 
     // Atomic slot booking to prevent race condition
     const slot = await findSlotByIdAndUpdateBookedStatus(slotId, false, true);
-    if (!slot) throw new HttpError(400, "Slot not found or already booked");
+    if (!slot) throw new HttpError("Slot not found or already booked", 400);
 
     // Check case ownership
     await getCaseById(caseId, user);
