@@ -46,12 +46,12 @@ function App() {
             <ScrollToTop />
             {/* Sidebar — hidden on auth pages AND full-width pages */}
             {!hideLayout && (
-    <Sidebar
-        sidebarOpen={sidebarOpen}
-       setSidebarOpen={setSidebarOpen}
-         hideOnDesktop={noSidebar}
-     />
- )}
+                <Sidebar
+                    sidebarOpen={sidebarOpen}
+                    setSidebarOpen={setSidebarOpen}
+                    hideOnDesktop={noSidebar}
+                />
+            )}
 
             <div className="flex-1 flex flex-col min-w-0">
 
@@ -85,7 +85,7 @@ function App() {
                         <Route path="/dashboard" element={<AuthGuard adminOnly><Dashboard /></AuthGuard>} />
                     </Routes>
 
-                    {!hideLayout && <Bot />}
+                    {!hideLayout && <AuthGuard><Bot /></AuthGuard>}
                 </div>
                 {!hideLayout && <Footer />}
             </div>
