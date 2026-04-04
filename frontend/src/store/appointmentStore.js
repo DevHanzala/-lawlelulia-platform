@@ -63,10 +63,10 @@ const useAppointmentStore = create((set) => ({
     },
 
     // Book an appointment (user)
-    bookAppointment: async (slotId) => {
+    bookAppointment: async (slotId , caseId) => {
         set({ error: "" });
         try {
-            await createAppointmentApi(slotId);
+            await createAppointmentApi({slotId, caseId});
             return { success: true };
         } catch (err) {
             const msg = err.response?.data?.message || "Failed to book appointment";
