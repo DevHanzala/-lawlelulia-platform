@@ -22,6 +22,12 @@ import AuthGuard from './guards/AuthGuard';
 import GoogleAuthCallback from './pages/GoogleAuthCallback';
 import Bot from './components/Bot';
 import ScrollToTop from './components/ScrollToTop';
+
+// New pages
+import Support from './pages/Support';
+import Feedback from './pages/Feedback';
+import Terms from './pages/Terms';
+
 // Pages where entire layout (navbar + sidebar) is hidden
 const hideLayouts = [
     "/login", "/signup",
@@ -30,8 +36,9 @@ const hideLayouts = [
 ];
 
 // Pages where sidebar is hidden but navbar stays
-// Home, About Us, Services take full width
-const hideSidebar = ["/", "/aboutus", "/services"];
+// Home, About Us, Services, and new public pages take full width
+const hideSidebar = ["/", "/aboutus", "/services", "/support", "/feedback", "/privacy", "/terms"];
+const hideNavbarFooter = ["/dashboard", "/appointments", "/profile", "/bookings"];
 
 function App() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -39,11 +46,13 @@ function App() {
 
     const hideLayout = hideLayouts.includes(location.pathname);
     const noSidebar = hideSidebar.includes(location.pathname);
+    const hideNavFoot = hideNavbarFooter.includes(location.pathname);
 
     return (
         <div className="flex min-h-screen">
 
             <ScrollToTop />
+
             {/* Sidebar — hidden on auth pages AND full-width pages */}
             {!hideLayout && (
                 <Sidebar
@@ -55,8 +64,8 @@ function App() {
 
             <div className="flex-1 flex flex-col min-w-0">
 
-                {/* Navbar — hidden only on auth pages */}
-                {!hideLayout && (
+                {/* Navbar — hidden only on auth pages and dashboard/app pages */}
+                {!hideLayout && !hideNavFoot && (
                     <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
                 )}
 
@@ -68,6 +77,11 @@ function App() {
                         <Route path="/aboutus" element={<AboutUs />} />
                         <Route path="/services" element={<Services />} />
 
+                        {/* Support & Legal routes */}
+                        <Route path="/support" element={<Support />} />
+                        <Route path="/feedback" element={<Feedback />} />
+                        <Route path="/terms" element={<Terms />} />
+
                         {/* Auth routes */}
                         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
                         <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
@@ -76,7 +90,7 @@ function App() {
                         <Route path="/forgot-password/verify" element={<PublicRoute><ForgotPasswordVerify /></PublicRoute>} />
                         <Route path="/forgot-password/reset" element={<PublicRoute><ResetPassword /></PublicRoute>} />
 
-                        {/* User routes (logged in, non-admin) */}
+                        {/* User routes (logged in) */}
                         <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
                         <Route path="/bookings" element={<AuthGuard><Bookings /></AuthGuard>} />
 
@@ -87,7 +101,8 @@ function App() {
 
                     {!hideLayout && <AuthGuard><Bot /></AuthGuard>}
                 </div>
-                {!hideLayout && <Footer />}
+
+                {!hideLayout && !hideNavFoot && <Footer />}
             </div>
         </div>
     );

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FaLinkedinIn, FaTwitter, FaFacebookF, FaEnvelope } from "react-icons/fa";
+import { FaLinkedinIn, FaTwitter, FaFacebookF, FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
 import useAuthStore from "../store/authStore";
 
 const Footer = () => {
@@ -7,152 +7,158 @@ const Footer = () => {
     const authed = isAuthenticated();
     const isAdmin = authed && user?.role === "admin";
 
+    const services = [
+        { label: "Legal Research & Drafting", hash: "legal-research" },
+        { label: "Procedural Guidance",       hash: "procedural-guidance" },
+        { label: "Evidence Organization",     hash: "evidence-organization" },
+        { label: "Courtroom Coaching",        hash: "courtroom-coaching" },
+        { label: "Emotional Guardrails",      hash: "emotional-guardrails" },
+        { label: "Intelligent Co-Counsel",    hash: "co-counsel" },
+    ];
+
+    const support = [
+        { label: "Help Center",      path: "/support" },
+        { label: "Submit Feedback",  path: "/feedback" },
+        { label: "Report an Issue",  path: "/support" },
+        { label: "FAQs",             path: "/support" },
+        { label: "Terms of Service", path: "/terms" },
+    ];
+
     return (
         <footer className="w-full text-white bg-[#0A0F1C]">
 
-            {/* Main Footer */}
-            <div className="mx-auto px-4 sm:px-6 md:px-10 py-8 sm:py-10">
-
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-
-                    {/* Brand — full width on both mobile and sm */}
-                    <div className="col-span-2 sm:col-span-2  lg:col-span-1">
-
+            {/* ── Brand row — always full width ── */}
+            <div className="mx-auto px-6 md:px-10 lg:px-16 pt-10 pb-8 border-b border-gray-800">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-5">
+                    <div className="max-w-sm">
                         <div className="flex items-center space-x-2 mb-3">
-                            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center font-bold text-[#0A0F1C]">
-                                C
-                            </div>
-                            <span className="font-bold text-3xl">CoCoLaw.ai</span>
+                            <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center font-bold text-[#0A0F1C] text-lg shrink-0">C</div>
+                            <span className="font-bold text-xl tracking-wide">CoCoLaw.ai</span>
                         </div>
-
-                        <p className="text-sm text-gray-400 mb-4 leading-relaxed">
-                            AI-powered co-counsel for litigants. Helping users navigate legal systems confidently.
+                        <p className="text-sm text-gray-400 leading-relaxed">
+                            AI-powered co-counsel for self-represented litigants. Leveling the playing field so everyone can navigate the legal system with confidence.
                         </p>
-
-                        {/* Social Icons */}
-                        <div className="flex space-x-3 ">
-                            <a href="#" className="icon"><FaLinkedinIn /></a>
-                            <a href="#" className="icon"><FaTwitter /></a>
-                            <a href="#" className="icon"><FaFacebookF /></a>
-                        </div>
                     </div>
-
-                    {/* Quick Links */}
-                    <div>
-                        <h5 className="footer-heading">Quick Links</h5>
-                        <div className="footer-links">
-                            <Link to="/">Home</Link>
-                            <Link to="/aboutus">About</Link>
-                            <Link to="/services">Services</Link>
-                            <Link to="/profile">Profile</Link>
+                    <div className="flex flex-col gap-3">
+                        <div className="flex space-x-2 mx-auto">
+                            {[
+                                { icon: <FaLinkedinIn />, href: "https://linkedin.com" },
+                                { icon: <FaTwitter />,    href: "https://twitter.com" },
+                                { icon: <FaFacebookF />,  href: "https://facebook.com" },
+                            ].map((s, i) => (
+                                <a key={i} href={s.href} target="_blank" rel="noreferrer"
+                                    className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-700 text-gray-400 hover:border-white hover:text-white transition text-xs">
+                                    {s.icon}
+                                </a>
+                            ))}
                         </div>
-                    </div>
-
-                    {/* Services */}
-                    <div>
-                        <h5 className="footer-heading">Services</h5>
-                        <div className="footer-links">
-                            <p>Legal Research</p>
-                            <p>Procedural Guidance</p>
-                            <p>Evidence Organization</p>
-                            <p>Courtroom Coaching</p>
-                        </div>
-                    </div>
-
-                   
-
-                    {/* Contact — full width on mobile */}
-                    <div className="col-span-2 sm:col-span-1 lg:col-span-1">
-                        <h5 className="footer-heading">Contact</h5>
-
-                        <div className="space-y-2 text-sm text-gray-400">
-                            <p>📞 +92 324 2650627</p>
-                            <p>📍 Karachi, Pakistan</p>
-
-                            <a
-                                href="mailto:anassohail34343@gmail.com"
-                                className="flex items-center gap-2 hover:text-white transition"
-                            >
-                                <FaEnvelope />
-                                anassohail34343@gmail.com
-                            </a>
-                        </div>
-
-                        {/* Only show Book Consultation for non-admin users */}
                         {!isAdmin && (
-                            <Link
-                                to="/bookings"
-                                className="mt-4 inline-block text-xs px-4 py-2 bg-white text-black rounded-md font-semibold hover:bg-gray-200 transition"
-                            >
+                            <Link to="/bookings"
+                                className="inline-block text-center text-sm px-4 py-2 bg-white text-[#0A0F1C] rounded-lg font-bold hover:bg-gray-200 transition md:w-fit">
                                 Book Consultation →
                             </Link>
                         )}
                     </div>
+                </div>
+            </div>
+
+            {/* ── Link columns: 2-col on mobile, 4-col on lg ── */}
+            <div className="mx-auto px-6 md:px-10 lg:px-16 py-8">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8">
+
+                    {/* Quick Links */}
+                    <div>
+                        <h5 className="text-xs font-bold uppercase tracking-wider text-white mb-4">Quick Links</h5>
+                        <div className="flex flex-col gap-2.5">
+                            {[
+                                { label: "Home",     path: "/" },
+                                { label: "About Us", path: "/aboutus" },
+                                { label: "Services", path: "/services" },
+                                { label: "Profile",  path: "/profile" },
+                                ...(!isAdmin ? [{ label: "Book Appointment", path: "/bookings" }] : []),
+                                ...(isAdmin  ? [
+                                    { label: "Dashboard",    path: "/dashboard" },
+                                    { label: "Appointments", path: "/appointments" },
+                                ] : []),
+                            ].map((item) => (
+                                <Link key={item.path} to={item.path}
+                                    className="text-sm text-gray-400 hover:text-white transition flex items-center gap-2 group">
+                                    <span className="w-1 h-1 rounded-full bg-gray-600 group-hover:bg-white transition shrink-0" />
+                                    {item.label}
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Services — anchor links */}
+                    <div>
+                        <h5 className="text-xs font-bold uppercase tracking-wider text-white mb-4">Services</h5>
+                        <div className="flex flex-col gap-2.5">
+                            {services.map((s) => (
+                                <a key={s.hash} href={`/services#${s.hash}`}
+                                    className="text-sm text-gray-400 hover:text-white transition flex items-center gap-2 group">
+                                    <span className="w-1 h-1 rounded-full bg-gray-600 group-hover:bg-white transition shrink-0" />
+                                    {s.label}
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Support */}
+                    <div>
+                        <h5 className="text-xs font-bold uppercase tracking-wider text-white mb-4">Support</h5>
+                        <div className="flex flex-col gap-2.5">
+                            {support.map((s) => (
+                                <Link key={s.label} to={s.path}
+                                    className="text-sm text-gray-400 hover:text-white transition flex items-center gap-2 group">
+                                    <span className="w-1 h-1 rounded-full bg-gray-600 group-hover:bg-white transition shrink-0" />
+                                    {s.label}
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Contact */}
+                    <div>
+                        <h5 className="text-xs font-bold uppercase tracking-wider text-white mb-4">Contact</h5>
+                        <div className="flex flex-col gap-3">
+                            <div className="flex items-start gap-2.5">
+                                <FaPhone className="text-gray-500 mt-0.5 shrink-0 text-xs" />
+                                <p className="text-sm text-gray-400">+1 (213) 555-0192</p>
+                            </div>
+                            <div className="flex items-start gap-2.5">
+                                <FaMapMarkerAlt className="text-gray-500 mt-0.5 shrink-0 text-xs" />
+                                <p className="text-sm text-gray-400 leading-relaxed">
+                                    350 S Grand Ave, Suite 2800<br />
+                                    Los Angeles, CA 90071
+                                </p>
+                            </div>
+                            <div className="flex items-start gap-2.5">
+                                <FaEnvelope className="text-gray-500 mt-0.5 shrink-0 text-xs" />
+                                <a href="mailto:support@cocolaw.ai"
+                                    className="text-sm text-gray-400 hover:text-white transition break-all">
+                                    support@cocolaw.ai
+                                </a>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
             </div>
 
-            {/* Bottom Bar */}
-            <div className="border-t border-gray-800">
-                <div className="mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-gray-500">
-
-                    <p>© 2026 CoCoLaw.ai  All rights reserved.</p>
-
-                    <div className="flex gap-4">
-                        <span className="hover:text-gray-300 cursor-pointer">Privacy</span>
-                        <span className="hover:text-gray-300 cursor-pointer">Terms</span>
-                        <span className="hover:text-gray-300 cursor-pointer">Cookies</span>
+            {/* ── Bottom Bar ── */}
+            <div className="border-t border-gray-800 bg-[#050815]">
+                <div className="mx-auto px-6 md:px-10 lg:px-16 py-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+                    <p className="text-xs text-gray-500">© 2026 CoCoLaw.ai — All rights reserved.</p>
+                    <div className="flex flex-wrap justify-center gap-4">
+                        {["Privacy Policy", "Terms of Service", "Cookie Policy", "Accessibility"].map((item) => (
+                            <span key={item} className="text-xs text-gray-600 hover:text-gray-400 cursor-pointer transition">
+                                {item}
+                            </span>
+                        ))}
                     </div>
                 </div>
             </div>
-
-            {/* Styles */}
-            <style jsx>{`
-                .footer-heading {
-                    font-size: 12px;
-                    font-weight: 700;
-                    margin-bottom: 8px;
-                    text-transform: uppercase;
-                    color: white;
-                }
-
-                .footer-links {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 4px;
-                    font-size: 14px;
-                    color: #9ca3af;
-                }
-
-                .footer-links a,
-                .footer-links p {
-                    transition: 0.2s;
-                    cursor: pointer;
-                }
-
-                .footer-links a:hover,
-                .footer-links p:hover {
-                    color: white;
-                }
-
-                .icon {
-                    width: 34px;
-                    height: 34px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    border: 1px solid #374151;
-                    border-radius: 999px;
-                    color: #9ca3af;
-                    transition: 0.3s;
-                }
-
-                .icon:hover {
-                    color: white;
-                    border-color: white;
-                }
-            `}</style>
-
         </footer>
     );
 };

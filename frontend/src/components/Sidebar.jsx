@@ -48,7 +48,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, hideOnDesktop }) => {
 
             <div
                 className={`bg-white w-56 border-r border-gray-200
-                  fixed top-0 left-0 z-50 transform transition-transform duration-300 ease-in-out
+                  fixed top-10 left-0 z-50 transform transition-transform duration-300 ease-in-out
     flex flex-col
     ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
     ${hideOnDesktop
@@ -62,7 +62,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, hideOnDesktop }) => {
                 <div className="flex flex-col p-3 border-b border-gray-200 shrink-0">
                     <div className="flex justify-between items-center">
                         <Link to="/" onClick={handleClose}>
-                            <h5 className="font-bold text-sm text-[#0A0F1C]">Cocolaw.ai</h5>
+                            <h5 className="font-bold text-lg text-[#0A0F1C]">Cocolaw.ai</h5>
                         </Link>
                         <button
                             className="md:hidden w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 font-bold text-lg hover:bg-gray-200 transition"
