@@ -17,8 +17,7 @@ const useCaseStore = create((set) => ({
             set((state) => ({ cases: [...state.cases, newCaseRes.data.data], loading: false }));
             return { success: true };
         } catch (error) {
-            console.log("Error creating case:", error);
-            set({ error: error.message, loading: false });
+            set({ error: error?.response?.data?.message, loading: false });
             return { success: false, message: error.message };
         }
     },

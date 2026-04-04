@@ -47,6 +47,7 @@ const Bookings = () => {
         getCases,
         createCase,
         loading: caseLoading,
+        error: caseError
     } = useCaseStore();
 
     useEffect(() => {
@@ -108,8 +109,8 @@ const Bookings = () => {
 
         const res = await createCase(caseTitle, caseDescription);
         if (!res.success) {
-           setBookingError(res.message || "Failed to create case. Please try again.");
-           return;
+            setBookingError(res.message || "Failed to create case. Please try again.");
+            return;
         }
         setBookingLoading(false);
         setCaseTitle("");
@@ -213,6 +214,13 @@ const Bookings = () => {
                             rows={3}
                             className="p-3 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#0A0F1C] resize-none transition"
                         />
+
+                        {/* Feedback messages */}
+                        {caseError && (
+                            <div className="mb-3 text-red-600 text-xs bg-red-50 border border-red-100 p-3 rounded-xl">
+                                ⚠️ {caseError}
+                            </div>
+                        )}
 
                         {/* Action */}
                         <div className="flex justify-end">
