@@ -3,6 +3,7 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import useSlotStore from "../store/slotStore";
 import useAppointmentStore from "../store/appointmentStore";
+import useCaseStore from "../store/caseStore";
 
 const formatTime = (iso) =>
     new Date(iso).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
@@ -19,12 +20,17 @@ const statusStyles = {
 };
 
 const Bookings = () => {
+
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedSlotId, setSelectedSlotId] = useState(null);
     const [specialRequest, setSpecialRequest] = useState("");
     const [bookingLoading, setBookingLoading] = useState(false);
     const [bookingSuccess, setBookingSuccess] = useState("");
     const [bookingError, setBookingError] = useState("");
+    const [selectedCaseId, setSelectedCaseId] = useState("");
+    const [showCreateCase, setShowCreateCase] = useState(false);
+    const [caseTitle, setCaseTitle] = useState("");
+    const [caseDescription, setCaseDescription] = useState("");
 
     const {
         slots, loading: slotsLoading,
@@ -35,6 +41,18 @@ const Bookings = () => {
         history, future, loading: apptLoading,
         fetchAllUserAppointments, bookAppointment
     } = useAppointmentStore();
+
+    const {
+        cases,
+        getCases,
+        createCase,
+        loading: caseLoading,
+    } = useCaseStore();
+
+    useEffect(() => {
+        getCases();
+        console.log("Cases: ", cases);
+    }, []);
 
     useEffect(() => {
         fetchSlotsByDate(selectedDate);
@@ -49,15 +67,22 @@ const Bookings = () => {
 
     const availableSlots = slots.filter((s) => !s.isBooked);
 
+    // Book selected slot with optional special request and case ID
     const handleBook = async () => {
+
         if (!selectedSlotId) {
             setBookingError("Please select a time slot.");
             return;
         }
+        if (!selectedCaseId) {
+            setBookingError("Please select a case for this appointment.");
+            return;
+        }
+
         setBookingError("");
         setBookingSuccess("");
         setBookingLoading(true);
-        const res = await bookAppointment(selectedSlotId);
+        const res = await bookAppointment(selectedSlotId, selectedCaseId);
         if (res.success) {
             setBookingSuccess("Appointment booked! Pending confirmation from admin.");
             setSelectedSlotId(null);
@@ -68,6 +93,27 @@ const Bookings = () => {
             setBookingError(res.error);
         }
         setBookingLoading(false);
+    };
+
+    // Register new case with title and description
+    const fileNewCase = async () => {
+        if (!caseTitle || !caseDescription) {
+            setBookingError("Please provide both title and description for the case.");
+            return;
+        }
+
+        setBookingError("");
+        setBookingSuccess("");
+        setBookingLoading(true);
+
+        const res = await createCase(caseTitle, caseDescription);
+        if (!res.success) {
+           setBookingError(res.message || "Failed to create case. Please try again.");
+           return;
+        }
+        setBookingLoading(false);
+        setCaseTitle("");
+        setCaseDescription("");
     };
 
     return (
@@ -93,8 +139,96 @@ const Bookings = () => {
                 ))}
             </div>
 
+            {/* Select Case + Create New */}
+            <div className="mb-6">
+
+                {/* Label */}
+                <label className="text-xs font-semibold text-gray-400 mb-2 block">
+                    SELECT CASE
+                </label>
+
+                {/* Row */}
+                <div className="flex flex-col sm:flex-row gap-3">
+
+                    {/* Select */}
+                    <div className="flex-1">
+                        <select
+                            value={selectedCaseId}
+                            onChange={(e) => {
+                                const value = e.target.value;
+
+                                if (value === "new") {
+                                    setShowCreateCase(true);
+                                    setSelectedCaseId("");
+                                } else {
+                                    setShowCreateCase(false);
+                                    setSelectedCaseId(value);
+                                }
+                            }}
+                            className="w-full h-11 px-3 border border-gray-200 rounded-xl text-sm outline-none bg-white focus:ring-2 focus:ring-[#0A0F1C] focus:border-transparent transition"
+                        >
+                            <option value="">Select a case</option>
+
+                            {cases.map((c) => (
+                                <option key={c._id} value={c._id}>
+                                    {c.caseTitle}
+                                </option>
+                            ))}
+
+                            <option value="new">+ Create New Case</option>
+                        </select>
+                    </div>
+                </div>
+
+                {/* Create Case Form */}
+                {showCreateCase && (
+                    <div className="mt-4 p-4 border border-gray-200 rounded-2xl bg-gray-50/70 backdrop-blur-sm flex flex-col gap-3 animate-fadeIn shadow-sm">
+
+                        {/* Header */}
+                        <div className="flex items-center justify-between">
+                            <p className="text-sm font-semibold text-[#0A0F1C]">
+                                New Case Details
+                            </p>
+                            <button
+                                onClick={() => setShowCreateCase(false)}
+                                className="text-xs text-gray-400 hover:text-gray-600"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+
+                        {/* Inputs */}
+                        <input
+                            type="text"
+                            placeholder="Case Title"
+                            value={caseTitle}
+                            onChange={(e) => setCaseTitle(e.target.value)}
+                            className="h-11 px-3 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#0A0F1C] transition"
+                        />
+
+                        <textarea
+                            placeholder="Case Description"
+                            value={caseDescription}
+                            onChange={(e) => setCaseDescription(e.target.value)}
+                            rows={3}
+                            className="p-3 border border-gray-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#0A0F1C] resize-none transition"
+                        />
+
+                        {/* Action */}
+                        <div className="flex justify-end">
+                            <button
+                                onClick={fileNewCase}
+                                className="text-sm px-5 h-10 bg-[#0A0F1C] text-white rounded-xl hover:bg-gray-800 transition shadow-sm"
+                            >
+                                File Case
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+
             {/* Calendar + Slots */}
-            <div className="flex flex-col md:flex-row gap-4 mb-4">
+            <div className="flex flex-col md:flex-row gap-4 mb-4 mt-4">
 
                 {/* Calendar */}
                 <div className="w-full md:w-1/2 bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col items-center">
@@ -140,11 +274,10 @@ const Bookings = () => {
                                     <button
                                         key={slot._id}
                                         onClick={() => setSelectedSlotId(isSelected ? null : slot._id)}
-                                        className={`p-3 rounded-xl border text-left transition ${
-                                            isSelected
-                                                ? "bg-[#0A0F1C] border-[#0A0F1C] shadow-md"
-                                                : "bg-green-50 border-green-100 hover:border-green-300"
-                                        }`}
+                                        className={`p-3 rounded-xl border text-left transition ${isSelected
+                                            ? "bg-[#0A0F1C] border-[#0A0F1C] shadow-md"
+                                            : "bg-green-50 border-green-100 hover:border-green-300"
+                                            }`}
                                     >
                                         <p className={`text-sm font-bold ${isSelected ? "text-white" : "text-[#0A0F1C]"}`}>
                                             {formatTime(slot.startTime)}
@@ -233,9 +366,8 @@ const Bookings = () => {
                                                     {formatDateShort(appt.slot.startTime)}
                                                 </p>
                                             </div>
-                                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${
-                                                statusStyles[appt.status] || "bg-gray-100 text-gray-600"
-                                            }`}>
+                                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${statusStyles[appt.status] || "bg-gray-100 text-gray-600"
+                                                }`}>
                                                 {appt.status}
                                             </span>
                                         </div>
@@ -273,9 +405,8 @@ const Bookings = () => {
                                                     {formatDateShort(appt.slot.startTime)}
                                                 </p>
                                             </div>
-                                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${
-                                                statusStyles[appt.status] || "bg-gray-100 text-gray-600"
-                                            }`}>
+                                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${statusStyles[appt.status] || "bg-gray-100 text-gray-600"
+                                                }`}>
                                                 {appt.status}
                                             </span>
                                         </div>
