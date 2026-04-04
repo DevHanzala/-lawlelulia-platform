@@ -72,7 +72,7 @@ export const getSlotsByDate = async (date, user) => {
     slots = slots.filter(slot => slot.endTime > now);
 
     // Attach appointment info
-    const slotsWithAppointments = await Promise.all(
+    let slotsWithAppointments = await Promise.all(
         slots.map(async (slot) => {
             const slotObj = slot.toObject();
             const appointment = await Appointment.findOne({ slot: slot._id })
