@@ -10,7 +10,7 @@ export const getCasesByUserId = async (user) => {
 // Service: get case by id
 export const getCaseById = async (caseId, user) => {
     const caseData = await Case.findById(caseId);
-    if (!caseData) throw new HttpError(404, "Case not found");
+    if (!caseData) throw new HttpError("Case not found",404);
     if (caseData.userId.toString() !== user._id.toString()) throw new HttpError("Unauthorized access to case", 403);
     return caseData;
 }
@@ -18,14 +18,14 @@ export const getCaseById = async (caseId, user) => {
 // Service: Create a new case
 export const createNewCase = async (caseTitle, caseDescription, user) => {
 
-    if(user.role === "admin") throw new HttpError(403, "Admins cannot create cases");
+    if(user.role === "admin") throw new HttpError("Admins cannot create cases", 403);
 
     // Input validation
     if (!caseTitle || caseTitle.length < 3 || caseTitle.length > 50) {
-        throw new HttpError(400, "Case title must be 3-50 characters long");
+        throw new HttpError("Case title must be 3-50 characters long", 400);
     }
     if (!caseDescription || caseDescription.length < 50 || caseDescription.length > 1500) {
-        throw new HttpError(400, "Case description must be  50 - 1500 characters long");
+        throw new HttpError("Case description must be 50-1500 characters long", 400);
     }
 
     const newCase = new Case({
