@@ -1,7 +1,7 @@
 import api from "../lib/axios";
 
-export const createAppointmentApi = (slotId) =>
-    api.post("/appointment/create", { slotId });
+export const createAppointmentApi = (payload) =>
+    api.post("/appointment/create", payload);
 
 export const updateAppointmentStatusApi = (appointmentId, status) =>
     api.put(`/appointment/${appointmentId}`, { status });
