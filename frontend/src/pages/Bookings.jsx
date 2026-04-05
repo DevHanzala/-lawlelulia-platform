@@ -31,6 +31,7 @@ const Bookings = () => {
     const [showCreateCase, setShowCreateCase] = useState(false);
     const [caseTitle, setCaseTitle] = useState("");
     const [caseDescription, setCaseDescription] = useState("");
+    const [file, setFile] = useState(null);
 
     const {
         slots, loading: slotsLoading,
@@ -83,12 +84,13 @@ const Bookings = () => {
         setBookingError("");
         setBookingSuccess("");
         setBookingLoading(true);
-        const res = await bookAppointment(selectedSlotId, selectedCaseId);
+        const res = await bookAppointment(selectedSlotId, selectedCaseId, file);
         if (res.success) {
             setBookingSuccess("Appointment booked! Pending confirmation from admin.");
             setSelectedSlotId(null);
             setSpecialRequest("");
             fetchSlotsByDate(selectedDate);
+            setFile(null);
             fetchAllUserAppointments();
         } else {
             setBookingError(res.error);
@@ -310,6 +312,36 @@ const Bookings = () => {
             {bookingSuccess && (
                 <div className="mb-3 text-green-700 text-xs bg-green-50 border border-green-100 p-3 rounded-xl">
                     ✅ {bookingSuccess}
+                </div>
+            )}
+
+            {/* File upload button */}
+            <div className="mb-8">
+                <label className="sm:w-48 inline-block text-center text-sm font-medium px-6 py-3 bg-[#0A0F1C] text-white rounded-xl hover:bg-gray-800 transition cursor-pointer whitespace-nowrap">
+                    Upload File
+                    <input
+                        type="file"
+                        className="hidden"
+                        onChange={(e) => {
+                            const file = e.target.files[0];
+                            console.log(file);
+                            setFile(file);
+                        }}
+                    />
+                </label>
+            </div>
+
+            {/* Show file preview */}
+            {file && (
+                <div className="sm:w-48 flex items-center justify-between bg-gray-200 p-3 rounded-xl font-medium text-black mb-8 text-xs">
+                    <span className="truncate">{file.name}</span>
+
+                    <button
+                        onClick={() => setFile(null)}
+                        className="ml-2 text-gray-500 hover:text-red-500 text-sm font-bold"
+                    >
+                        ✕
+                    </button>
                 </div>
             )}
 
