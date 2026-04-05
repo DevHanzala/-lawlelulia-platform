@@ -9,9 +9,16 @@ const api = axios.create({
 // Attach JWT token from localStorage on every request
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("cocolaw_token");
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  // Let browser handle FormData
+  if (config.data instanceof FormData) {
+    delete config.headers["Content-Type"];
+  }
+
   return config;
 });
 
