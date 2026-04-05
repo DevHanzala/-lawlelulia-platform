@@ -10,12 +10,12 @@ export const uploadToDrive = async (file) => {
         const response = await drive.files.create({
             requestBody: {
                 name: file.originalname,
-                parents: [process.env.FOLDER_ID]
+                parents: [process.env.FOLDER_ID],
             },
             media: {
                 mimeType: file.mimetype,
-                body: fs.createReadStream(file.path)
-            }
+                body: fs.createReadStream(file.path),
+            },
         });
 
         // Make file public
@@ -24,7 +24,7 @@ export const uploadToDrive = async (file) => {
             requestBody: {
                 role: 'reader',
                 type: 'anyone'
-            }
+            },
         });
 
         // Delete local file
@@ -36,6 +36,8 @@ export const uploadToDrive = async (file) => {
         };
 
     } catch (error) {
+
+        console.log("Error uploading to Google Drive:", error);
 
         //  delete file even if upload fails
         if (file?.path && fs.existsSync(file.path)) {
