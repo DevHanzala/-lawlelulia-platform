@@ -1,9 +1,20 @@
-import { google } from 'googleapis';
-import path from 'path';
+import { google } from "googleapis";
+import dotenv from "dotenv";
 
-const auth = new google.auth.GoogleAuth({
-    keyFile: path.join(process.cwd(), 'credentials.json'),
-    scopes: ['https://www.googleapis.com/auth/drive']
+dotenv.config();
+
+const oauth2Client = new google.auth.OAuth2(
+  process.env.CLIENT_ID,
+  process.env.CLIENT_SECRET,
+  "http://localhost"
+);
+
+// ✅ THIS is the key line
+oauth2Client.setCredentials({
+  refresh_token: process.env.REFRESH_TOKEN,
 });
 
-export const drive = google.drive({ version: 'v3', auth });
+export const drive = google.drive({
+  version: "v3",
+  auth: oauth2Client,
+});
