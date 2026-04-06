@@ -53,8 +53,7 @@ export const getCasesWithAppointments = async (user) => {
     // Step 2: For each case, fetch its appointments
     const casesWithAppointments = await Promise.all(
         cases.map(async (c) => {
-            const appointments = await Appointment.find({ caseId: c._id }).lean();
-
+            const appointments = await Appointment.find({ case: c._id }).lean();
             // Return object with renamed user and without userId
             const { userId, ...rest } = c; // destructure to remove userId
             return {
