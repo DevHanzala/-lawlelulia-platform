@@ -4,6 +4,10 @@ import api from "../lib/axios";
 export const createCaseApi = (payload) =>
   api.post("/case/createCase", payload);
 
-// Get Cases ( user ID 
+// Get Cases ( user ID )
 export const getCasesApi = () =>
   api.get("/case/getCases");
+
+// Get Cases ( user ID  Admin Only)
+export const getCasesWithAppointmentsApi = () =>
+  api.get("/case/getCasesWithAppointments");
