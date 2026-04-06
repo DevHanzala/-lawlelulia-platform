@@ -44,6 +44,8 @@ export const uploadToDrive = async (file) => {
             fs.unlinkSync(file.path);
         }
 
-        throw new Error("File upload failed", 500);
+        // Log the error and return null to indicate upload failure
+        console.log("Failed to upload file to Google Drive: ", error);
+        return null;
     }
 };
