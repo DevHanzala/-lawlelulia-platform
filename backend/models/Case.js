@@ -19,6 +19,14 @@ const caseSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User', // References the User collection
         required: true
+    },
+    status: {
+        type: String,
+        default: "active",
+        enum: {
+            values: ["active", "closed"],
+            message: "Status must be either 'active' or 'closed'"
+        },
     }
 }, {
     timestamps: true // Optional: adds createdAt and updatedAt
