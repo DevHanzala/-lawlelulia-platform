@@ -7,6 +7,8 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import useSlotStore from "../store/slotStore";
 import useAppointmentStore from "../store/appointmentStore";
+import useCaseStore from "../store/caseStore";
+import CasesCard from "../components/CasesCard";
 
 const formatDateLabel = (d) =>
     new Date(d).toLocaleDateString("en-US", {
@@ -56,8 +58,16 @@ const Dashboard = () => {
 
     const { updatingId, updateStatus } = useAppointmentStore();
 
+    // get states and actions from case store
+    const { cases, getCasesWithAppointments, loading } = useCaseStore();
+
     useEffect(() => {
         fetchSlotsByDate(date);
+    }, [date]);
+
+    // Fetch cases with appointments on component mount
+    useEffect(() => {
+        getCasesWithAppointments();
     }, [date]);
 
     const prevDay = () => {
@@ -239,9 +249,8 @@ const Dashboard = () => {
                                                 👤 {slot.appointment.user.fullName}
                                             </p>
                                         )}
-                                        <span className={`text-xs px-2 py-0.5 rounded-full mt-1.5 inline-block font-medium ${
-                                            statusStyles[slot.appointment?.status || "pending"]
-                                        }`}>
+                                        <span className={`text-xs px-2 py-0.5 rounded-full mt-1.5 inline-block font-medium ${statusStyles[slot.appointment?.status || "pending"]
+                                            }`}>
                                             {slot.appointment?.status || "pending"}
                                         </span>
                                     </div>
@@ -303,11 +312,10 @@ const Dashboard = () => {
                         <div className="flex flex-col gap-2 max-h-72 overflow-y-auto">
                             {slots.map((slot) => (
                                 <div key={slot._id}
-                                    className={`flex justify-between items-center rounded-xl p-2.5 border ${
-                                        slot.isBooked
-                                            ? "bg-gray-50 border-gray-200"
-                                            : "bg-green-50 border-green-100"
-                                    }`}>
+                                    className={`flex justify-between items-center rounded-xl p-2.5 border ${slot.isBooked
+                                        ? "bg-gray-50 border-gray-200"
+                                        : "bg-green-50 border-green-100"
+                                        }`}>
                                     <div>
                                         <p className="text-xs font-semibold text-gray-700">
                                             {formatTime(slot.startTime)} — {formatTime(slot.endTime)}
@@ -330,6 +338,11 @@ const Dashboard = () => {
                     )}
                 </div>
             </div>
+
+            {/* Show all cases along with their details */}
+            <CasesCard
+                cases={cases}
+            />
         </>
     );
 };
