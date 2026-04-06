@@ -26,8 +26,8 @@ export const createAppointment = async (slotId, caseId, file, user) => {
         const uploaded = await uploadToDrive(file);
 
         fileData = {
-            fileId: uploaded.fileId,
-            fileUrl: uploaded.url
+            fileId: uploaded?.fileId ,
+            fileUrl: uploaded?.url 
         };
     }
 
