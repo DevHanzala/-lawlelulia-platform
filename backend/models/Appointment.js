@@ -24,7 +24,7 @@ const appointmentSchema = new mongoose.Schema({
         type: String,
         default: null
     },
-    filename: {
+    fileName: {
         type: String,
         default: null
     },
