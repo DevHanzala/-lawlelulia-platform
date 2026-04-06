@@ -27,7 +27,8 @@ export const createAppointment = async (slotId, caseId, file, user) => {
 
         fileData = {
             fileId: uploaded?.fileId ,
-            fileUrl: uploaded?.url 
+            fileUrl: uploaded?.url,
+            fileName: file.originalname 
         };
     }
 
