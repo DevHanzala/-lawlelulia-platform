@@ -17,10 +17,16 @@ const appointmentSchema = new mongoose.Schema({
         required: [true, "Case is required for appointment"]
     },
     fileId: {
-        type: String
+        type: String,
+        default: null
     },
     fileUrl: {
-        type: String
+        type: String,
+        default: null
+    },
+    filename: {
+        type: String,
+        default: null
     },
     status: {
         type: String,
