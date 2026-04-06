@@ -18,15 +18,6 @@ export const uploadToDrive = async (file) => {
             },
         });
 
-        // Make file public
-        await drive.permissions.create({
-            fileId: response.data.id,
-            requestBody: {
-                role: 'reader',
-                type: 'anyone'
-            },
-        });
-
         // Delete local file
         fs.unlinkSync(file.path);
 
