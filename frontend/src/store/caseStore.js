@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import {
     createCaseApi,
-    getCasesApi
+    getCasesApi,
+    getCasesWithAppointmentsApi
 } from "../api/case.api";
 
 const useCaseStore = create((set) => ({
@@ -27,6 +28,17 @@ const useCaseStore = create((set) => ({
         set({ loading: true, error: "" });
         try {
             const res = await getCasesApi();
+            set({ cases: res.data.data, loading: false });
+        } catch (error) {
+            set({ error: error.message, loading: false });
+        }
+    },
+
+    // get Cases ( user ID )
+    getCasesWithAppointments: async () => {
+        set({ loading: true, error: "" });
+        try {
+            const res = await getCasesWithAppointmentsApi();
             set({ cases: res.data.data, loading: false });
         } catch (error) {
             set({ error: error.message, loading: false });
