@@ -321,10 +321,10 @@ const Bookings = () => {
                     Upload File
                     <input
                         type="file"
+                        accept="image/png, image/jpeg, image/jpg, application/pdf"
                         className="hidden"
                         onChange={(e) => {
                             const file = e.target.files[0];
-                            console.log(file);
                             setFile(file);
                         }}
                     />
