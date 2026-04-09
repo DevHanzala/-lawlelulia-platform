@@ -1,21 +1,10 @@
 import multer from "multer";
-import path from "path";
 
-// Storage config
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "uploads/"); // make sure this folder exists
-    },
-    filename: (req, file, cb) => {
-        const uniqueName = file.originalname + "-" + Date.now();
-        cb(null, uniqueName);
-    }
-});
+// Memory storage — no disk writes, works on Render and any ephemeral filesystem
+const storage = multer.memoryStorage();
 
-// File filter 
 const fileFilter = (req, file, cb) => {
     const allowedTypes = ["application/pdf", "image/png", "image/jpeg", "image/jpg"];
-
     if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
     } else {
@@ -23,11 +12,8 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
-// Multer instance
 export const fileUpload = multer({
     storage,
     fileFilter,
-    limits: {
-        fileSize: 5 * 1024 * 1024 // 5MB
-    }
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
 });

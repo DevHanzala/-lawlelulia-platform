@@ -26,7 +26,7 @@ export const createAppointment = async (slotId, caseId, file, user) => {
     await getCaseById(caseId, user);
 
     let fileData = {};
-    if (file && file.path) {
+    if (file && file.buffer) {
         try {
             const uploaded = await uploadToDrive(file);
             fileData = {
