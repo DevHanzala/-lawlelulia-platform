@@ -1,9 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import useSlotStore from "../store/slotStore";
 import useAppointmentStore from "../store/appointmentStore";
 import useCaseStore from "../store/caseStore";
+import usePolling from "../hooks/usePolling";
+import { BookingSlotSk, UpcomingApptSk, HistoryApptSk } from "../components/Skeleton";
 
 const formatTime = (iso) => new Date(iso).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
 const formatDateShort = (iso) => new Date(iso).toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" });
@@ -13,6 +15,42 @@ const statusStyles = {
     confirmed: "bg-green-100 text-green-700 border-green-200",
     cancelled: "bg-red-100 text-red-600 border-red-200",
 };
+
+// Shimmer CSS
+const shimmerCSS = `
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    .skeleton-shimmer { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.6s ease-in-out infinite; border-radius: 6px; }
+`;
+
+// Select skeleton
+const SelectSk = () => (
+    <div className="w-full h-11 rounded-xl skeleton-shimmer" />
+);
+
+// Calendar skeleton
+const CalendarSk = () => (
+    <div className="flex flex-col gap-3 items-center w-full">
+        <div className="w-full flex justify-between items-center">
+            <div className="h-4 w-6 rounded skeleton-shimmer" />
+            <div className="h-4 w-24 rounded skeleton-shimmer" />
+            <div className="h-4 w-6 rounded skeleton-shimmer" />
+        </div>
+        {/* Days header */}
+        <div className="grid grid-cols-7 gap-1 w-full">
+            {Array(7).fill(0).map((_, i) => (
+                <div key={i} className="h-6 rounded skeleton-shimmer" />
+            ))}
+        </div>
+        {/* Day cells */}
+        {Array(5).fill(0).map((_, row) => (
+            <div key={row} className="grid grid-cols-7 gap-1 w-full">
+                {Array(7).fill(0).map((_, col) => (
+                    <div key={col} className="h-8 w-8 rounded-full skeleton-shimmer mx-auto" />
+                ))}
+            </div>
+        ))}
+    </div>
+);
 
 function useReveal() {
     useEffect(() => {
@@ -44,11 +82,26 @@ const Bookings = () => {
     const { history, future, loading: apptLoading, fetchAllUserAppointments, bookAppointment } = useAppointmentStore();
     const { cases, getCases, createCase, loading: caseLoading, error: caseError } = useCaseStore();
 
-    useEffect(() => { getCases(); }, []);
-    useEffect(() => { fetchSlotsByDate(selectedDate); setSelectedSlotId(null); setBookingSuccess(""); setBookingError(""); }, [selectedDate]);
-    useEffect(() => { fetchAllUserAppointments(); }, []);
+    const refreshBookings = useCallback(() => {
+        fetchSlotsByDate(selectedDate);
+        fetchAllUserAppointments();
+        getCases();
+    }, [selectedDate]);
+
+    usePolling(refreshBookings, 30000);
+
+    useEffect(() => { getCases(); fetchAllUserAppointments(); }, []);
+    useEffect(() => {
+        fetchSlotsByDate(selectedDate);
+        setSelectedSlotId(null);
+        setBookingSuccess("");
+        setBookingError("");
+    }, [selectedDate]);
 
     const availableSlots = slots.filter(s => !s.isBooked);
+    const isFirstSlotLoad = slotsLoading && slots.length === 0;
+    const isFirstApptLoad = apptLoading && future.length === 0 && history.length === 0;
+    const isFirstCaseLoad = caseLoading && cases.length === 0;
 
     const handleBook = async () => {
         if (!selectedSlotId) { setBookingError("Please select a time slot."); return; }
@@ -74,6 +127,7 @@ const Bookings = () => {
     return (
         <div className="p-4 md:p-6">
             <style>{`
+                ${shimmerCSS}
                 @keyframes slideDown { from { opacity:0; transform:translateY(-14px); } to { opacity:1; transform:translateY(0); } }
                 @keyframes fadeUp    { from { opacity:0; transform:translateY(18px);  } to { opacity:1; transform:translateY(0); } }
                 @keyframes fadeIn    { from { opacity:0; }                              to { opacity:1; } }
@@ -89,7 +143,7 @@ const Bookings = () => {
             {/* Header */}
             <div className="mb-6 anim-slide">
                 <h5 className="text-xl font-black text-[#0A0F1C]">Book a Consultation</h5>
-                <p className="text-gray-400 text-sm mt-0.5">Select your case, pick a date, choose a time — it's that simple.</p>
+                <p className="text-gray-400 text-sm mt-0.5">Select your case, pick a date, choose a time  it's that simple.</p>
             </div>
 
             {/* Step 1 — Case */}
@@ -99,13 +153,18 @@ const Bookings = () => {
                     <p className="text-sm font-bold text-[#0A0F1C]">Select Your Case</p>
                 </div>
                 <p className="text-xs text-gray-400 mb-3 ml-8">Choose an existing case or create a new one for this appointment.</p>
-                <select value={selectedCaseId}
-                    onChange={(e) => { const v = e.target.value; if (v === "new") { setShowCreateCase(true); setSelectedCaseId(""); } else { setShowCreateCase(false); setSelectedCaseId(v); } }}
-                    className="w-full h-11 px-3 border border-gray-200 rounded-xl text-sm outline-none bg-white focus:ring-2 focus:ring-[#0A0F1C] focus:border-transparent transition">
-                    <option value="">— Select a case —</option>
-                    {cases.map(c => <option key={c._id} value={c._id}>{c.caseTitle}</option>)}
-                    <option value="new">+ Create New Case</option>
-                </select>
+
+                {isFirstCaseLoad ? (
+                    <SelectSk />
+                ) : (
+                    <select value={selectedCaseId}
+                        onChange={(e) => { const v = e.target.value; if (v === "new") { setShowCreateCase(true); setSelectedCaseId(""); } else { setShowCreateCase(false); setSelectedCaseId(v); } }}
+                        className="w-full h-11 px-3 border border-gray-200 rounded-xl text-sm outline-none bg-white focus:ring-2 focus:ring-[#0A0F1C] focus:border-transparent transition">
+                        <option value=""> Select a case </option>
+                        {cases.map(c => <option key={c._id} value={c._id}>{c.caseTitle}</option>)}
+                        <option value="new">+ Create New Case</option>
+                    </select>
+                )}
 
                 {showCreateCase && (
                     <div className="mt-4 p-4 border border-dashed border-gray-300 rounded-2xl bg-gray-50 flex flex-col gap-3 anim-in">
@@ -144,15 +203,30 @@ const Bookings = () => {
                             disabled={{ before: new Date() }}
                             modifiersClassNames={{ selected: "bg-[#0A0F1C] text-white rounded-full", today: "font-bold text-[#0A0F1C]" }} />
                     </div>
+
                     {/* Slots */}
                     <div className="w-full md:w-1/2 bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
                         <p className="text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Available Slots</p>
                         <p className="text-sm font-bold text-[#0A0F1C] mb-4">
                             {selectedDate.toLocaleDateString("en-US", { weekday: "long", day: "2-digit", month: "long" })}
                         </p>
-                        {slotsLoading ? (
-                            <div className="flex justify-center items-center h-32">
-                                <div className="w-6 h-6 border-4 border-[#0A0F1C] border-t-transparent rounded-full animate-spin" />
+
+                        {isFirstSlotLoad ? (
+                            <div className="grid grid-cols-2 gap-2">
+                                {Array(6).fill(0).map((_, i) => <BookingSlotSk key={i} />)}
+                            </div>
+                        ) : slotsLoading ? (
+                            /* Subtle refresh indicator when already have data */
+                            <div className="grid grid-cols-2 gap-2 opacity-60">
+                                {availableSlots.length > 0
+                                    ? availableSlots.map((slot) => (
+                                        <div key={slot._id} className="bg-green-50 border border-green-100 rounded-xl p-3 animate-pulse">
+                                            <p className="text-sm font-bold text-[#0A0F1C]">{formatTime(slot.startTime)}</p>
+                                            <p className="text-xs mt-0.5 text-gray-400">to {formatTime(slot.endTime)}</p>
+                                        </div>
+                                    ))
+                                    : Array(4).fill(0).map((_, i) => <BookingSlotSk key={i} />)
+                                }
                             </div>
                         ) : availableSlots.length === 0 ? (
                             <div className="text-center py-10 flex flex-col items-center gap-2">
@@ -162,7 +236,7 @@ const Bookings = () => {
                             </div>
                         ) : (
                             <>
-                                <p className="text-xs text-gray-400 mb-3">{availableSlots.length} slot{availableSlots.length !== 1 ? "s" : ""} available — tap one to select</p>
+                                <p className="text-xs text-gray-400 mb-3">{availableSlots.length} slot{availableSlots.length !== 1 ? "s" : ""} available tap one to select</p>
                                 <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
                                     {availableSlots.map((slot) => {
                                         const isSelected = selectedSlotId === slot._id;
@@ -214,16 +288,24 @@ const Bookings = () => {
                     </button>
                 </div>
 
-                {/* Checklist hint */}
+                {/* Checklist */}
                 {(!selectedSlotId || !selectedCaseId) && (
                     <div className="text-xs text-gray-400 bg-gray-50 rounded-xl p-3 border border-gray-100 anim-in">
-                        <p className="font-medium text-gray-500 mb-1">Before booking, make sure:</p>
-                        <p className={selectedCaseId ? "text-green-600" : "text-gray-400"}>
-                            {selectedCaseId ? "✓" : "○"} Case selected
-                        </p>
-                        <p className={selectedSlotId ? "text-green-600" : "text-gray-400"}>
-                            {selectedSlotId ? "✓" : "○"} Time slot selected
-                        </p>
+                        <p className="font-medium text-gray-500 mb-1.5">Before booking, make sure:</p>
+                        <div className="flex flex-col gap-1">
+                            <p className={`flex items-center gap-2 ${selectedCaseId ? "text-green-600" : "text-gray-400"}`}>
+                                <span className={`w-4 h-4 rounded-full border flex items-center justify-center text-xs ${selectedCaseId ? "bg-green-100 border-green-400" : "border-gray-300"}`}>
+                                    {selectedCaseId ? "✓" : ""}
+                                </span>
+                                Case selected
+                            </p>
+                            <p className={`flex items-center gap-2 ${selectedSlotId ? "text-green-600" : "text-gray-400"}`}>
+                                <span className={`w-4 h-4 rounded-full border flex items-center justify-center text-xs ${selectedSlotId ? "bg-green-100 border-green-400" : "border-gray-300"}`}>
+                                    {selectedSlotId ? "✓" : ""}
+                                </span>
+                                Time slot selected
+                            </p>
+                        </div>
                     </div>
                 )}
 
@@ -240,85 +322,97 @@ const Bookings = () => {
             {/* My Appointments */}
             <div data-reveal>
                 <h5 className="text-base font-bold text-[#0A0F1C] mb-4">My Appointments</h5>
-                {apptLoading ? (
-                    <div className="flex justify-center py-8">
-                        <div className="w-6 h-6 border-4 border-[#0A0F1C] border-t-transparent rounded-full animate-spin" />
-                    </div>
-                ) : (
-                    <div className="flex flex-col md:flex-row gap-4">
-                        {/* Upcoming */}
-                        <div className="w-full md:w-1/2 bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-                            <div className="flex items-center justify-between mb-3 border-b border-gray-100 pb-3">
-                                <div>
-                                    <h6 className="font-bold text-sm text-[#0A0F1C]">Upcoming</h6>
-                                    <p className="text-xs text-gray-400">Scheduled future sessions</p>
-                                </div>
-                                <span className="text-xs bg-[#0A0F1C] text-white px-2 py-0.5 rounded-full font-medium">{future.length}</span>
+                <div className="flex flex-col md:flex-row gap-4">
+
+                    {/* Upcoming */}
+                    <div className="w-full md:w-1/2 bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                        <div className="flex items-center justify-between mb-3 border-b border-gray-100 pb-3">
+                            <div>
+                                <h6 className="font-bold text-sm text-[#0A0F1C]">Upcoming</h6>
+                                <p className="text-xs text-gray-400">Scheduled future sessions</p>
                             </div>
-                            {future.length === 0 ? (
-                                <div className="text-center py-8"><div className="text-3xl mb-2">📆</div><p className="text-xs text-gray-400">No upcoming appointments</p></div>
-                            ) : (
-                                <div className="flex flex-col gap-2 max-h-64 overflow-y-auto">
-                                    {future.map((appt) => {
-                                        const now = new Date();
-                                        const start = new Date(appt.slot.startTime);
-                                        const diffMins = (start - now) / 60000;
-                                        const canJoin = diffMins <= 15 && diffMins > -60;
-                                        return (
-                                            <div key={appt._id} className="bg-gray-50 rounded-xl p-3 border border-gray-100 hover:border-gray-200 transition">
-                                                <div className="flex justify-between items-start">
-                                                    <div>
-                                                        <p className="text-sm font-bold text-[#0A0F1C]">{formatTime(appt.slot.startTime)} — {formatTime(appt.slot.endTime)}</p>
-                                                        <p className="text-xs text-gray-400 mt-0.5">{formatDateShort(appt.slot.startTime)}</p>
-                                                        {appt.jitsiLink && appt.status === "confirmed" && (
-                                                            <p className="text-xs text-green-600 mt-1 font-medium">🔗 Meeting ready</p>
-                                                        )}
-                                                    </div>
-                                                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium border shrink-0 ml-2 ${statusStyles[appt.status] || "bg-gray-100 text-gray-600"}`}>
-                                                        {appt.status}
-                                                    </span>
+                            {isFirstApptLoad
+                                ? <div className="h-5 w-6 rounded-full skeleton-shimmer" />
+                                : <span className="text-xs bg-[#0A0F1C] text-white px-2 py-0.5 rounded-full font-medium">{future.length}</span>
+                            }
+                        </div>
+
+                        {isFirstApptLoad ? (
+                            <div className="flex flex-col gap-2">
+                                {Array(3).fill(0).map((_, i) => <UpcomingApptSk key={i} />)}
+                            </div>
+                        ) : future.length === 0 ? (
+                            <div className="text-center py-8"><div className="text-3xl mb-2">📆</div><p className="text-xs text-gray-400">No upcoming appointments</p></div>
+                        ) : (
+                            <div className="flex flex-col gap-2 max-h-64 overflow-y-auto">
+                                {future.map((appt) => {
+                                    const now = new Date();
+                                    const start = new Date(appt.slot.startTime);
+                                    const diffMins = (start - now) / 60000;
+                                    const canJoin = diffMins <= 15 && diffMins > -60;
+                                    return (
+                                        <div key={appt._id} className="bg-gray-50 rounded-xl p-3 border border-gray-100 hover:border-gray-200 transition">
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <p className="text-sm font-bold text-[#0A0F1C]">{formatTime(appt.slot.startTime)} — {formatTime(appt.slot.endTime)}</p>
+                                                    <p className="text-xs text-gray-400 mt-0.5">{formatDateShort(appt.slot.startTime)}</p>
+                                                    {appt.jitsiLink && appt.status === "confirmed" && (
+                                                        <p className="text-xs text-green-600 mt-1 font-medium">🔗 Meeting ready</p>
+                                                    )}
                                                 </div>
-                                                {canJoin && appt.jitsiLink && (
-                                                    <a href={appt.jitsiLink} target="_blank" rel="noopener noreferrer"
-                                                        className="mt-2 w-full flex items-center justify-center gap-1 text-xs font-semibold bg-[#0A0F1C] text-white py-2 rounded-lg hover:bg-gray-700 transition anim-in">
-                                                        🎥 Join Meeting Now
-                                                    </a>
-                                                )}
+                                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium border shrink-0 ml-2 ${statusStyles[appt.status] || "bg-gray-100 text-gray-600"}`}>
+                                                    {appt.status}
+                                                </span>
                                             </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
-                        </div>
-                        {/* History */}
-                        <div className="w-full md:w-1/2 bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-                            <div className="flex items-center justify-between mb-3 border-b border-gray-100 pb-3">
-                                <div>
-                                    <h6 className="font-bold text-sm text-[#0A0F1C]">History</h6>
-                                    <p className="text-xs text-gray-400">Past sessions</p>
-                                </div>
-                                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">{history.length}</span>
-                            </div>
-                            {history.length === 0 ? (
-                                <div className="text-center py-8"><div className="text-3xl mb-2">🗂️</div><p className="text-xs text-gray-400">No past appointments</p></div>
-                            ) : (
-                                <div className="flex flex-col gap-2 max-h-64 overflow-y-auto">
-                                    {history.map((appt) => (
-                                        <div key={appt._id} className="flex justify-between items-center bg-gray-50 rounded-xl p-3 border border-gray-100 hover:border-gray-200 transition">
-                                            <div>
-                                                <p className="text-sm font-bold text-[#0A0F1C]">{formatTime(appt.slot.startTime)} — {formatTime(appt.slot.endTime)}</p>
-                                                <p className="text-xs text-gray-400 mt-0.5">{formatDateShort(appt.slot.startTime)}</p>
-                                            </div>
-                                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${statusStyles[appt.status] || "bg-gray-100 text-gray-600"}`}>
-                                                {appt.status}
-                                            </span>
+                                            {canJoin && appt.jitsiLink && (
+                                                <a href={appt.jitsiLink} target="_blank" rel="noopener noreferrer"
+                                                    className="mt-2 w-full flex items-center justify-center gap-1 text-xs font-semibold bg-[#0A0F1C] text-white py-2 rounded-lg hover:bg-gray-700 transition anim-in">
+                                                    🎥 Join Meeting Now
+                                                </a>
+                                            )}
                                         </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </div>
-                )}
+
+                    {/* History */}
+                    <div className="w-full md:w-1/2 bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+                        <div className="flex items-center justify-between mb-3 border-b border-gray-100 pb-3">
+                            <div>
+                                <h6 className="font-bold text-sm text-[#0A0F1C]">History</h6>
+                                <p className="text-xs text-gray-400">Past sessions</p>
+                            </div>
+                            {isFirstApptLoad
+                                ? <div className="h-5 w-6 rounded-full skeleton-shimmer" />
+                                : <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">{history.length}</span>
+                            }
+                        </div>
+
+                        {isFirstApptLoad ? (
+                            <div className="flex flex-col gap-2">
+                                {Array(3).fill(0).map((_, i) => <HistoryApptSk key={i} />)}
+                            </div>
+                        ) : history.length === 0 ? (
+                            <div className="text-center py-8"><div className="text-3xl mb-2">🗂️</div><p className="text-xs text-gray-400">No past appointments</p></div>
+                        ) : (
+                            <div className="flex flex-col gap-2 max-h-64 overflow-y-auto">
+                                {history.map((appt) => (
+                                    <div key={appt._id} className="flex justify-between items-center bg-gray-50 rounded-xl p-3 border border-gray-100 hover:border-gray-200 transition">
+                                        <div>
+                                            <p className="text-sm font-bold text-[#0A0F1C]">{formatTime(appt.slot.startTime)} — {formatTime(appt.slot.endTime)}</p>
+                                            <p className="text-xs text-gray-400 mt-0.5">{formatDateShort(appt.slot.startTime)}</p>
+                                        </div>
+                                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${statusStyles[appt.status] || "bg-gray-100 text-gray-600"}`}>
+                                            {appt.status}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );

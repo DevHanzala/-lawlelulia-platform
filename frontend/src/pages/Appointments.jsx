@@ -1,6 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { FaSync } from "react-icons/fa";
 import useSlotStore from "../store/slotStore";
 import useAppointmentStore from "../store/appointmentStore";
+import usePolling from "../hooks/usePolling";
+import { ApptMgmtSk, StatCardSk } from "../components/Skeleton";
 
 const formatTime = (iso) => new Date(iso).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
 const formatDateShort = (iso) => new Date(iso).toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" });
@@ -23,18 +26,36 @@ function useReveal() {
     }, []);
 }
 
+// Colored summary skeleton (not dark bg)
+const ColoredStatSk = ({ bg, border }) => (
+    <div className={`${bg} border ${border} rounded-2xl p-4 flex items-center justify-between`}>
+        <div className="flex flex-col gap-2">
+            <div className="h-3 w-20 rounded skeleton-shimmer" />
+            <div className="h-8 w-10 rounded skeleton-shimmer" />
+        </div>
+        <div className="w-10 h-10 rounded-full skeleton-shimmer" />
+    </div>
+);
+
 const Appointments = () => {
     useReveal();
     const [filterStatus, setFilterStatus] = useState("all");
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const { slots, loading: slotsLoading, error: slotsError, fetchSlotsByDate } = useSlotStore();
     const { updatingId, updateStatus } = useAppointmentStore();
 
-    const loadToday = () => {
+    const loadToday = useCallback(() => {
         const now = new Date();
         fetchSlotsByDate(new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 12, 0, 0)));
-    };
+    }, []);
 
-    useEffect(() => { loadToday(); }, []);
+    usePolling(loadToday, 30000);
+
+    const handleManualRefresh = async () => {
+        setIsRefreshing(true);
+        loadToday();
+        setTimeout(() => setIsRefreshing(false), 600);
+    };
 
     const handleStatusUpdate = async (slot, status) => {
         if (!slot.appointment?._id) { alert("No appointment found for this slot."); return; }
@@ -54,49 +75,72 @@ const Appointments = () => {
         cancelled: appointmentSlots.filter(s => s.appointment?.status === "cancelled").length,
     };
 
+    const isFirstLoad = slotsLoading && slots.length === 0;
+
     return (
         <div className="p-4 md:p-6">
             <style>{`
+                @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+                .skeleton-shimmer { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.6s ease-in-out infinite; border-radius: 6px; }
                 @keyframes slideDown { from { opacity:0; transform:translateY(-14px); } to { opacity:1; transform:translateY(0); } }
                 @keyframes fadeUp    { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
                 .anim-slide { animation: slideDown 0.45s ease both; }
                 .anim-up    { animation: fadeUp 0.45s ease both; }
                 .anim-d1 { animation-delay:0.05s; } .anim-d2 { animation-delay:0.12s; }
                 .anim-d3 { animation-delay:0.19s; } .anim-d4 { animation-delay:0.26s; }
+                .spin-anim { animation: spin 0.8s linear infinite; }
                 [data-reveal] { opacity:0; transform:translateY(18px); transition: opacity 0.5s ease, transform 0.5s ease; }
                 [data-reveal].revealed { opacity:1; transform:translateY(0); }
             `}</style>
 
             {/* Header */}
-            <div className="mb-6 anim-slide">
-                <h5 className="font-black text-xl text-[#0A0F1C]">Appointment Management</h5>
-                <p className="text-sm text-gray-400 mt-0.5">
-                    {new Date().toLocaleDateString("en-US", { weekday: "long", day: "2-digit", month: "long", year: "numeric" })}
-                </p>
+            <div className="mb-6 anim-slide flex items-center justify-between">
+                <div>
+                    <h5 className="font-black text-xl text-[#0A0F1C]">Appointment Management</h5>
+                    <p className="text-sm text-gray-400 mt-0.5">
+                        {new Date().toLocaleDateString("en-US", { weekday: "long", day: "2-digit", month: "long", year: "numeric" })}
+                    </p>
+                </div>
+                <button onClick={handleManualRefresh}
+                    className="flex items-center gap-1.5 text-xs bg-[#0A0F1C] text-white hover:bg-[#0A0F1C]/80 border border-gray-200 hover:border-gray-400 px-3 py-1.5 rounded-lg transition">
+                    <FaSync className={`text-xs ${isRefreshing ? "spin-anim" : ""}`} />
+                    Refresh
+                </button>
             </div>
 
             {/* Stat cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                {[
-                    { key: "all",       label: "Total",     icon: "📅", bg: "bg-[#0A0F1C]", text: "text-white",      sub: "text-gray-400" },
-                    { key: "pending",   label: "Pending",   icon: "⏳", bg: "bg-yellow-50",  text: "text-yellow-700", sub: "text-yellow-400", border: "border border-yellow-100" },
-                    { key: "confirmed", label: "Confirmed", icon: "✅", bg: "bg-green-50",   text: "text-green-700",  sub: "text-green-400",  border: "border border-green-100" },
-                    { key: "cancelled", label: "Cancelled", icon: "❌", bg: "bg-red-50",     text: "text-red-600",    sub: "text-red-300",    border: "border border-red-100" },
-                ].map((item, i) => (
-                    <button key={item.key}
-                        onClick={() => setFilterStatus(item.key)}
-                        className={`anim-up anim-d${i+1} text-left p-4 rounded-2xl shadow-sm transition-all duration-200 ${item.bg} ${item.border || ""} ${filterStatus === item.key ? "ring-2 ring-offset-1 ring-[#0A0F1C]" : "hover:shadow-md"}`}>
-                        <div className="flex items-center justify-between mb-1">
-                            <span className="text-lg">{item.icon}</span>
-                            <span className={`text-2xl font-black ${item.text}`}>{counts[item.key]}</span>
-                        </div>
-                        <p className={`text-xs font-semibold ${item.sub}`}>{item.label}</p>
-                    </button>
-                ))}
+                {isFirstLoad ? (
+                    <>
+                        <StatCardSk />
+                        {[
+                            { bg: "bg-yellow-50", border: "border-yellow-100" },
+                            { bg: "bg-green-50", border: "border-green-100" },
+                            { bg: "bg-red-50", border: "border-red-100" },
+                        ].map((s, i) => <ColoredStatSk key={i} {...s} />)}
+                    </>
+                ) : (
+                    [
+                        { key: "all",       label: "Total",     icon: "📅", bg: "bg-[#0A0F1C]", text: "text-white",      sub: "text-gray-400" },
+                        { key: "pending",   label: "Pending",   icon: "⏳", bg: "bg-yellow-50",  text: "text-yellow-700", sub: "text-yellow-400", border: "border border-yellow-100" },
+                        { key: "confirmed", label: "Confirmed", icon: "✅", bg: "bg-green-50",   text: "text-green-700",  sub: "text-green-400",  border: "border border-green-100" },
+                        { key: "cancelled", label: "Cancelled", icon: "❌", bg: "bg-red-50",     text: "text-red-600",    sub: "text-red-300",    border: "border border-red-100" },
+                    ].map((item, i) => (
+                        <button key={item.key} onClick={() => setFilterStatus(item.key)}
+                            className={`anim-up anim-d${i + 1} text-left p-4 rounded-2xl shadow-sm transition-all duration-200 ${item.bg} ${item.border || ""} ${filterStatus === item.key ? "ring-2 ring-offset-1 ring-[#0A0F1C]" : "hover:shadow-md"}`}>
+                            <div className="flex items-center justify-between mb-1">
+                                <span className="text-lg">{item.icon}</span>
+                                <span className={`text-2xl font-black ${item.text}`}>{counts[item.key]}</span>
+                            </div>
+                            <p className={`text-xs font-semibold ${item.sub}`}>{item.label}</p>
+                        </button>
+                    ))
+                )}
             </div>
 
             {/* Filter tabs */}
-            <div className="flex gap-2 mb-5 flex-wrap anim-slide">
+            <div className="flex gap-2 mb-5 flex-wrap anim-slide items-center">
                 <p className="text-xs text-gray-400 self-center mr-1 font-medium">Filter:</p>
                 {["all", "pending", "confirmed", "cancelled"].map((status) => (
                     <button key={status} onClick={() => setFilterStatus(status)}
@@ -111,14 +155,9 @@ const Appointments = () => {
                         </span>
                     </button>
                 ))}
-                <button onClick={loadToday} className="ml-auto text-xs text-gray-400 hover:text-[#0A0F1C] underline transition">↻ Refresh</button>
             </div>
 
-            {slotsLoading ? (
-                <div className="flex items-center justify-center h-48">
-                    <div className="w-8 h-8 border-4 border-[#0A0F1C] border-t-transparent rounded-full animate-spin" />
-                </div>
-            ) : slotsError ? (
+            {slotsError ? (
                 <div className="text-center py-12">
                     <p className="text-red-500 text-sm">{slotsError}</p>
                     <button onClick={loadToday} className="mt-3 text-xs px-4 py-2 bg-[#0A0F1C] text-white rounded-lg">Retry</button>
@@ -130,16 +169,23 @@ const Appointments = () => {
                             <h5 className="text-sm font-bold text-[#0A0F1C]">
                                 {filterStatus === "all" ? "All Appointments" : `${filterStatus.charAt(0).toUpperCase() + filterStatus.slice(1)} Appointments`}
                             </h5>
-                            <p className="text-xs text-gray-400 mt-0.5">Today — click an appointment to manage it</p>
+                            <p className="text-xs text-gray-400 mt-0.5">Today  click confirm or cancel to manage</p>
                         </div>
-                        <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full font-medium">{filtered.length} shown</span>
+                        {isFirstLoad
+                            ? <div className="h-6 w-16 rounded-full skeleton-shimmer" />
+                            : <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full font-medium">{filtered.length} shown</span>
+                        }
                     </div>
 
-                    {filtered.length === 0 ? (
+                    {isFirstLoad ? (
+                        <div className="flex flex-col gap-2">
+                            {Array(4).fill(0).map((_, i) => <ApptMgmtSk key={i} />)}
+                        </div>
+                    ) : filtered.length === 0 ? (
                         <div className="text-center py-16">
                             <div className="text-5xl mb-3">📭</div>
                             <p className="text-sm font-semibold text-gray-500">No {filterStatus !== "all" ? filterStatus : ""} appointments today</p>
-                            <p className="text-xs text-gray-400 mt-1">Appointments will appear here once clients book slots</p>
+                            <p className="text-xs text-gray-400 mt-1">Appointments appear here once clients book slots</p>
                         </div>
                     ) : (
                         <div className="flex flex-col gap-2">
@@ -154,7 +200,6 @@ const Appointments = () => {
                                 return (
                                     <div key={slot._id} className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50 rounded-xl p-4 border border-gray-100 hover:border-gray-300 hover:shadow-sm transition-all duration-200">
                                         <div className="flex items-start gap-3 flex-1 min-w-0">
-                                            {/* Status dot */}
                                             <div className={`w-2.5 h-2.5 rounded-full shrink-0 mt-1.5 ${cfg.dot}`} />
                                             <div className="min-w-0">
                                                 <div className="flex items-center gap-2 flex-wrap">
@@ -172,13 +217,11 @@ const Appointments = () => {
                                                 )}
                                                 {slot.appointment?.jitsiLink && (
                                                     <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
-                                                        🎥 <span className="truncate max-w-50">{slot.appointment.jitsiLink}</span>
+                                                        🎥 <span className="truncate max-w-xs">{slot.appointment.jitsiLink}</span>
                                                     </p>
                                                 )}
                                             </div>
                                         </div>
-
-                                        {/* Actions */}
                                         <div className="flex gap-2 shrink-0 flex-wrap sm:flex-nowrap">
                                             {canJoin && slot.appointment?.jitsiLink && (
                                                 <a href={slot.appointment.jitsiLink} target="_blank" rel="noopener noreferrer"

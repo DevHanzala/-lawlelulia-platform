@@ -26,9 +26,7 @@ const useSlotStore = create((set, get) => ({
                 )
             ).toISOString();
 
-            console.log(`[SlotStore] Fetching slots for: ${safeISO}`);
             const res = await getSlotsByDateApi(safeISO);
-            console.log(`[SlotStore] Got ${res.data.data?.length} slots`);
             set({ slots: res.data.data || [], loading: false });
         } catch (err) {
             console.error(`[SlotStore] Error:`, err.response?.data?.message);

@@ -26,6 +26,7 @@ import ScrollToTop from './components/ScrollToTop';
 import Support from './pages/Support';
 import Feedback from './pages/Feedback';
 import Terms from './pages/Terms';
+import useAuthStore from './store/authStore';
 
 const hideLayouts = [
     "/login", "/signup",
@@ -39,10 +40,16 @@ const hideNavbarFooter = ["/dashboard", "/appointments", "/profile", "/bookings"
 function App() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const location = useLocation();
+    const { user, isAuthenticated } = useAuthStore();
 
     const hideLayout = hideLayouts.includes(location.pathname);
     const noSidebar = hideSidebar.includes(location.pathname);
     const hideNavFoot = hideNavbarFooter.includes(location.pathname);
+
+    const authed = isAuthenticated();
+    const isAdmin = authed && user?.role === "admin";
+    // Bot only for logged-in non-admin users
+    const showBot = authed && !isAdmin && !hideLayout;
 
     return (
         <div className="flex min-h-screen">
@@ -59,7 +66,6 @@ function App() {
 
                 <div className={`${hideLayout ? "w-full h-screen" : "flex-1 bg-gray-50"} ${!hideLayout && !noSidebar ? "p-4" : ""}`}>
                     <Routes>
-                        {/* Public full-width */}
                         <Route path="/" element={<Home />} />
                         <Route path="/aboutus" element={<AboutUs />} />
                         <Route path="/services" element={<Services />} />
@@ -67,7 +73,6 @@ function App() {
                         <Route path="/feedback" element={<Feedback />} />
                         <Route path="/terms" element={<Terms />} />
 
-                        {/* Auth */}
                         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
                         <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
                         <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
@@ -75,17 +80,15 @@ function App() {
                         <Route path="/forgot-password/verify" element={<PublicRoute><ForgotPasswordVerify /></PublicRoute>} />
                         <Route path="/forgot-password/reset" element={<PublicRoute><ResetPassword /></PublicRoute>} />
 
-                        {/* User routes */}
                         <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
                         <Route path="/bookings" element={<AuthGuard><Bookings /></AuthGuard>} />
                         <Route path="/client-dashboard" element={<AuthGuard><ClientDashboard /></AuthGuard>} />
-
-                        {/* Admin only */}
                         <Route path="/appointments" element={<AuthGuard adminOnly><Appointments /></AuthGuard>} />
                         <Route path="/dashboard" element={<AuthGuard adminOnly><Dashboard /></AuthGuard>} />
                     </Routes>
 
-                    {!hideLayout &&  <AuthGuard><Bot /></AuthGuard>}
+                    {/* Bot — clients only, not admin */}
+                    {showBot && <Bot />}
                 </div>
 
                 {!hideLayout && !hideNavFoot && <Footer />}

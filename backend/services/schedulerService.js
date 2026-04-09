@@ -21,7 +21,6 @@ export const startReminderScheduler = () => {
 
                 if (!appt.slot || !appt.user) {
                     if (!warnedOrphans.has(id)) {
-                        console.warn(`[Scheduler] ⚠️ Orphaned appointment ${id} — slot/user deleted. Run DB cleanup.`);
                         warnedOrphans.add(id);
                     }
                     continue;
@@ -33,7 +32,6 @@ export const startReminderScheduler = () => {
                 if (startTime >= in15mins && startTime < in16mins) {
                     if (sentReminders.has(id)) continue;
                     sentReminders.add(id);
-                    console.log(`[Scheduler] ⏰ Firing reminder for: ${id}`);
                     sendAppointmentReminderEmail({
                         to: appt.user.email,
                         clientName: appt.user.fullName,

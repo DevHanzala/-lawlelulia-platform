@@ -33,12 +33,7 @@ export const sendBookingConfirmationEmail = async ({ to, clientName, appointment
                         <td style="padding:8px;color:#6b7280;">Date & Time</td>
                         <td style="padding:8px;font-weight:bold;">${formattedTime}</td>
                     </tr>
-                    <tr>
-                        <td style="padding:8px;color:#6b7280;">Meeting Link</td>
-                        <td style="padding:8px;">
-                            <a href="${jitsiLink}" style="color:#0A0F1C;font-weight:bold;">${jitsiLink}</a>
-                        </td>
-                    </tr>
+                  
                 </table>
                 <p style="color:#6b7280;font-size:14px;">
                     You will receive a reminder email with the join link <strong>15 minutes before</strong> your appointment.
@@ -65,7 +60,7 @@ export const sendAppointmentReminderEmail = async ({ to, clientName, appointment
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 12px;">
                 <h2 style="color: #0A0F1C;">Your Meeting Starts Soon!</h2>
                 <p>Dear <strong>${clientName}</strong>,</p>
-                <p>Your legal consultation starts in <strong>15 minutes</strong>. Please join the meeting now.</p>
+                <p>Your legal consultation starts in <strong>15 minutes.</strong></p>
                 <table style="width:100%; margin: 16px 0; border-collapse: collapse;">
                     <tr style="background:#f9fafb;">
                         <td style="padding: 8px; color: #6b7280;">Date & Time</td>
@@ -84,7 +79,7 @@ export const sendAppointmentReminderEmail = async ({ to, clientName, appointment
                 <p style="margin-top:24px; color:#9ca3af; font-size:12px;">
                     Please join 2-3 minutes early. The room opens automatically.
                 </p>
-                <p style="color:#9ca3af; font-size:12px;">— The CoCoLaw.ai Team</p>
+                <p style="color:#9ca3af; font-size:12px;"> The CoCoLaw.ai Team</p>
             </div>
         `,
     };

@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
     FaUsers, FaUserCheck, FaCalendarDay, FaClock,
-    FaChevronLeft, FaChevronRight, FaTrash, FaVideo
+    FaChevronLeft, FaChevronRight, FaTrash, FaVideo, FaSync
 } from "react-icons/fa";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
@@ -9,6 +9,10 @@ import useSlotStore from "../store/slotStore";
 import useAppointmentStore from "../store/appointmentStore";
 import useCaseStore from "../store/caseStore";
 import CasesCard from "../components/CasesCard";
+import usePolling from "../hooks/usePolling";
+import {
+    StatCardSk, BookedSlotSk, AvailSlotSk
+} from "../components/Skeleton";
 
 const formatDateLabel = (d) =>
     new Date(d).toLocaleDateString("en-US", { day: "2-digit", month: "long", year: "numeric", weekday: "long" });
@@ -40,8 +44,10 @@ function useReveal() {
     useEffect(() => {
         const els = document.querySelectorAll("[data-reveal]");
         const io = new IntersectionObserver(
-            (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("revealed"); io.unobserve(e.target); } }),
-            { threshold: 0.1 }
+            (entries) => entries.forEach((e) => {
+                if (e.isIntersecting) { e.target.classList.add("revealed"); io.unobserve(e.target); }
+            }),
+            { threshold: 0.08 }
         );
         els.forEach((el) => io.observe(el));
         return () => io.disconnect();
@@ -57,13 +63,24 @@ const Dashboard = () => {
     const [endTime, setEndTime] = useState("");
     const [slotFormError, setSlotFormError] = useState("");
     const [slotFormLoading, setSlotFormLoading] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     const { slots, loading: slotsLoading, error: slotsError, fetchSlotsByDate, createSlot, deleteSlot, clearError } = useSlotStore();
     const { updatingId, updateStatus } = useAppointmentStore();
     const { cases, getCasesWithAppointments } = useCaseStore();
 
-    useEffect(() => { fetchSlotsByDate(date); }, [date]);
-    useEffect(() => { getCasesWithAppointments(); }, [date]);
+    const refreshDashboard = useCallback(() => {
+        fetchSlotsByDate(date);
+        getCasesWithAppointments();
+    }, [date]);
+
+    usePolling(refreshDashboard, 30000);
+
+    const handleManualRefresh = async () => {
+        setIsRefreshing(true);
+        await Promise.all([fetchSlotsByDate(date), getCasesWithAppointments()]);
+        setTimeout(() => setIsRefreshing(false), 600);
+    };
 
     const prevDay = () => setDate(prev => { const d = new Date(prev); d.setDate(d.getDate() - 1); return d; });
     const nextDay = () => setDate(prev => { const d = new Date(prev); d.setDate(d.getDate() + 1); return d; });
@@ -83,7 +100,10 @@ const Dashboard = () => {
         } else { setSlotFormError(res.error); }
     };
 
-    const handleDeleteSlot = async (slotId) => { const res = await deleteSlot(slotId); if (!res.success) alert(res.error); };
+    const handleDeleteSlot = async (slotId) => {
+        const res = await deleteSlot(slotId);
+        if (!res.success) alert(res.error);
+    };
 
     const handleUpdateStatus = async (slot, status) => {
         if (!slot.appointment?._id) { alert("Appointment data not found."); return; }
@@ -105,14 +125,18 @@ const Dashboard = () => {
     return (
         <>
             <style>{`
+                @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+                .skeleton-shimmer { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.6s ease-in-out infinite; border-radius: 6px; }
                 @keyframes slideDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:translateY(0); } }
                 @keyframes fadeUp    { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+                @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
                 .anim-slide-down { animation: slideDown 0.5s ease both; }
                 .anim-fade-up    { animation: fadeUp 0.5s ease both; }
-                .anim-delay-1    { animation-delay: 0.1s; }
-                .anim-delay-2    { animation-delay: 0.2s; }
-                .anim-delay-3    { animation-delay: 0.3s; }
-                .anim-delay-4    { animation-delay: 0.4s; }
+                .anim-delay-1    { animation-delay: 0.05s; }
+                .anim-delay-2    { animation-delay: 0.12s; }
+                .anim-delay-3    { animation-delay: 0.19s; }
+                .anim-delay-4    { animation-delay: 0.26s; }
+                .spin-anim { animation: spin 0.8s linear infinite; }
                 [data-reveal] { opacity:0; transform:translateY(18px); transition: opacity 0.55s ease, transform 0.55s ease; }
                 [data-reveal].revealed { opacity:1; transform:translateY(0); }
             `}</style>
@@ -151,23 +175,33 @@ const Dashboard = () => {
             )}
 
             {/* Header */}
-            <div className="px-4 md:px-6 pt-6 pb-2 anim-slide-down">
-                <h1 className="text-xl font-black text-[#0A0F1C]">Admin Dashboard</h1>
-                <p className="text-xs text-gray-400 mt-0.5">{formatDateLabel(new Date())} — Manage your slots and appointments</p>
+            <div className="px-4 md:px-6 pt-6 pb-2 anim-slide-down flex items-center justify-between">
+                <div>
+                    <h1 className="text-xl font-black text-[#0A0F1C]">Admin Dashboard</h1>
+                    <p className="text-xs text-gray-400 mt-0.5">{formatDateLabel(new Date())}  Manage slots and appointments</p>
+                </div>
+                <button onClick={handleManualRefresh}
+                    className="flex items-center gap-1.5 text-xs bg-[#0A0F1C] text-white hover:bg-[#0A0F1C]/80 border border-gray-200 hover:border-gray-400 px-3 py-1.5 rounded-lg transition">
+                    <FaSync className={`text-xs ${isRefreshing ? "spin-anim" : ""}`} />
+                    Refresh
+                </button>
             </div>
 
             {/* Stats */}
             <div className="p-4 md:p-6 grid grid-cols-2 lg:grid-cols-4 gap-3">
-                {stats.map((card, i) => (
-                    <div key={i} data-reveal className={`bg-[#0A0F1C] text-white rounded-2xl p-4 flex items-center justify-between shadow-sm border border-white/5 anim-fade-up anim-delay-${i + 1}`}>
-                        <div>
-                            <h5 className="text-2xl font-black">{card.value}</h5>
-                            <p className="text-gray-300 text-xs font-semibold mt-0.5">{card.label}</p>
-                            <p className="text-gray-500 text-xs mt-0.5">{card.sub}</p>
+                {slotsLoading && slots.length === 0
+                    ? Array(4).fill(0).map((_, i) => <StatCardSk key={i} />)
+                    : stats.map((card, i) => (
+                        <div key={i} data-reveal className={`bg-[#0A0F1C] text-white rounded-2xl p-4 flex items-center justify-between shadow-sm border border-white/5 anim-fade-up anim-delay-${i + 1}`}>
+                            <div>
+                                <h5 className="text-2xl font-black">{card.value}</h5>
+                                <p className="text-gray-300 text-xs font-semibold mt-0.5">{card.label}</p>
+                                <p className="text-gray-500 text-xs mt-0.5">{card.sub}</p>
+                            </div>
+                            {card.icon}
                         </div>
-                        {card.icon}
-                    </div>
-                ))}
+                    ))
+                }
             </div>
 
             {/* Main */}
@@ -184,15 +218,19 @@ const Dashboard = () => {
                     </div>
 
                     {slotsLoading ? (
-                        <div className="flex justify-center items-center h-32">
-                            <div className="w-6 h-6 border-4 border-[#0A0F1C] border-t-transparent rounded-full animate-spin" />
+                        <div className="flex flex-col gap-2">
+                            {Array(3).fill(0).map((_, i) => <BookedSlotSk key={i} />)}
                         </div>
                     ) : slotsError ? (
-                        <p className="text-red-500 text-sm text-center py-8">{slotsError}</p>
+                        <div className="text-center py-10">
+                            <p className="text-red-500 text-sm mb-2">{slotsError}</p>
+                            <button onClick={() => fetchSlotsByDate(date)} className="text-xs px-4 py-2 bg-[#0A0F1C] text-white rounded-lg">Retry</button>
+                        </div>
                     ) : bookedSlots.length === 0 ? (
                         <div className="text-center py-12">
                             <FaCalendarDay className="text-4xl mx-auto mb-3 text-gray-200" />
                             <p className="text-sm text-gray-400">No booked appointments for this day</p>
+                            <p className="text-xs text-gray-300 mt-1">Slots will appear here once clients book them</p>
                         </div>
                     ) : (
                         <div className="flex flex-col gap-2 max-h-96 overflow-y-auto">
@@ -211,7 +249,7 @@ const Dashboard = () => {
                                             {slot.appointment?.jitsiLink && (
                                                 <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
                                                     <FaVideo className="text-xs shrink-0" />
-                                                    <span className="truncate max-w-45">{slot.appointment.jitsiLink}</span>
+                                                    <span className="truncate max-w-xs">{slot.appointment.jitsiLink}</span>
                                                 </p>
                                             )}
                                             <span className={`text-xs px-2 py-0.5 rounded-full mt-1.5 inline-block font-medium ${statusStyles[slot.appointment?.status || "pending"]}`}>
@@ -261,10 +299,17 @@ const Dashboard = () => {
                             <FaChevronRight className="text-xs" />
                         </button>
                     </div>
+
                     {slotsLoading ? (
-                        <div className="flex justify-center py-6"><div className="w-5 h-5 border-4 border-[#0A0F1C] border-t-transparent rounded-full animate-spin" /></div>
+                        <div className="flex flex-col gap-2">
+                            {Array(4).fill(0).map((_, i) => <AvailSlotSk key={i} />)}
+                        </div>
                     ) : slots.length === 0 ? (
-                        <p className="text-xs text-gray-400 text-center py-8">No slots for this day</p>
+                        <div className="text-center py-8">
+                            <div className="text-3xl mb-2">🗓️</div>
+                            <p className="text-xs text-gray-400">No slots for this day</p>
+                            <p className="text-xs text-gray-300 mt-0.5">Click "+ Add Slot" to create one</p>
+                        </div>
                     ) : (
                         <div className="flex flex-col gap-2 max-h-72 overflow-y-auto">
                             {slots.map((slot) => (
@@ -288,6 +333,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
+            {/* Cases */}
             <div data-reveal className="px-4 md:px-6 pb-6">
                 <CasesCard cases={cases} />
             </div>
