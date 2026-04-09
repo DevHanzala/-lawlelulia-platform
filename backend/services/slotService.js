@@ -39,17 +39,29 @@ export const createSlot = async (startTime, endTime, user) => {
 // Service: Get all slots for a specific date
 export const getSlotsByDate = async (date, user) => {
     const targetDate = new Date(date);
-
     const now = new Date();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // strip time
 
-    // If requested date is in the past
-    if (targetDate < today) {
-        throw new HttpError("Please enter next date", 400);
+    // Use UTC for today comparison — NOT local time
+    const todayUTC = new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        0, 0, 0, 0
+    ));
+
+    const requestedDayUTC = new Date(Date.UTC(
+        targetDate.getUTCFullYear(),
+        targetDate.getUTCMonth(),
+        targetDate.getUTCDate(),
+        0, 0, 0, 0
+    ));
+
+    // Only block if requested day is strictly BEFORE today in UTC
+    if (requestedDayUTC < todayUTC) {
+        console.log(`[SlotService] ❌ Requested date is in the past`);
+        throw new HttpError("Please enter a future date", 400);
     }
 
-    // Start and end of the requested date in UTC
     const startOfDay = new Date(Date.UTC(
         targetDate.getUTCFullYear(),
         targetDate.getUTCMonth(),
@@ -63,28 +75,33 @@ export const getSlotsByDate = async (date, user) => {
         23, 59, 59, 999
     ));
 
-    // Fetch all slots for that date
     let slots = await Slot.find({
         startTime: { $gte: startOfDay, $lte: endOfDay }
     }).sort({ startTime: 1 });
 
-    // Filter out slots whose **endTime has passed**
-    slots = slots.filter(slot => slot.endTime > now);
+    slots.forEach((s, i) => {
+        console.log(`  Slot ${i + 1}: start=${s.startTime.toISOString()} end=${s.endTime.toISOString()} endPassed=${s.endTime <= now}`);
+    });
 
+    // FIXED: Only filter out slots where endTime has FULLY passed
+    // Keep slots where endTime is still in the future
+    const beforeFilter = slots.length;
+    slots = slots.filter(slot => slot.endTime > now);
     // Attach appointment info
     let slotsWithAppointments = await Promise.all(
         slots.map(async (slot) => {
             const slotObj = slot.toObject();
             const appointment = await Appointment.findOne({ slot: slot._id })
-                .select("_id status user")
+                .select("_id status user jitsiLink")
                 .populate("user", "fullName email");
             slotObj.appointment = appointment || null;
             return slotObj;
         })
     );
 
-    // If user is not admin, filter out booked slots
+    // Non-admin: only show available (unbooked) slots
     if (user.role !== "admin") {
+        const beforeAdminFilter = slotsWithAppointments.length;
         slotsWithAppointments = slotsWithAppointments.filter(s => !s.isBooked);
     }
 

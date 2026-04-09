@@ -14,6 +14,7 @@ import Bookings from './pages/Bookings';
 import Appointments from './pages/Appointments';
 import Services from './pages/Services';
 import Dashboard from './pages/Dashboard';
+import ClientDashboard from './pages/ClientDashboard';
 import ForgotPassword from './pages/ForgotPassword';
 import ForgotPasswordVerify from './pages/ForgotPasswordVerify';
 import ResetPassword from './pages/ResetPassword';
@@ -22,23 +23,18 @@ import AuthGuard from './guards/AuthGuard';
 import GoogleAuthCallback from './pages/GoogleAuthCallback';
 import Bot from './components/Bot';
 import ScrollToTop from './components/ScrollToTop';
-
-// New pages
 import Support from './pages/Support';
 import Feedback from './pages/Feedback';
 import Terms from './pages/Terms';
 
-// Pages where entire layout (navbar + sidebar) is hidden
 const hideLayouts = [
     "/login", "/signup",
     "/forgot-password", "/forgot-password/verify", "/forgot-password/reset",
     "/auth/google/callback"
 ];
 
-// Pages where sidebar is hidden but navbar stays
-// Home, About Us, Services, and new public pages take full width
 const hideSidebar = ["/", "/aboutus", "/services", "/support", "/feedback", "/privacy", "/terms"];
-const hideNavbarFooter = ["/dashboard", "/appointments", "/profile", "/bookings"];
+const hideNavbarFooter = ["/dashboard", "/appointments", "/profile", "/bookings", "/client-dashboard"];
 
 function App() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -50,39 +46,28 @@ function App() {
 
     return (
         <div className="flex min-h-screen">
-
             <ScrollToTop />
 
-            {/* Sidebar — hidden on auth pages AND full-width pages */}
             {!hideLayout && (
-                <Sidebar
-                    sidebarOpen={sidebarOpen}
-                    setSidebarOpen={setSidebarOpen}
-                    hideOnDesktop={noSidebar}
-                />
+                <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} hideOnDesktop={noSidebar} />
             )}
 
             <div className="flex-1 flex flex-col min-w-0">
-
-                {/* Navbar — hidden only on auth pages and dashboard/app pages */}
                 {!hideLayout && !hideNavFoot && (
                     <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
                 )}
 
-                {/* Page content */}
                 <div className={`${hideLayout ? "w-full h-screen" : "flex-1 bg-gray-50"} ${!hideLayout && !noSidebar ? "p-4" : ""}`}>
                     <Routes>
-                        {/* Full-width public routes — no sidebar */}
+                        {/* Public full-width */}
                         <Route path="/" element={<Home />} />
                         <Route path="/aboutus" element={<AboutUs />} />
                         <Route path="/services" element={<Services />} />
-
-                        {/* Support & Legal routes */}
                         <Route path="/support" element={<Support />} />
                         <Route path="/feedback" element={<Feedback />} />
                         <Route path="/terms" element={<Terms />} />
 
-                        {/* Auth routes */}
+                        {/* Auth */}
                         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
                         <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
                         <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
@@ -90,16 +75,17 @@ function App() {
                         <Route path="/forgot-password/verify" element={<PublicRoute><ForgotPasswordVerify /></PublicRoute>} />
                         <Route path="/forgot-password/reset" element={<PublicRoute><ResetPassword /></PublicRoute>} />
 
-                        {/* User routes (logged in) */}
+                        {/* User routes */}
                         <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
                         <Route path="/bookings" element={<AuthGuard><Bookings /></AuthGuard>} />
+                        <Route path="/client-dashboard" element={<AuthGuard><ClientDashboard /></AuthGuard>} />
 
-                        {/* Admin only routes */}
+                        {/* Admin only */}
                         <Route path="/appointments" element={<AuthGuard adminOnly><Appointments /></AuthGuard>} />
                         <Route path="/dashboard" element={<AuthGuard adminOnly><Dashboard /></AuthGuard>} />
                     </Routes>
 
-                    {!hideLayout && <AuthGuard><Bot /></AuthGuard>}
+                    {!hideLayout &&  <AuthGuard><Bot /></AuthGuard>}
                 </div>
 
                 {!hideLayout && !hideNavFoot && <Footer />}

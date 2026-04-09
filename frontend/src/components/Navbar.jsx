@@ -38,7 +38,10 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
                     </>
                 )}
                 {authed && !isAdmin && (
+                    <div className="flex items-center space-x-6">
                     <Link to="/bookings" className={navLinkClass("/bookings")}>Bookings</Link>
+                    <Link to="/client-dashboard" className={navLinkClass("/client-dashboard")}>Dashboard</Link>
+                    </div>
                 )}
                 <Link to="/services" className={navLinkClass("/services")}>Services</Link>
                 <Link to="/aboutus" className={navLinkClass("/aboutus")}>About Us</Link>

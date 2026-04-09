@@ -63,22 +63,29 @@ const useAppointmentStore = create((set) => ({
     },
 
     // Book an appointment (user)
-    bookAppointment: async (slotId , caseId, file) => {
-        set({ error: "" });
-        try {
-            const formData = new FormData();
-            formData.append("slotId", slotId);
-            formData.append("caseId", caseId);
-            formData.append("file", file);
-            await createAppointmentApi(formData);
-            return { success: true };
-        } catch (err) {
-            const msg = err.response?.data?.message || "Failed to book appointment";
-            set({ error: msg });
-            return { success: false, error: msg };
-        }
-    },
+bookAppointment: async (slotId, caseId, file) => {
+    set({ error: "" });
+    try {
+        const formData = new FormData();
+        formData.append("slotId", slotId);
+        formData.append("caseId", caseId);
 
+        // FIXED: Only append file if it actually exists
+        if (file && file instanceof File) {
+            formData.append("file", file);
+            console.log(`[AppointmentStore] Appending file: ${file.name}`);
+        } else {
+            console.log(`[AppointmentStore] No file to upload`);
+        }
+
+        await createAppointmentApi(formData);
+        return { success: true };
+    } catch (err) {
+        const msg = err.response?.data?.message || "Failed to book appointment";
+        set({ error: msg });
+        return { success: false, error: msg };
+    }
+},
     // Update appointment status (admin)
     updateStatus: async (appointmentId, status) => {
         set({ updatingId: appointmentId, error: "" });

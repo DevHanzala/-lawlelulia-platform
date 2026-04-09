@@ -13,16 +13,25 @@ const useSlotStore = create((set, get) => ({
     fetchSlotsByDate: async (date) => {
         set({ loading: true, error: "" });
         try {
-            // Send just the date portion as ISO — backend normalizes to start/end of day
             const d = date instanceof Date ? date : new Date(date);
-            // Use noon UTC to avoid timezone day-shift issues
+
+            // FIXED: Use UTC date parts from the actual UTC date, not local date
+            // This ensures April 9 local = April 9 UTC query
             const safeISO = new Date(
-                Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0)
+                Date.UTC(
+                    d.getUTCFullYear(),  // ← UTC year, not local
+                    d.getUTCMonth(),     // ← UTC month, not local
+                    d.getUTCDate(),      // ← UTC date, not local
+                    12, 0, 0
+                )
             ).toISOString();
 
+            console.log(`[SlotStore] Fetching slots for: ${safeISO}`);
             const res = await getSlotsByDateApi(safeISO);
+            console.log(`[SlotStore] Got ${res.data.data?.length} slots`);
             set({ slots: res.data.data || [], loading: false });
         } catch (err) {
+            console.error(`[SlotStore] Error:`, err.response?.data?.message);
             set({
                 error: err.response?.data?.message || "Failed to load slots",
                 loading: false,

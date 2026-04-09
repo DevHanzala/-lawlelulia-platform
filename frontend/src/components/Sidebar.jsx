@@ -112,10 +112,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, hideOnDesktop }) => {
                     )}
 
                     {authed && !isAdmin && (
-                        <Link to="/bookings" onClick={handleClose} className={linkClass("/bookings")}>
-                            <img className="w-4 h-4 opacity-70" src={Icon3} alt="" />
-                            <p>Bookings</p>
-                        </Link>
+                        <div className="flex flex-col space-y-0.5">
+                            <Link to="/bookings" onClick={handleClose} className={linkClass("/bookings")}>
+                                <img className="w-4 h-4 opacity-70" src={Icon3} alt="" />
+                                <p>Bookings</p>
+                            </Link>
+                            <Link to="/client-dashboard" onClick={handleClose} className={linkClass("/client-dashboard")}>
+                                <img className="w-4 h-4 opacity-70" src={Icon1} alt="" />
+                                <p>Dashboard</p>
+                            </Link>
+                        </div>
                     )}
 
                     {authed && (

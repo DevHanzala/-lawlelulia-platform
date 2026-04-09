@@ -75,7 +75,7 @@ const Footer = () => {
                                 { label: "About Us", path: "/aboutus" },
                                 { label: "Services", path: "/services" },
                                 { label: "Profile",  path: "/profile" },
-                                ...(!isAdmin ? [{ label: "Book Appointment", path: "/bookings" }] : []),
+                                ...(!isAdmin ? [{ label: "Book Appointment", path: "/bookings" }, { label: " Dashboard", path: "/client-dashboard" }] : []),
                                 ...(isAdmin  ? [
                                     { label: "Dashboard",    path: "/dashboard" },
                                     { label: "Appointments", path: "/appointments" },

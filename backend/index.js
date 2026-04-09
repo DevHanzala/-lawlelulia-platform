@@ -10,12 +10,13 @@ import slotRoute from "./routes/slotRoute.js";
 import appointmentRoute from "./routes/appointmentRoute.js";
 import chatBotRoute from "./routes/chatBotRoutes.js";
 import caseRoutes from "./routes/caseRoutes.js";
+import { startReminderScheduler } from "./services/schedulerService.js"; 
 
 dotenv.config();
 
 // CONNECT DB
 connectDB();
-
+startReminderScheduler();
 const app = express();
 
 app.use(cors());
