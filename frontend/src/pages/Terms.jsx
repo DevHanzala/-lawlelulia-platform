@@ -20,7 +20,6 @@ const terms = [
     { id: "3", icon: "✅", title: "Eligibility & Accounts", content: `You must be at least 18 years of age to create an account. By registering, you represent that all information you provide is accurate.\n\nYou are responsible for maintaining the confidentiality of your login credentials and for all activity under your account. Notify us immediately at security@cocolaw.ai of any unauthorized access.` },
     { id: "4", icon: "⚖️", title: "Permitted & Prohibited Use", content: `Permitted: You may use the Platform solely for lawful purposes in connection with your own legal matters.\n\nProhibited: You may not (a) generate content to harass or harm any person; (b) submit false information to courts; (c) resell Platform outputs without written consent; (d) reverse-engineer our AI models; or (e) use the Platform in violation of applicable law.` },
     { id: "5", icon: "🤖", title: "AI Outputs & Disclaimer", content: `The Platform uses artificial intelligence to generate legal documents, research, and guidance. While we strive for accuracy, AI-generated content may contain errors or outdated information.\n\nYOU ARE SOLELY RESPONSIBLE FOR REVIEWING, VERIFYING, AND CORRECTING ALL AI-GENERATED OUTPUTS BEFORE FILING OR RELYING ON THEM. CoCoLaw.ai makes no warranty that any document generated will be accepted by any court.` },
-    { id: "6", icon: "💳", title: "Subscriptions & Billing", content: `Subscriptions are billed monthly in advance and automatically renew unless cancelled before the renewal date. You may cancel at any time via your account settings; cancellation takes effect at the end of the current billing period with no prorated refunds.\n\nWe reserve the right to modify pricing with 30 days' notice. Qualifying users may apply for in forma pauperis reduced-rate access by contacting our support team.` },
     { id: "7", icon: "🔐", title: "Intellectual Property", content: `All software, AI models, and proprietary processes are owned by CoCoLaw.ai, Inc. and protected by applicable intellectual property laws. You receive a limited, non-exclusive license to use the Platform during your subscription.\n\nYou retain full ownership of all content you submit. You grant CoCoLaw.ai a limited license to process your content solely for delivering services. We do not use your content to train our AI models.` },
     { id: "8", icon: "🛡️", title: "Limitation of Liability", content: `TO THE MAXIMUM EXTENT PERMITTED BY LAW, COCOLAW.AI SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING LOSS OF CASE OUTCOME OR LOST PROFITS.\n\nIN NO EVENT SHALL COCOLAW.AI'S TOTAL LIABILITY EXCEED THE GREATER OF (A) THE TOTAL FEES PAID BY YOU IN THE 12 MONTHS PRECEDING THE CLAIM OR (B) $100.` },
     { id: "9", icon: "⚖️", title: "Dispute Resolution", content: `These Terms are governed by the laws of the State of Delaware. Any dispute shall be resolved by binding individual arbitration under AAA Commercial Arbitration Rules. Class actions are waived.\n\nBefore initiating arbitration, contact us at legal@cocolaw.ai and allow 30 days for informal resolution.` },
@@ -85,21 +84,7 @@ const Terms = () => {
                 </div>
             </section>
 
-            {/* Table of Contents */}
-            <section className="px-6 md:px-16 py-8 bg-gray-50" style={{ borderBottom: "1px solid #e5e7eb" }}>
-                <div className="max-w-3xl mx-auto">
-                    <p className="text-xs uppercase tracking-widest text-slate-400 mb-4" data-reveal>Table of Contents</p>
-                    <div className="grid sm:grid-cols-2 gap-2" data-reveal>
-                        {terms.map((term) => (
-                            <button key={term.id} onClick={() => { setActive(term.id); setTimeout(() => document.getElementById(`term-${term.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" }), 50); }}
-                                className="flex items-center gap-2 text-left px-3 py-2 rounded-lg hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-200 transition-all duration-200 group">
-                                <span className="text-sm">{term.icon}</span>
-                                <span className="text-xs text-gray-600 group-hover:text-[#0A0F1C] font-medium transition-colors">{term.id}. {term.title}</span>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </section>
+
 
             {/* Terms Sections */}
             <section className="px-6 md:px-16 py-14">

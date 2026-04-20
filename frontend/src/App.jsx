@@ -12,7 +12,12 @@ import { useLocation } from "react-router-dom";
 import Login from './pages/Login';
 import Bookings from './pages/Bookings';
 import Appointments from './pages/Appointments';
-import Services from './pages/Services';
+import PracticeAreas from './pages/PracticeAreas';       // replaces Services
+import Features from './pages/Features';                   // NEW
+import ClientPortal from './pages/ClientPortal';           // NEW
+import Contact from './pages/Contact';                     // NEW
+import Privacy from './pages/Privacy';  
+import FAQ from './pages/FAQ';                   // NEW
 import Dashboard from './pages/Dashboard';
 import ClientDashboard from './pages/ClientDashboard';
 import ForgotPassword from './pages/ForgotPassword';
@@ -23,7 +28,6 @@ import AuthGuard from './guards/AuthGuard';
 import GoogleAuthCallback from './pages/GoogleAuthCallback';
 import Bot from './components/Bot';
 import ScrollToTop from './components/ScrollToTop';
-import Support from './pages/Support';
 import Feedback from './pages/Feedback';
 import Terms from './pages/Terms';
 import useAuthStore from './store/authStore';
@@ -34,8 +38,16 @@ const hideLayouts = [
     "/auth/google/callback"
 ];
 
-const hideSidebar = ["/", "/aboutus", "/services", "/support", "/feedback", "/privacy", "/terms"];
-const hideNavbarFooter = ["/dashboard", "/appointments", "/profile", "/bookings", "/client-dashboard"];
+// Pages that hide the sidebar (full-width public pages)
+const hideSidebar = [
+    "/", "/aboutus", "/practice-areas", "/features", "/client-portal",
+    "/support", "/feedback", "/privacy", "/terms", "/contact", "/faqs"
+];
+
+// Pages that hide navbar + footer (dashboard pages)
+const hideNavbarFooter = [
+    "/dashboard", "/appointments", "/profile", "/bookings", "/client-dashboard"
+];
 
 function App() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -48,7 +60,6 @@ function App() {
 
     const authed = isAuthenticated();
     const isAdmin = authed && user?.role === "admin";
-    // Bot only for logged-in non-admin users
     const showBot = authed && !isAdmin && !hideLayout;
 
     return (
@@ -66,13 +77,19 @@ function App() {
 
                 <div className={`${hideLayout ? "w-full h-screen" : "flex-1 bg-gray-50"} ${!hideLayout && !noSidebar ? "p-4" : ""}`}>
                     <Routes>
+                        {/* ── Public full-width pages ── */}
                         <Route path="/" element={<Home />} />
                         <Route path="/aboutus" element={<AboutUs />} />
-                        <Route path="/services" element={<Services />} />
-                        <Route path="/support" element={<Support />} />
+                        <Route path="/practice-areas" element={<PracticeAreas />} />
+                        <Route path="/features" element={<Features />} />
+                        <Route path="/client-portal" element={<ClientPortal />} />
+                        <Route path="/contact" element={<Contact />} />
                         <Route path="/feedback" element={<Feedback />} />
+                        <Route path="/privacy" element={<Privacy />} />
                         <Route path="/terms" element={<Terms />} />
+                        <Route path="/faqs" element={<FAQ />} />
 
+                        {/* ── Auth ── */}
                         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
                         <Route path="/signup" element={<PublicRoute><SignUp /></PublicRoute>} />
                         <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
@@ -80,14 +97,17 @@ function App() {
                         <Route path="/forgot-password/verify" element={<PublicRoute><ForgotPasswordVerify /></PublicRoute>} />
                         <Route path="/forgot-password/reset" element={<PublicRoute><ResetPassword /></PublicRoute>} />
 
+                        {/* ── User routes ── */}
                         <Route path="/profile" element={<AuthGuard><Profile /></AuthGuard>} />
                         <Route path="/bookings" element={<AuthGuard><Bookings /></AuthGuard>} />
                         <Route path="/client-dashboard" element={<AuthGuard><ClientDashboard /></AuthGuard>} />
+
+                        {/* ── Admin only ── */}
                         <Route path="/appointments" element={<AuthGuard adminOnly><Appointments /></AuthGuard>} />
                         <Route path="/dashboard" element={<AuthGuard adminOnly><Dashboard /></AuthGuard>} />
                     </Routes>
 
-                    {/* Bot — clients only, not admin */}
+                    {/* Bot — clients only, never admin */}
                     {showBot && <Bot />}
                 </div>
 

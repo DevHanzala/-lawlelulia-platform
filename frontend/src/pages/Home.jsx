@@ -1,9 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import {
-    Scale, Gavel, 
-} from "lucide-react";
-/* ─── Scroll-reveal hook ─────────────────────────────────────── */
+import { Scale, Gavel } from "lucide-react";
+
 function useReveal() {
     useEffect(() => {
         const els = document.querySelectorAll("[data-reveal]");
@@ -16,81 +14,47 @@ function useReveal() {
     }, []);
 }
 
-/* ─── SVG assets ─────────────────────────────────────────────── */
-
-const ShieldSVG = () => (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-        <path d="M32 4L8 14v18c0 13 10.5 22.5 24 26 13.5-3.5 24-13 24-26V14L32 4z" fill="currentColor" opacity="0.15" stroke="currentColor" strokeWidth="2"/>
-        <path d="M22 32l7 7 13-14" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" opacity="0.8"/>
-    </svg>
-);
-
-const DocSVG = () => (
-    <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-        <rect x="12" y="6" width="36" height="48" rx="4" fill="currentColor" opacity="0.12" stroke="currentColor" strokeWidth="1.5"/>
-        <rect x="12" y="6" width="24" height="48" rx="4" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.4"/>
-        <line x1="20" y1="20" x2="44" y2="20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
-        <line x1="20" y1="28" x2="44" y2="28" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
-        <line x1="20" y1="36" x2="36" y2="36" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.6"/>
-        <circle cx="48" cy="48" r="10" fill="currentColor" opacity="0.8"/>
-        <path d="M44 48l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-);
-
 const HeroPattern = () => (
     <svg className="absolute inset-0 w-full h-full opacity-5" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-        <defs>
-            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5"/>
-            </pattern>
-        </defs>
+        <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5"/></pattern></defs>
         <rect width="800" height="600" fill="url(#grid)"/>
         <circle cx="650" cy="100" r="200" fill="none" stroke="white" strokeWidth="0.5"/>
         <circle cx="650" cy="100" r="150" fill="none" stroke="white" strokeWidth="0.5"/>
-        <circle cx="650" cy="100" r="100" fill="none" stroke="white" strokeWidth="0.5"/>
     </svg>
 );
 
-/* ─── Stats counter ──────────────────────────────────────────── */
 const stats = [
-    { value: "80%+", label: "Litigants go to court without a lawyer" },
-    { value: "2–11%", label: "Pro se success rate in federal cases" },
-    { value: "49%", label: "Rise in AI-assisted pro se filings" },
-    { value: "24/7", label: "AI Co-Counsel availability" },
+    { value: "500+", label: "Cases Successfully Handled" },
+    { value: "24/7", label: "AI-Powered Legal Support" },
+    { value: "98%", label: "Client Satisfaction Rate" },
+    { value: "5", label: "Core Practice Areas" },
 ];
 
-const features = [
-    { icon: "01", title: "Intelligent Co-Counsel", desc: "Plain-language support for legal research, document drafting, procedural guidance, and preparation." },
-    { icon: "02", title: "Jurisdiction-Specific Research", desc: "Tailored legal research and document creation specific to your jurisdiction and court." },
-    { icon: "03", title: "Procedural Guidance", desc: "Step-by-step guidance through legal procedures with automatic deadline tracking." },
-    { icon: "04", title: "Evidence Organization", desc: "Tools to organize evidence and assistance with constructing objections before trial." },
-    { icon: "05", title: "Courtroom Coaching", desc: "Assistance with preparing courtroom scripts and guidance on proper legal decorum." },
-    { icon: "06", title: "Settlement Analysis", desc: "Tools to help manage emotional responses and analyze settlement options objectively." },
-    { icon: "07", title: "Affordable Subscription", desc: "Cost-effective subscription model with support for in forma pauperis cases." },
-    { icon: "08", title: "Secure & Private", desc: "A secure, private platform continuously updated with the latest legal information." },
+const whyChoose = [
+    { icon: "⚖️", title: "Experienced Legal Professionals", desc: "Skilled attorneys across multiple practice areas delivering results-driven representation." },
+    { icon: "💻", title: "Technology-Driven Processes", desc: "Faster, more efficient service delivery through intelligent digital systems." },
+    { icon: "🔒", title: "Secure & Transparent", desc: "Real-time client communication with bank-grade security at every step." },
+    { icon: "🎯", title: "Personalized Strategies", desc: "Tailored legal approaches built around your specific goals  no generic advice." },
+    { icon: "🎥", title: "Built-in Video Conferencing", desc: "Meet your lawyer without leaving home. Consultations available on any device." },
+    { icon: "📅", title: "Smart Scheduling 24/7", desc: "Book appointments in seconds, any time of day. Instant confirmation guaranteed." },
+    { icon: "🤖", title: "AI-Powered Assistant", desc: "Get answers around the clock. Our AI captures leads and answers queries instantly." },
+    { icon: "📊", title: "Real-Time Case Updates", desc: "Always know where your case stands  no chasing, no confusion, no waiting." },
 ];
 
-const howItWorks = [
-    { num: "01", title: "Describe Your Situation", desc: "Clearly articulate your legal issue in plain English. No legal jargon required  our AI understands natural language.", icon: "💬" },
-    { num: "02", title: "AI Legal Analysis", desc: "Our AI rigorously analyzes your facts against relevant laws, rules, and jurisdiction-specific precedents.", icon: "⚖️" },
-    { num: "03", title: "Receive Actionable Outputs", desc: "Get court-ready drafts, essential checklists, filing deadlines, and strategic options tailored to your case.", icon: "📄" },
-    { num: "04", title: "File with Confidence", desc: "Refine your case through guided Q&A and submit documents with full understanding of what you're filing.", icon: "✅" },
+const practiceAreas = [
+    { icon: "🏢", title: "Corporate Law", desc: "Business formation, contracts, compliance, mergers, and shareholder agreements.", path: "/practice-areas" },
+    { icon: "⚖️", title: "Criminal Defense", desc: "Aggressive representation protecting your rights at every stage of the criminal process.", path: "/practice-areas" },
+    { icon: "👨‍👩‍👧", title: "Family Law", desc: "Divorce, custody, support, and domestic matters handled with empathy and strategy.", path: "/practice-areas" },
+    { icon: "🏛️", title: "Civil Litigation", desc: "Evidence-driven dispute resolution from filing through to verdict.", path: "/practice-areas" },
+    { icon: "💡", title: "Intellectual Property", desc: "Trademark, copyright, and IP portfolio protection and enforcement.", path: "/practice-areas" },
 ];
 
 const testimonials = [
-    { quote: "CoCoLaw.ai helped me understand my rights and file my motion correctly. I felt prepared walking into court for the first time.", name: "Marcus T.", role: "Pro Se Litigant, Civil Case" },
-    { quote: "The procedural guidance alone saved my case from being dismissed. I had no idea about filing deadlines until CoCoLaw flagged it.", name: "Priya S.", role: "Self-Represented, Family Court" },
-    { quote: "As someone with no legal background, having a 24/7 AI co-counsel changed everything. The document drafting feature is invaluable.", name: "James R.", role: "Pro Se Plaintiff, Employment Case" },
+    { quote: "Highly professional and incredibly responsive. The entire process was smooth, efficient, and stress-free. I always knew exactly where my case stood.", name: "Verified Client" },
+    { quote: "Excellent service from start to finish. Clear communication, a solid legal strategy, and a great result. I would not hesitate to recommend Cocolaw.ai.", name: "Verified Client" },
+    { quote: "Modern, reliable, and genuinely easy to work with. The client portal made everything transparent. I always felt in control of my case.", name: "Verified Client" },
 ];
 
-const market = [
-    { title: "Massive Total Addressable Market", desc: "Millions of pro se cases filed annually represent a significant and often underserved market.", metric: "60M+", metricLabel: "cases/year" },
-    { title: "Early Validation", desc: "Initial market interest demonstrated by beta users, waitlist sign-ups, and successful pilot programs.", metric: "2K+", metricLabel: "beta users" },
-    { title: "Growing Trend", desc: "AI is increasing pro se filings, with certain categories growing over 49%, indicating rising demand.", metric: "49%", metricLabel: "growth" },
-    { title: "Scalable SaaS Model", desc: "Tiered subscriptions and premium add-ons for enhanced features and dedicated support.", metric: "$2B+", metricLabel: "TAM" },
-];
-
-/* ─── Component ──────────────────────────────────────────────── */
 const Home = () => {
     useReveal();
 
@@ -100,44 +64,41 @@ const Home = () => {
             {/* ── HERO ── */}
             <section className="relative bg-[#0A0F1C] text-white overflow-hidden" style={{ borderBottom: "3px solid #1e2740" }}>
                 <HeroPattern />
-
-               <div className="absolute right-8 top-1/2 -translate-y-1 hidden lg:block pointer-events-none opacity-5">
-    <Scale size={250} color="white" strokeWidth={0.8} />
-</div>
-
-<div className="absolute left-6 bottom-24 hidden lg:block pointer-events-none opacity-5">
-    <Gavel size={200} color="white" strokeWidth={0.8} />
-</div>
+                <div className="absolute right-8 top-1/2 -translate-y-1/2 hidden lg:block pointer-events-none opacity-5">
+                    <Scale size={250} color="white" strokeWidth={0.8} />
+                </div>
+                <div className="absolute left-6 bottom-24 hidden lg:block pointer-events-none opacity-5">
+                    <Gavel size={200} color="white" strokeWidth={0.8} />
+                </div>
 
                 <div className="relative z-10 text-center py-24 px-6 max-w-4xl mx-auto">
                     <div className="inline-block mb-4 px-4 py-1.5 rounded-full border border-gray-600 text-xs uppercase tracking-widest text-gray-400 animate-fadein">
-                        The First AI Platform Purpose-Built for Pro Se Litigants
+                        Strategic Legal Counsel  Smarter. Faster. Better.
                     </div>
                     <h1 className="text-4xl md:text-6xl font-black max-w-3xl mx-auto leading-tight tracking-tight animate-slidein">
-                        CoCoLaw.ai:<br />
-                        <span className="text-gray-300">Your AI Co-Counsel</span>
+                        Welcome to<br />
+                        <span className="text-gray-300">Cocolaw.ai</span>
                     </h1>
                     <p className="text-gray-400 mt-6 max-w-2xl mx-auto text-base md:text-lg leading-relaxed animate-fadein-delay">
-                        Leveling the playing field for the <strong className="text-white">80%+ of litigants</strong> who go to court without a lawyer.
-                        Professional legal intelligence at a fraction of the cost.
+                        A modern law firm powered by intelligent technology. We deliver a seamless, efficient, and results-driven legal experience for <strong className="text-white">individuals, entrepreneurs, and businesses</strong> who expect more from their legal team.
                     </p>
                     <div className="mt-10 flex flex-wrap justify-center gap-4 animate-fadein-delay2">
-                        <Link to="/signup" className="bg-white text-black px-8 py-3.5 rounded-md font-semibold hover:bg-gray-100 transition text-sm">
-                            Get Started Free →
+                        <Link to="/bookings" className="bg-white text-black px-8 py-3.5 rounded-md font-semibold hover:bg-gray-100 transition text-sm">
+                            Book a Consultation →
                         </Link>
-                        <Link to="/services" className="border border-gray-500 text-white px-8 py-3.5 rounded-md hover:border-white hover:bg-white hover:text-black transition text-sm font-medium">
-                            Explore Services
+                        <Link to="/practice-areas" className="border border-gray-500 text-white px-8 py-3.5 rounded-md hover:border-white hover:bg-white hover:text-black transition text-sm font-medium">
+                            Our Practice Areas
                         </Link>
                     </div>
-
-                    <div className="mt-12 flex flex-wrap justify-center gap-6 text-xs text-gray-500 animate-fadein-delay2">
-                        <span className="flex items-center gap-1.5">🔒 Bank-grade Security</span>
-                        <span className="flex items-center gap-1.5">⚖️ Jurisdiction-Aware AI</span>
-                        <span className="flex items-center gap-1.5">📋 Court-Ready Documents</span>
-                        <span className="flex items-center gap-1.5">🕐 24/7 Availability</span>
+                    <div className="mt-10 flex flex-wrap justify-center gap-6 text-xs text-gray-500 animate-fadein-delay2">
+                        <span className="flex items-center gap-1.5">🔒 Enterprise-Grade Security</span>
+                        <span className="flex items-center gap-1.5">🎥 Built-in Video Conferencing</span>
+                        <span className="flex items-center gap-1.5">📅 Smart Scheduling 24/7</span>
+                        <span className="flex items-center gap-1.5">🤖 AI-Powered Assistant</span>
                     </div>
                 </div>
 
+                {/* Stats bar */}
                 <div className="relative z-10 border-t border-gray-800 bg-[#0d1324]">
                     <div className="grid grid-cols-2 md:grid-cols-4 max-w-5xl mx-auto">
                         {stats.map((s, i) => (
@@ -150,77 +111,18 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* ── PROBLEM ── */}
-            <section className="px-6 md:px-16 py-16 bg-white">
+            {/* ── WHY CHOOSE ── */}
+            <section className="px-6 md:px-16 py-16 bg-white" style={{ borderBottom: "1px solid #e5e7eb" }}>
                 <div className="max-w-5xl mx-auto">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 text-center mb-2" data-reveal>
-                        Challenges for Self-Represented Litigants
+                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 text-center mb-2" data-reveal>Why Cocolaw.ai</p>
+                    <h2 className="text-2xl md:text-3xl font-bold text-center mb-3" data-reveal>Why Choose Cocolaw.ai</h2>
+                    <p className="text-gray-500 text-sm text-center max-w-2xl mx-auto mb-12" data-reveal>
+                        We built more than just a law firm. Cocolaw.ai is a fully integrated legal platform that combines experienced legal representation with powerful digital tools  giving you clarity, control, and convenience at every stage of your case.
                     </p>
-                    <h2 className="text-2xl md:text-3xl font-bold text-center mb-3" data-reveal>
-                        Pro Se Litigants Face an Uphill Battle
-                    </h2>
-                    <p className="text-gray-500 text-sm text-center max-w-2xl mx-auto mb-10" data-reveal>
-                        Millions of Americans navigate courts alone every year. Without legal representation, even valid cases fail  not because of weak facts, but due to procedural mistakes.
-                    </p>
-                    <div className="grid md:grid-cols-3 gap-6">
-                        {[
-                            { icon: "📉", title: "Low Success Rate", desc: "Pro se plaintiffs win only 2–11% of federal civil cases, compared to 40%+ with representation. The gap is stark and well-documented." },
-                            { icon: "🚧", title: "Procedural Hurdles", desc: "Most cases fail due to early procedural issues — dismissals for improper service, missed deadlines, deficient pleadings, and unfiled motions." },
-                            { icon: "⚖️", title: "Unequal Playing Field", desc: "Courts enforce identical complex rules of procedure and evidence for both licensed attorneys and self-represented individuals." },
-                        ].map((item, i) => (
-                            <div key={i} data-reveal className="bg-gray-50 border-l-4 border-[#0A0F1C] p-6 rounded-lg group hover:shadow-md transition-all duration-300">
-                                <div className="text-2xl mb-3">{item.icon}</div>
-                                <h3 className="font-bold mb-2 text-[#0A0F1C]">{item.title}</h3>
-                                <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* ── WHY EXISTING FAIL ── */}
-            <section className="px-6 md:px-16 py-16 bg-gray-50" style={{ borderTop: "1px solid #e5e7eb", borderBottom: "1px solid #e5e7eb" }}>
-                <div className="max-w-5xl mx-auto">
-                    <h2 className="text-2xl md:text-3xl font-bold text-center mb-2" data-reveal>Why Existing Solutions Fall Short</h2>
-                    <p className="text-gray-500 text-sm text-center mb-10" data-reveal>The tools available today were never built with pro se litigants in mind.</p>
-                    <div className="grid md:grid-cols-3 gap-6">
-                        {[
-                            { num: 1, title: "Court Self-Help Resources", desc: "Provide only surface-level guidance with no personalization, leaving litigants lost when their case hits complexity.", icon: "🏛️" },
-                            { num: 2, title: "Generic AI Tools", desc: "Not trained on legal data hallucinate citations, ignore jurisdictional rules, and can't draft court-ready documents.", icon: "🤖" },
-                            { num: 3, title: "Traditional Legal Aid", desc: "Overwhelmed by demand and chronically underfunded — most eligible individuals are turned away or face multi-month waits.", icon: "🏢" },
-                        ].map((item, i) => (
-                            <div key={i} data-reveal className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center hover:shadow-md hover:border-[#0A0F1C] transition-all duration-300">
-                                <div className="text-3xl mb-3">{item.icon}</div>
-                                <div className="w-8 h-8 bg-[#0A0F1C] rounded-full mx-auto mb-4 flex items-center justify-center">
-                                    <span className="text-white text-xs font-bold">{item.num}</span>
-                                </div>
-                                <h3 className="font-bold mb-2">{item.title}</h3>
-                                <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="mt-8 text-center p-4 bg-white rounded-lg border border-gray-200" data-reveal>
-                        <p className="text-sm text-gray-500 italic">
-                            The justice gap widens every year  pro se filings are up 49% in some categories, yet the support infrastructure has barely moved.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            {/* ── FEATURES ── */}
-            <section className="px-6 md:px-16 py-16 bg-white">
-                <div className="max-w-6xl mx-auto">
-                    <div className="text-center mb-10">
-                        <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-2" data-reveal>Platform Features</p>
-                        <h2 className="text-2xl md:text-3xl font-bold mb-2" data-reveal>Everything You Need to Fight Your Case</h2>
-                        <p className="text-gray-500 text-sm max-w-xl mx-auto" data-reveal>The first AI platform purpose-built for pro se litigants  covering every stage of litigation.</p>
-                    </div>
                     <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-5">
-                        {features.map((item, i) => (
+                        {whyChoose.map((item, i) => (
                             <div key={i} data-reveal className="border border-gray-200 rounded-xl p-5 hover:shadow-md hover:border-[#0A0F1C] transition-all duration-300 group">
-                                <div className="w-9 h-9 bg-[#0A0F1C] rounded-full mb-3 flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                                    <span className="text-white text-xs font-bold">{item.icon}</span>
-                                </div>
+                                <div className="text-2xl mb-3">{item.icon}</div>
                                 <h3 className="font-bold text-sm mb-2 text-[#0A0F1C]">{item.title}</h3>
                                 <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
                             </div>
@@ -229,27 +131,64 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* ── HOW IT WORKS ── */}
-            <section className="px-6 md:px-16 py-16 bg-[#0A0F1C] text-white relative overflow-hidden" style={{ borderTop: "3px solid #1e2740", borderBottom: "3px solid #1e2740" }}>
-                <div className="absolute right-0 top-0 bottom-0 w-64 opacity-5 flex items-center justify-center pointer-events-none lg:flex">
-                    <div className="w-48 h-48 text-white"><Scale size={200} color="white" strokeWidth={0.8} /></div>
+            {/* ── SMARTER WAY ── */}
+            <section className="px-6 md:px-16 py-16 bg-gray-50" style={{ borderBottom: "1px solid #e5e7eb" }}>
+                <div className="max-w-5xl mx-auto">
+                    <div className="flex flex-col md:flex-row gap-12 items-center">
+                        <div className="md:w-1/2" data-reveal>
+                            <p className="text-xs uppercase tracking-widest text-slate-400 mb-2">A Smarter Way to Access Legal Services</p>
+                            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[#0A0F1C]">Digital Convenience Meets Legal Expertise</h2>
+                            <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                                Cocolaw.ai bridges traditional legal expertise with modern digital convenience. From booking your first consultation to tracking the progress of your case in real time, every feature
+                                 is designed to give you full control and complete clarity  without the confusion that typically comes with legal processes.
+                            </p>
+                            <p className="text-gray-600 text-sm leading-relaxed mb-6">
+                                Our platform is mobile-first, lightning-fast, and built to rank on Google  so when you need legal help, you find us immediately, and once you do, getting started takes minutes.
+                            </p>
+                            <Link to="/bookings" className="inline-block bg-[#0A0F1C] text-white px-6 py-3 rounded-md font-semibold text-sm hover:bg-gray-800 transition">
+                                Book Your Consultation →
+                            </Link>
+                        </div>
+                        <div className="md:w-1/2 grid grid-cols-2 gap-4" data-reveal>
+                            {[
+                                { icon: "🎥", title: "Video Consultations", desc: "Meet your lawyer without leaving home. Secure, private, encrypted." },
+                                { icon: "📅", title: "Instant Scheduling", desc: "View real-time availability and confirm in under 60 seconds." },
+                                { icon: "📊", title: "Live Case Tracking", desc: "Always know what is happening. No chasing for updates." },
+                                { icon: "🔒", title: "Secure Portal", desc: "Your private legal dashboard  documents, messages, and dates in one place." },
+                            ].map((item, i) => (
+                                <div key={i} className="bg-white rounded-xl p-4 border border-gray-100 hover:border-[#0A0F1C] hover:shadow-sm transition-all duration-300">
+                                    <div className="text-xl mb-2">{item.icon}</div>
+                                    <h3 className="font-bold text-xs mb-1 text-[#0A0F1C]">{item.title}</h3>
+                                    <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
+            </section>
+
+            {/* ── PRACTICE AREAS ── */}
+            <section className="px-6 md:px-16 py-16 bg-[#0A0F1C] text-white relative overflow-hidden" style={{ borderTop: "3px solid #1e2740", borderBottom: "3px solid #1e2740" }}>
+                <HeroPattern />
                 <div className="max-w-5xl mx-auto relative z-10">
-                    <h2 className="text-2xl md:text-3xl font-bold text-center mb-2" data-reveal>How It Works</h2>
-                    <p className="text-gray-400 text-sm text-center mb-12" data-reveal>From your first question to your final filing  a streamlined journey.</p>
-                    <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-0">
-                        {howItWorks.map((step, i) => (
-                            <div key={i} data-reveal className={`p-6 ${i < 3 ? "md:border-r border-gray-700" : ""} ${i === 1 || i === 3 ? "sm:border-l border-gray-700 md:border-l-0" : ""} border-b md:border-b-0 border-gray-800`}>
-                                <div className="text-4xl font-black text-gray-700 mb-1">{step.num}</div>
-                                <div className="text-xl mb-3">{step.icon}</div>
-                                <h3 className="font-bold text-sm mb-2">{step.title}</h3>
-                                <p className="text-xs text-gray-400 leading-relaxed">{step.desc}</p>
-                            </div>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 text-center mb-2" data-reveal>Legal Expertise</p>
+                    <h2 className="text-2xl md:text-3xl font-bold text-center mb-3" data-reveal>Our Practice Areas</h2>
+                    <p className="text-gray-400 text-sm text-center max-w-xl mx-auto mb-10" data-reveal>
+                        Comprehensive legal services across all major practice areas — handled by attorneys with specialized experience and a results-focused approach.
+                    </p>
+                    <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5 mb-8">
+                        {practiceAreas.map((area, i) => (
+                            <Link key={i} to={area.path} data-reveal
+                                className="bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 hover:border-white/30 transition-all duration-300 group">
+                                <div className="text-2xl mb-3">{area.icon}</div>
+                                <h3 className="font-bold text-sm mb-2">{area.title}</h3>
+                                <p className="text-xs text-gray-400 leading-relaxed">{area.desc}</p>
+                            </Link>
                         ))}
                     </div>
-                    <div className="mt-10 text-center" data-reveal>
-                        <Link to="/signup" className="inline-block bg-white text-black px-8 py-3 rounded-md font-semibold hover:bg-gray-100 transition text-sm">
-                            Start Your Case Now →
+                    <div className="text-center" data-reveal>
+                        <Link to="/practice-areas" className="inline-block border border-white/30 text-white px-6 py-2.5 rounded-md text-sm font-semibold hover:bg-white hover:text-[#0A0F1C] transition-all duration-200">
+                            View All Practice Areas →
                         </Link>
                     </div>
                 </div>
@@ -258,21 +197,16 @@ const Home = () => {
             {/* ── TESTIMONIALS ── */}
             <section className="px-6 md:px-16 py-16 bg-gray-50">
                 <div className="max-w-5xl mx-auto">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 text-center mb-2" data-reveal>Real Users, Real Results</p>
-                    <h2 className="text-2xl md:text-3xl font-bold text-center mb-10" data-reveal>What Our Users Say</h2>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 text-center mb-2" data-reveal>Client Stories</p>
+                    <h2 className="text-2xl md:text-3xl font-bold text-center mb-10" data-reveal>What Our Clients Say About Cocolaw.ai</h2>
                     <div className="grid md:grid-cols-3 gap-6">
                         {testimonials.map((t, i) => (
                             <div key={i} data-reveal className="bg-white rounded-xl p-6 border border-gray-100 hover:border-[#0A0F1C] hover:shadow-md transition-all duration-300">
                                 <div className="text-2xl text-gray-300 font-serif mb-3">"</div>
                                 <p className="text-sm text-gray-600 leading-relaxed italic mb-4">{t.quote}</p>
                                 <div className="flex items-center gap-3 border-t border-gray-100 pt-4">
-                                    <div className="w-9 h-9 rounded-full bg-[#0A0F1C] flex items-center justify-center text-white text-xs font-bold shrink-0">
-                                        {t.name.charAt(0)}
-                                    </div>
-                                    <div>
-                                        <p className="text-xs font-bold text-[#0A0F1C]">{t.name}</p>
-                                        <p className="text-xs text-gray-400">{t.role}</p>
-                                    </div>
+                                    <div className="w-9 h-9 rounded-full bg-[#0A0F1C] flex items-center justify-center text-white text-xs font-bold shrink-0">✓</div>
+                                    <p className="text-xs font-bold text-[#0A0F1C]">{t.name}</p>
                                 </div>
                             </div>
                         ))}
@@ -280,106 +214,36 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* ── MARKET OPPORTUNITY ── */}
-            <section className="px-6 md:px-16 py-16 bg-white" style={{ borderTop: "1px solid #e5e7eb" }}>
-                <div className="max-w-5xl mx-auto">
-                    <h2 className="text-2xl md:text-3xl font-bold text-center mb-2" data-reveal>Market Opportunity & Traction</h2>
-                    <p className="text-gray-500 text-sm text-center mb-10" data-reveal>A vast, underserved market ready for a purpose-built solution.</p>
-                    <div className="grid md:grid-cols-2 gap-5">
-                        {market.map((item, i) => (
-                            <div key={i} data-reveal className="flex gap-4 p-5 rounded-xl border border-gray-100 hover:border-[#0A0F1C] hover:shadow-sm transition-all duration-300">
-                                <div className="shrink-0 text-right w-16">
-                                    <p className="text-lg font-black text-[#0A0F1C] leading-none">{item.metric}</p>
-                                    <p className="text-xs text-gray-400">{item.metricLabel}</p>
-                                </div>
-                                <div className="border-l border-gray-200 pl-4">
-                                    <h3 className="font-bold text-sm mb-1">{item.title}</h3>
-                                    <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* ── SERVICES PREVIEW — NOW DARK ── */}
-            <section className="px-6 md:px-16 py-16 bg-[#0A0F1C] text-white relative overflow-hidden" style={{ borderTop: "3px solid #1e2740", borderBottom: "3px solid #1e2740" }}>
-                <div className="absolute inset-0 opacity-5 pointer-events-none">
-                    <HeroPattern />
-                </div>
-                <div className="absolute left-0 top-0 bottom-0 w-48 opacity-5 hidden lg:flex items-center justify-center pointer-events-none">
-                    <div className="w-36 h-36 text-white"><Gavel size={200} color="white" strokeWidth={0.8} /></div>
-                </div>
-                <div className="max-w-5xl mx-auto relative z-10">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 text-center mb-2" data-reveal>What We Offer</p>
-                    <h2 className="text-2xl md:text-3xl font-bold text-center mb-3 text-white" data-reveal>Purpose-Built Legal Tools</h2>
-                    <p className="text-gray-400 text-sm text-center max-w-xl mx-auto mb-10" data-reveal>Every feature was designed around the specific challenges pro se litigants face — from research to the courtroom.</p>
-                    <div className="grid md:grid-cols-3 gap-5 mb-8">
-                        {[
-                            { icon: <div className="w-12 h-12 text-white"><DocSVG /></div>, title: "Legal Research & Drafting", desc: "Court-ready motions, complaints, and responses — drafted by AI, tailored to your jurisdiction." },
-                            { icon: <div className="w-12 h-12 text-white"><ShieldSVG /></div>, title: "Evidence & Objections", desc: "Organize exhibits, flag admissibility issues, and prepare legally sound objections before trial." },
-                            { icon: <div className="text-3xl">🎯</div>, title: "Courtroom Preparation", desc: "Scripted opening statements, decorum guides, and judicial Q&A practice sessions." },
-                        ].map((item, i) => (
-                            <div key={i} data-reveal className="bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 hover:border-white/25 transition-all duration-300 text-center">
-                                <div className="flex justify-center mb-4">{item.icon}</div>
-                                <h3 className="font-bold text-sm mb-2 text-white">{item.title}</h3>
-                                <p className="text-xs text-gray-400 leading-relaxed">{item.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="text-center" data-reveal>
-                        <Link to="/services" className="inline-block border border-white/30 text-white px-6 py-2.5 rounded-md text-sm font-semibold hover:bg-white hover:text-[#0A0F1C] transition-all duration-200">
-                            View All Services →
-                        </Link>
-                    </div>
-                </div>
-            </section>
-
-            {/* ── OUR MISSION — NOW LIGHT ── */}
+            {/* ── CTA ── */}
             <section className="bg-white text-[#0A0F1C] text-center py-20 px-6" style={{ borderTop: "1px solid #e5e7eb" }}>
                 <div className="max-w-2xl mx-auto">
-                    <p className="text-xs uppercase tracking-widest text-slate-400 mb-3" data-reveal>Our Mission</p>
-                    <h2 className="text-2xl md:text-3xl font-bold mb-4 text-[#0A0F1C]" data-reveal>
-                        CoCoLaw.ai doesn't replace lawyers  it empowers the millions who cannot afford them.
+                    <p className="text-xs uppercase tracking-widest text-slate-400 mb-3" data-reveal>Get Started Today</p>
+                    <h2 className="text-2xl md:text-3xl font-bold mb-4" data-reveal>
+                        Book your consultation today and experience smarter legal services.
                     </h2>
-                    <p className="mt-2 text-gray-500 text-sm leading-relaxed mb-8" data-reveal>
-                        A justice system where self-representation is not a disadvantage. Access high-quality legal intelligence, right when you need it.
+                    <p className="text-gray-500 text-sm leading-relaxed mb-8" data-reveal>
+                        Our attorneys come to every consultation fully prepared. We invest real time in understanding your situation so we can give you real, actionable guidance from the very first conversation.
                     </p>
                     <div className="flex flex-wrap justify-center gap-4" data-reveal>
-                        <Link to="/signup" className="bg-[#0A0F1C] text-white px-8 py-3.5 rounded-md font-semibold hover:bg-gray-800 transition text-sm">
-                            Start Your Legal Journey Today →
+                        <Link to="/bookings" className="bg-[#0A0F1C] text-white px-8 py-3.5 rounded-md font-semibold hover:bg-gray-800 transition text-sm">
+                            Book a Consultation →
                         </Link>
-                        <Link to="/bookings" className="border border-[#0A0F1C] text-[#0A0F1C] px-8 py-3.5 rounded-md hover:bg-[#0A0F1C] hover:text-white transition text-sm font-medium">
-                            Book a Consultation
+                        <Link to="/features" className="border border-[#0A0F1C] text-[#0A0F1C] px-8 py-3.5 rounded-md hover:bg-[#0A0F1C] hover:text-white transition text-sm font-medium">
+                            Explore Features
                         </Link>
                     </div>
                 </div>
             </section>
 
-            {/* ── ANIMATIONS ── */}
             <style>{`
-                @keyframes fadein {
-                    from { opacity: 0; transform: translateY(16px); }
-                    to   { opacity: 1; transform: translateY(0); }
-                }
-                @keyframes slidein {
-                    from { opacity: 0; transform: translateY(24px); }
-                    to   { opacity: 1; transform: translateY(0); }
-                }
+                @keyframes fadein { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+                @keyframes slidein { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
                 .animate-fadein       { animation: fadein  0.7s ease both; }
                 .animate-fadein-delay  { animation: fadein  0.9s 0.2s ease both; }
                 .animate-fadein-delay2 { animation: fadein  0.9s 0.4s ease both; }
                 .animate-slidein      { animation: slidein 0.8s 0.1s ease both; }
-
-                [data-reveal] {
-                    opacity: 0;
-                    transform: translateY(20px);
-                    transition: opacity 0.6s ease, transform 0.6s ease;
-                }
-                [data-reveal].revealed {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
+                [data-reveal] { opacity:0; transform:translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+                [data-reveal].revealed { opacity:1; transform:translateY(0); }
             `}</style>
         </div>
     );

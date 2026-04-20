@@ -267,7 +267,7 @@ const ClientDashboard = () => {
                     {[
                         { icon: "📅", label: "Book Appointment", to: "/bookings",  sub: "Schedule a session" },
                         { icon: "👤", label: "My Profile",       to: "/profile",   sub: "Update your info" },
-                        { icon: "⚖️", label: "Our Services",     to: "/services",  sub: "What we offer" },
+                        { icon: "⚖️", label: "Our Practice Area",     to: "/practice-areas",  sub: "What we offer" },
                         { icon: "💬", label: "Get Support",      to: "/support",   sub: "Help & FAQs" },
                     ].map((action, i) => (
                         <Link key={i} to={action.to}
