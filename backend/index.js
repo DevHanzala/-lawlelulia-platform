@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import googleAuthRoute from "./routes/googleAuthRoute.js";
 import authRoutes from "./routes/authRoute.js";
+import profileRoute from "./routes/profileRoute.js";       // NEW
+import inquiryRoute from "./routes/inquiryRoute.js";  
 import globalExceptionHandler from "./exception/globalExceptionHandler.js";
 import slotRoute from "./routes/slotRoute.js";
 import appointmentRoute from "./routes/appointmentRoute.js";
@@ -24,6 +26,8 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", googleAuthRoute);
+app.use("/api/profile",     profileRoute);   // NEW
+app.use("/api/inquiry",     inquiryRoute);   // NEW
 app.use("/api/slot", slotRoute);
 app.use("/api/appointment", appointmentRoute);
 app.use("/api/chatbot", chatBotRoute);
