@@ -5,7 +5,7 @@ import {
     deleteSlotApi,
 } from "../api/slot.api";
 
-const useSlotStore = create((set, get) => ({
+const useSlotStore = create((set) => ({
     slots: [],
     loading: false,
     error: "",

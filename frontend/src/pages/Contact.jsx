@@ -35,7 +35,7 @@ const contactInfo = [
 ];
 
 const faqs = [
-    { q:"How quickly will I receive a response?", a:"Our team responds within 24 business hours. For urgent matters, use our live AI chat — available 24/7." },
+    { q:"How quickly will I receive a response?", a:"Our team responds within 24 business hours. For urgent matters, use our live AI chat  available 24/7." },
     { q:"Does submitting this form create an attorney-client relationship?", a:"No. Submitting an inquiry does not create an attorney-client relationship. CoCoLaw.ai provides AI-powered legal guidance, not traditional legal representation." },
     { q:"Is my information kept confidential?", a:"Yes. All information is encrypted in transit and at rest. We never sell or share your personal data with third parties." },
 ];
@@ -100,7 +100,7 @@ const Contact = () => {
                     <div className="max-w-xl">
                         <p className="text-xs uppercase tracking-widest text-slate-400 mb-3 animate-fadein">Get in Touch</p>
                         <h1 className="text-3xl md:text-5xl font-black leading-tight mb-4 animate-slidein">We Respond.<br/><span className="text-gray-400">Fast.</span></h1>
-                        <p className="text-gray-400 text-sm md:text-base leading-relaxed animate-fadein-delay">Whether you have a specific legal question, need to understand your options, or are ready to engage our services — our team responds promptly.</p>
+                        <p className="text-gray-400 text-sm md:text-base leading-relaxed animate-fadein-delay">Whether you have a specific legal question, need to understand your options, or are ready to engage our services  our team responds promptly.</p>
                         <div className="mt-6 flex flex-wrap gap-4 text-xs text-gray-500 animate-fadein-delay">
                             <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"/>24h response time</span>
                             <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 inline-block"/>Enterprise-grade security</span>

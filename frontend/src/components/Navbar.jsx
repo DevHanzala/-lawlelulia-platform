@@ -52,6 +52,7 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
                 {/* User-only */}
                 {authed && !isAdmin && (
                     <>
+                <Link to="/client-portal"  className={navLinkClass("/client-portal")}>Client Portal</Link>
                         <Link to="/bookings"          className={navLinkClass("/bookings")}>Bookings</Link>
                         <Link to="/client-dashboard"  className={navLinkClass("/client-dashboard")}>Dashboard</Link>
                     </>

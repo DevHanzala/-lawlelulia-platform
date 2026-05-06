@@ -80,7 +80,7 @@ const Home = () => {
                         <span className="text-gray-300">Cocolaw.ai</span>
                     </h1>
                     <p className="text-gray-400 mt-6 max-w-2xl mx-auto text-base md:text-lg leading-relaxed animate-fadein-delay">
-                        A modern law firm powered by intelligent technology. We deliver a seamless, efficient, and results-driven legal experience for <strong className="text-white">individuals, entrepreneurs, and businesses</strong> who expect more from their legal team.
+                        A modern legal AI Assistant powered by intelligent technology. We deliver a seamless, efficient, and results-driven legal experience for <strong className="text-white">individuals, entrepreneurs, and businesses</strong> who expect more from their legal team.
                     </p>
                     <div className="mt-10 flex flex-wrap justify-center gap-4 animate-fadein-delay2">
                         <Link to="/bookings" className="bg-white text-black px-8 py-3.5 rounded-md font-semibold hover:bg-gray-100 transition text-sm">
@@ -117,7 +117,7 @@ const Home = () => {
                     <p className="text-xs font-semibold uppercase tracking-widest text-slate-400 text-center mb-2" data-reveal>Why Cocolaw.ai</p>
                     <h2 className="text-2xl md:text-3xl font-bold text-center mb-3" data-reveal>Why Choose Cocolaw.ai</h2>
                     <p className="text-gray-500 text-sm text-center max-w-2xl mx-auto mb-12" data-reveal>
-                        We built more than just a law firm. Cocolaw.ai is a fully integrated legal platform that combines experienced legal representation with powerful digital tools  giving you clarity, control, and convenience at every stage of your case.
+                     Cocolaw.ai is a fully integrated legal platform that combines experienced legal representation with powerful digital tools  giving you clarity, control, and convenience at every stage of your case.
                     </p>
                     <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-5">
                         {whyChoose.map((item, i) => (
@@ -174,7 +174,7 @@ const Home = () => {
                     <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 text-center mb-2" data-reveal>Legal Expertise</p>
                     <h2 className="text-2xl md:text-3xl font-bold text-center mb-3" data-reveal>Our Practice Areas</h2>
                     <p className="text-gray-400 text-sm text-center max-w-xl mx-auto mb-10" data-reveal>
-                        Comprehensive legal services across all major practice areas — handled by attorneys with specialized experience and a results-focused approach.
+                        Comprehensive legal services across all major practice areas  handled by attorneys with specialized experience and a results-focused approach.
                     </p>
                     <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-5 mb-8">
                         {practiceAreas.map((area, i) => (
