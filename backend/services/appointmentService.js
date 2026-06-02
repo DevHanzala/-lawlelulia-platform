@@ -1,7 +1,7 @@
 import { HttpError } from "../exception/HttpError.js";
 import Appointment from "../models/Appointment.js";
 import { getCaseById } from "./caseService.js";
-import { findSlotByIdAndUpdateBookedStatus } from "./slotService.js";
+import { findOrCreateSlotAndBook, findSlotByIdAndUpdateBookedStatus } from "./slotService.js";
 import { uploadToDrive } from "./fileService.js";
 import { createCalendarEvent } from "./calendarService.js";
 import { generateJitsiLink } from "./jitsiService.js";
@@ -14,14 +14,16 @@ import User from "../models/User.js";
 
 
 // Service: schedule a new appointment
-// Service: schedule a new appointment
-export const createAppointment = async (slotId, caseId, file, user) => {
+// Now accepts startTime (ISO string) instead of slotId.
+// The slot is auto-generated (find-or-create) from the fixed schedule.
+export const createAppointment = async (startTime, caseId, file, user) => {
     if (user.role === "admin") {
-        throw new HttpError("Admin cannot book his own appointments", 403);
+        throw new HttpError("Admin cannot book appointments", 403);
     }
 
-    const slot = await findSlotByIdAndUpdateBookedStatus(slotId, false, true);
-    if (!slot) throw new HttpError("Slot not found or already booked", 400);
+    // Find-or-create the slot atomically and mark it booked
+    const slot = await findOrCreateSlotAndBook(startTime);
+    if (!slot) throw new HttpError("Slot not available or already booked", 409);
 
     await getCaseById(caseId, user);
 
@@ -30,8 +32,8 @@ export const createAppointment = async (slotId, caseId, file, user) => {
         try {
             const uploaded = await uploadToDrive(file);
             fileData = {
-                fileId: uploaded?.fileId,
-                fileUrl: uploaded?.url,
+                fileId:   uploaded?.fileId,
+                fileUrl:  uploaded?.url,
                 fileName: file.originalname,
             };
         } catch (uploadErr) {
@@ -41,9 +43,9 @@ export const createAppointment = async (slotId, caseId, file, user) => {
 
     const { link: jitsiLink } = generateJitsiLink();
     const newAppointment = await Appointment.create({
-        slot: slot._id,
-        case: caseId,
-        user: user._id,
+        slot:    slot._id,
+        case:    caseId,
+        user:    user._id,
         jitsiLink,
         ...fileData,
     });
@@ -52,8 +54,8 @@ export const createAppointment = async (slotId, caseId, file, user) => {
 
     // Google Calendar event (non-blocking)
     createCalendarEvent({
-        clientName: fullUser.fullName,
-        clientEmail: fullUser.email,
+        clientName:      fullUser.fullName,
+        clientEmail:     fullUser.email,
         appointmentTime: slot.startTime,
         jitsiLink,
     }).catch(err =>
@@ -91,40 +93,24 @@ export const updateAppointmentStatus = async (appointmentId, status, user) => {
 
     // Send confirmation email ONLY when admin confirms for first time
     if (status === "confirmed" && previousStatus !== "confirmed") {
-        const clientEmail = appointment.user.email;
-        const clientName = appointment.user.fullName;
-        const appointmentTime = appointment.slot.startTime;
-        const jitsiLink = appointment.jitsiLink;
+        const clientEmail      = appointment.user.email;
+        const clientName       = appointment.user.fullName;
+        const appointmentTime  = appointment.slot.startTime;
+        const jitsiLink        = appointment.jitsiLink;
 
-        // Send immediate confirmation
-        sendBookingConfirmationEmail({
-            to: clientEmail,
-            clientName,
-            appointmentTime,
-            jitsiLink,
-        }).catch(err =>
-            console.error("[AppointmentService] Confirmation email error:", err.message)
-        );
+        sendBookingConfirmationEmail({ to: clientEmail, clientName, appointmentTime, jitsiLink })
+            .catch(err => console.error("[AppointmentService] Confirmation email error:", err.message));
 
-        // Schedule reminder 15 mins before
-        scheduleReminderEmail({
-            to: clientEmail,
-            clientName,
-            appointmentTime,
-            jitsiLink,
-        });
-
+        scheduleReminderEmail({ to: clientEmail, clientName, appointmentTime, jitsiLink });
     }
 
     // Send cancellation email
     if (status === "cancelled" && previousStatus !== "cancelled") {
         sendCancellationEmail({
-            to: appointment.user.email,
-            clientName: appointment.user.fullName,
+            to:              appointment.user.email,
+            clientName:      appointment.user.fullName,
             appointmentTime: appointment.slot.startTime,
-        }).catch(err =>
-            console.error("[AppointmentService] Cancellation email error:", err.message)
-        );
+        }).catch(err => console.error("[AppointmentService] Cancellation email error:", err.message));
     }
 
     return appointment;
@@ -135,26 +121,18 @@ export const getUserAppointmentHistory = async (user) => {
     const now = new Date();
 
     return await Appointment.aggregate([
-        {
-            $match: { user: user._id }
-        },
+        { $match: { user: user._id } },
         {
             $lookup: {
-                from: "slots",
-                localField: "slot",
+                from:         "slots",
+                localField:   "slot",
                 foreignField: "_id",
-                as: "slot"
+                as:           "slot"
             }
         },
         { $unwind: "$slot" },
-        {
-            $match: {
-                "slot.startTime": { $lt: now }
-            }
-        },
-        {
-            $sort: { "slot.startTime": -1 }
-        }
+        { $match: { "slot.startTime": { $lt: now } } },
+        { $sort: { "slot.startTime": -1 } }
     ]);
 };
 
@@ -163,25 +141,17 @@ export const getUserFutureAppointments = async (user) => {
     const now = new Date();
 
     return await Appointment.aggregate([
-        {
-            $match: { user: user._id }
-        },
+        { $match: { user: user._id } },
         {
             $lookup: {
-                from: "slots",
-                localField: "slot",
+                from:         "slots",
+                localField:   "slot",
                 foreignField: "_id",
-                as: "slot"
+                as:           "slot"
             }
         },
         { $unwind: "$slot" },
-        {
-            $match: {
-                "slot.startTime": { $gt: now }
-            }
-        },
-        {
-            $sort: { "slot.startTime": 1 }
-        }
+        { $match: { "slot.startTime": { $gt: now } } },
+        { $sort: { "slot.startTime": 1 } }
     ]);
-}
+};

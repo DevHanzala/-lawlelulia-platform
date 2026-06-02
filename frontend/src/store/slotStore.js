@@ -1,9 +1,5 @@
 import { create } from "zustand";
-import {
-    createSlotApi,
-    getSlotsByDateApi,
-    deleteSlotApi,
-} from "../api/slot.api";
+import { getSlotsByDateApi } from "../api/slot.api";
 
 const useSlotStore = create((set) => ({
     slots: [],
@@ -15,13 +11,11 @@ const useSlotStore = create((set) => ({
         try {
             const d = date instanceof Date ? date : new Date(date);
 
-            // FIXED: Use UTC date parts from the actual UTC date, not local date
-            // This ensures April 9 local = April 9 UTC query
             const safeISO = new Date(
                 Date.UTC(
-                    d.getUTCFullYear(),  // ← UTC year, not local
-                    d.getUTCMonth(),     // ← UTC month, not local
-                    d.getUTCDate(),      // ← UTC date, not local
+                    d.getUTCFullYear(),
+                    d.getUTCMonth(),
+                    d.getUTCDate(),
                     12, 0, 0
                 )
             ).toISOString();
@@ -31,35 +25,10 @@ const useSlotStore = create((set) => ({
         } catch (err) {
             console.error(`[SlotStore] Error:`, err.response?.data?.message);
             set({
-                error: err.response?.data?.message || "Failed to load slots",
+                error:   err.response?.data?.message || "Failed to load slots",
                 loading: false,
-                slots: [],
+                slots:   [],
             });
-        }
-    },
-
-    createSlot: async (startTime, endTime) => {
-        set({ error: "" });
-        try {
-            await createSlotApi(startTime, endTime);
-            return { success: true };
-        } catch (err) {
-            const msg = err.response?.data?.message || "Failed to create slot";
-            set({ error: msg });
-            return { success: false, error: msg };
-        }
-    },
-
-    deleteSlot: async (slotId) => {
-        try {
-            await deleteSlotApi(slotId);
-            set((state) => ({
-                slots: state.slots.filter((s) => s._id !== slotId),
-            }));
-            return { success: true };
-        } catch (err) {
-            const msg = err.response?.data?.message || "Failed to delete slot";
-            return { success: false, error: msg };
         }
     },
 

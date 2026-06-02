@@ -4,10 +4,10 @@ import { success } from "../utils/apiResponse.js";
 
 // Controller: schedule a new appointment
 export const createAppointment = asyncHandler(async (req, res) => {
-    const { slotId, caseId } = req.body;
-    const file = req.file; // multer will attach the uploaded file to req
+    const { startTime, caseId } = req.body;   // ← startTime instead of slotId
+    const file = req.file;
     const { user } = req;
-    const newAppointment = await appointmentService.createAppointment(slotId, caseId, file, user);
+    const newAppointment = await appointmentService.createAppointment(startTime, caseId, file, user);
     return success(res, "Appointment scheduled successfully", newAppointment);
 });
 
@@ -18,7 +18,7 @@ export const updateAppointmentStatus = asyncHandler(async (req, res) => {
     const { user } = req;
     const updatedAppointment = await appointmentService.updateAppointmentStatus(appointmentId, status, user);
     return success(res, "Appointment status updated successfully", updatedAppointment);
-})
+});
 
 // Controller: Get appointments history of a user (descending order)
 export const getUserAppointmentHistory = asyncHandler(async (req, res) => {

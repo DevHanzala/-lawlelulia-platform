@@ -5,6 +5,8 @@ const slotSchema = new mongoose.Schema({
     startTime: {
         type: Date,
         required: [true, "Start time is required"],
+        unique: true,   
+        index: true,
     },
 
     endTime: {
@@ -19,7 +21,5 @@ const slotSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-// prevent duplicate slots for the same date and time
-slotSchema.index({ date: 1, startTime: 1, endTime: 1 }, { unique: true });
 
 export default mongoose.model("Slot", slotSchema);

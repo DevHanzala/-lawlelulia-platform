@@ -1,18 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import {
     FaUsers, FaUserCheck, FaCalendarDay, FaClock,
-    FaChevronLeft, FaChevronRight, FaTrash, FaVideo, FaSync
+    FaChevronLeft, FaChevronRight, FaSync
 } from "react-icons/fa";
-import { DayPicker } from "react-day-picker";
-import "react-day-picker/dist/style.css";
 import useSlotStore from "../store/slotStore";
 import useAppointmentStore from "../store/appointmentStore";
 import useCaseStore from "../store/caseStore";
 import CasesCard from "../components/CasesCard";
 import usePolling from "../hooks/usePolling";
-import {
-    StatCardSk, BookedSlotSk, AvailSlotSk
-} from "../components/Skeleton";
+import { StatCardSk, BookedSlotSk, AvailSlotSk } from "../components/Skeleton";
 
 const formatDateLabel = (d) =>
     new Date(d).toLocaleDateString("en-US", { day: "2-digit", month: "long", year: "numeric", weekday: "long" });
@@ -20,24 +16,17 @@ const formatDateLabel = (d) =>
 const formatTime = (iso) =>
     new Date(iso).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
 
-const buildISO = (dateObj, timeStr) => {
-    const trimmed = timeStr.trim().toUpperCase();
-    const match = trimmed.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/);
-    if (!match) return null;
-    let hours = parseInt(match[1]);
-    const minutes = parseInt(match[2]);
-    const period = match[3];
-    if (period === "PM" && hours !== 12) hours += 12;
-    if (period === "AM" && hours === 12) hours = 0;
-    const d = new Date(dateObj);
-    d.setHours(hours, minutes, 0, 0);
-    return d.toISOString();
-};
-
 const statusStyles = {
-    pending: "bg-yellow-100 text-yellow-700",
+    pending:   "bg-yellow-100 text-yellow-700",
     confirmed: "bg-green-100 text-green-700",
     cancelled: "bg-red-100 text-red-600",
+};
+
+// Days off label helper
+const getDayLabel = (date) => {
+    const day = new Date(date).getDay();
+    if (day === 0) return "Sunday — Office Closed";
+    return null;
 };
 
 function useReveal() {
@@ -57,15 +46,9 @@ function useReveal() {
 const Dashboard = () => {
     useReveal();
     const [date, setDate] = useState(new Date());
-    const [showModal, setShowModal] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(new Date());
-    const [startTime, setStartTime] = useState("");
-    const [endTime, setEndTime] = useState("");
-    const [slotFormError, setSlotFormError] = useState("");
-    const [slotFormLoading, setSlotFormLoading] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
 
-    const { slots, loading: slotsLoading, error: slotsError, fetchSlotsByDate, createSlot, deleteSlot, clearError } = useSlotStore();
+    const { slots, loading: slotsLoading, error: slotsError, fetchSlotsByDate } = useSlotStore();
     const { updatingId, updateStatus } = useAppointmentStore();
     const { cases, getCasesWithAppointments } = useCaseStore();
 
@@ -85,26 +68,6 @@ const Dashboard = () => {
     const prevDay = () => setDate(prev => { const d = new Date(prev); d.setDate(d.getDate() - 1); return d; });
     const nextDay = () => setDate(prev => { const d = new Date(prev); d.setDate(d.getDate() + 1); return d; });
 
-    const handleAddSlot = async () => {
-        setSlotFormError("");
-        if (!startTime || !endTime) { setSlotFormError("Both times are required."); return; }
-        const startISO = buildISO(selectedDate, startTime);
-        const endISO = buildISO(selectedDate, endTime);
-        if (!startISO || !endISO) { setSlotFormError("Invalid format. Use e.g. 08:00 AM"); return; }
-        setSlotFormLoading(true);
-        const res = await createSlot(startISO, endISO);
-        setSlotFormLoading(false);
-        if (res.success) {
-            setShowModal(false); setStartTime(""); setEndTime("");
-            if (new Date(selectedDate).toDateString() === new Date(date).toDateString()) fetchSlotsByDate(date);
-        } else { setSlotFormError(res.error); }
-    };
-
-    const handleDeleteSlot = async (slotId) => {
-        const res = await deleteSlot(slotId);
-        if (!res.success) alert(res.error);
-    };
-
     const handleUpdateStatus = async (slot, status) => {
         if (!slot.appointment?._id) { alert("Appointment data not found."); return; }
         const res = await updateStatus(slot.appointment._id, status);
@@ -112,15 +75,18 @@ const Dashboard = () => {
         else alert(res.error);
     };
 
-    const bookedSlots = slots.filter(s => s.isBooked);
+    const bookedSlots    = slots.filter(s => s.isBooked);
     const availableSlots = slots.filter(s => !s.isBooked);
 
     const stats = [
-        { label: "Total Slots", value: slots.length, icon: <FaUsers className="text-2xl text-white opacity-50" />, sub: "For selected day" },
-        { label: "Available", value: availableSlots.length, icon: <FaUserCheck className="text-2xl text-green-400" />, sub: "Ready to book" },
-        { label: "Booked", value: bookedSlots.length, icon: <FaCalendarDay className="text-2xl text-purple-400" />, sub: "Appointments set" },
-        { label: "Pending Review", value: bookedSlots.filter(s => s.appointment?.status === "pending" || !s.appointment?.status).length, icon: <FaClock className="text-2xl text-yellow-400" />, sub: "Awaiting action" },
+        { label: "Total Slots",    value: slots.length,           icon: <FaUsers className="text-2xl text-white opacity-50" />,    sub: "For selected day" },
+        { label: "Available",      value: availableSlots.length,  icon: <FaUserCheck className="text-2xl text-green-400" />,       sub: "Ready to book" },
+        { label: "Booked",         value: bookedSlots.length,     icon: <FaCalendarDay className="text-2xl text-purple-400" />,   sub: "Appointments set" },
+        { label: "Pending Review", value: bookedSlots.filter(s => s.appointment?.status === "pending" || !s.appointment?.status).length,
+                                                                   icon: <FaClock className="text-2xl text-yellow-400" />,         sub: "Awaiting action" },
     ];
+
+    const offDayLabel = getDayLabel(date);
 
     return (
         <>
@@ -141,44 +107,13 @@ const Dashboard = () => {
                 [data-reveal].revealed { opacity:1; transform:translateY(0); }
             `}</style>
 
-            {/* Add Slot Modal */}
-            {showModal && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50 p-4 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm flex flex-col gap-4 p-6 anim-slide-down">
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <h3 className="text-base font-bold text-[#0A0F1C]">Add New Slot</h3>
-                                <p className="text-xs text-gray-400 mt-0.5">Pick a date and set the time window</p>
-                            </div>
-                            <button onClick={() => { setShowModal(false); setSlotFormError(""); clearError(); }}
-                                className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold transition">×</button>
-                        </div>
-                        <div className="border border-gray-100 rounded-xl p-2">
-                            <DayPicker mode="single" selected={selectedDate} onSelect={(d) => d && setSelectedDate(d)}
-                                disabled={{ before: new Date() }} className="mx-auto" />
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <input type="text" placeholder="Start Time (e.g., 08:00 AM)" value={startTime}
-                                onChange={(e) => setStartTime(e.target.value)}
-                                className="w-full p-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-[#0A0F1C] focus:border-transparent transition" />
-                            <input type="text" placeholder="End Time (e.g., 09:00 AM)" value={endTime}
-                                onChange={(e) => setEndTime(e.target.value)}
-                                className="w-full p-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:ring-2 focus:ring-[#0A0F1C] focus:border-transparent transition" />
-                        </div>
-                        {slotFormError && <p className="text-red-500 text-xs bg-red-50 border border-red-100 p-2.5 rounded-xl">{slotFormError}</p>}
-                        <button onClick={handleAddSlot} disabled={slotFormLoading}
-                            className="w-full bg-[#0A0F1C] text-white text-sm font-semibold rounded-xl px-4 py-2.5 hover:bg-gray-800 transition disabled:opacity-60">
-                            {slotFormLoading ? "Creating..." : "+ Add Slot"}
-                        </button>
-                    </div>
-                </div>
-            )}
-
             {/* Header */}
             <div className="px-4 md:px-6 pt-6 pb-2 anim-slide-down flex items-center justify-between">
                 <div>
                     <h1 className="text-xl font-black text-[#0A0F1C]">Admin Dashboard</h1>
-                    <p className="text-xs text-gray-400 mt-0.5">{formatDateLabel(new Date())}  Manage slots and appointments</p>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                        {formatDateLabel(new Date())} · Slots auto-generated 9AM–9PM EST · Mon–Sat
+                    </p>
                 </div>
                 <button onClick={handleManualRefresh}
                     className="flex items-center gap-1.5 text-xs bg-[#0A0F1C] text-white hover:bg-[#0A0F1C]/80 border border-gray-200 hover:border-gray-400 px-3 py-1.5 rounded-lg transition">
@@ -226,11 +161,17 @@ const Dashboard = () => {
                             <p className="text-red-500 text-sm mb-2">{slotsError}</p>
                             <button onClick={() => fetchSlotsByDate(date)} className="text-xs px-4 py-2 bg-[#0A0F1C] text-white rounded-lg">Retry</button>
                         </div>
+                    ) : offDayLabel ? (
+                        <div className="text-center py-12">
+                            <div className="text-4xl mb-3">🔒</div>
+                            <p className="text-sm text-gray-500 font-semibold">{offDayLabel}</p>
+                            <p className="text-xs text-gray-400 mt-1">No appointments are scheduled on this day.</p>
+                        </div>
                     ) : bookedSlots.length === 0 ? (
                         <div className="text-center py-12">
                             <FaCalendarDay className="text-4xl mx-auto mb-3 text-gray-200" />
                             <p className="text-sm text-gray-400">No booked appointments for this day</p>
-                            <p className="text-xs text-gray-300 mt-1">Slots will appear here once clients book them</p>
+                            <p className="text-xs text-gray-300 mt-1">Clients can book any open slot between 9AM–9PM EST</p>
                         </div>
                     ) : (
                         <div className="flex flex-col gap-2 max-h-96 overflow-y-auto">
@@ -247,10 +188,7 @@ const Dashboard = () => {
                                                 <p className="text-xs text-gray-500 mt-1">👤 {slot.appointment.user.fullName}</p>
                                             )}
                                             {slot.appointment?.jitsiLink && (
-                                                <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
-                                                    <FaVideo className="text-xs shrink-0" />
-                                                    <span className="truncate max-w-xs">{slot.appointment.jitsiLink}</span>
-                                                </p>
+                                                <p className="text-xs text-gray-400 mt-1 truncate max-w-xs">🎥 {slot.appointment.jitsiLink}</p>
                                             )}
                                             <span className={`text-xs px-2 py-0.5 rounded-full mt-1.5 inline-block font-medium ${statusStyles[slot.appointment?.status || "pending"]}`}>
                                                 {slot.appointment?.status || "pending"}
@@ -260,7 +198,7 @@ const Dashboard = () => {
                                             {canJoin && slot.appointment?.jitsiLink && (
                                                 <a href={slot.appointment.jitsiLink} target="_blank" rel="noopener noreferrer"
                                                     className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-[#0A0F1C] text-white rounded-lg hover:bg-gray-700 transition">
-                                                    <FaVideo className="text-xs" /> Join
+                                                    🎥 Join
                                                 </a>
                                             )}
                                             <button onClick={() => handleUpdateStatus(slot, "confirmed")}
@@ -281,15 +219,18 @@ const Dashboard = () => {
                     )}
                 </div>
 
-                {/* Availability */}
+                {/* Schedule Overview (replaces manual Availability panel) */}
                 <div data-reveal className="w-full lg:w-1/3 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-5">
                     <div className="flex justify-between items-center mb-4">
-                        <h5 className="text-sm font-bold text-[#0A0F1C]">Availability</h5>
-                        <button onClick={() => { setShowModal(true); setSlotFormError(""); }}
-                            className="bg-[#0A0F1C] text-xs font-semibold rounded-lg px-3 py-1.5 text-white hover:bg-gray-800 transition">
-                            + Add Slot
-                        </button>
+                        <div>
+                            <h5 className="text-sm font-bold text-[#0A0F1C]">Schedule</h5>
+                            <p className="text-xs text-gray-400 mt-0.5">9AM–9PM EST · Mon–Sat</p>
+                        </div>
+                        {/* Schedule badge */}
+                        <span className="text-xs bg-green-50 text-green-700 border border-green-100 px-2 py-0.5 rounded-full font-medium">Auto</span>
                     </div>
+
+                    {/* Day nav */}
                     <div className="flex justify-between items-center mb-4 bg-gray-50 border border-gray-100 rounded-xl px-3 py-2.5">
                         <button onClick={prevDay} className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-[#0A0F1C] transition">
                             <FaChevronLeft className="text-xs" />
@@ -300,7 +241,13 @@ const Dashboard = () => {
                         </button>
                     </div>
 
-                    {slotsLoading ? (
+                    {offDayLabel ? (
+                        <div className="text-center py-8">
+                            <div className="text-3xl mb-2">🔒</div>
+                            <p className="text-xs text-gray-500 font-medium">{offDayLabel}</p>
+                            <p className="text-xs text-gray-400 mt-1">No slots on Sundays</p>
+                        </div>
+                    ) : slotsLoading ? (
                         <div className="flex flex-col gap-2">
                             {Array(4).fill(0).map((_, i) => <AvailSlotSk key={i} />)}
                         </div>
@@ -308,28 +255,34 @@ const Dashboard = () => {
                         <div className="text-center py-8">
                             <div className="text-3xl mb-2">🗓️</div>
                             <p className="text-xs text-gray-400">No slots for this day</p>
-                            <p className="text-xs text-gray-300 mt-0.5">Click "+ Add Slot" to create one</p>
+                            <p className="text-xs text-gray-300 mt-0.5">Try a Mon–Sat date</p>
                         </div>
                     ) : (
                         <div className="flex flex-col gap-2 max-h-72 overflow-y-auto">
-                            {slots.map((slot) => (
-                                <div key={slot._id} className={`flex justify-between items-center rounded-xl p-2.5 border transition-all duration-200 ${slot.isBooked ? "bg-gray-50 border-gray-200" : "bg-green-50 border-green-100 hover:border-green-300"}`}>
+                            {slots.map((slot, i) => (
+                                <div key={slot._id || `virtual-${i}`}
+                                    className={`flex justify-between items-center rounded-xl p-2.5 border transition-all duration-200 ${slot.isBooked ? "bg-gray-50 border-gray-200" : "bg-green-50 border-green-100"}`}>
                                     <div>
                                         <p className="text-xs font-semibold text-gray-700">{formatTime(slot.startTime)} — {formatTime(slot.endTime)}</p>
                                         <span className={`text-xs font-medium ${slot.isBooked ? "text-gray-400" : "text-green-600"}`}>
                                             {slot.isBooked ? "● Booked" : "● Available"}
                                         </span>
                                     </div>
-                                    {!slot.isBooked && (
-                                        <button onClick={() => handleDeleteSlot(slot._id)}
-                                            className="w-7 h-7 flex items-center justify-center text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition">
-                                            <FaTrash className="text-xs" />
-                                        </button>
+                                    {slot.isBooked && slot.appointment?.user?.fullName && (
+                                        <span className="text-xs text-gray-400 truncate max-w-[80px]">
+                                            {slot.appointment.user.fullName.split(" ")[0]}
+                                        </span>
                                     )}
                                 </div>
                             ))}
                         </div>
                     )}
+
+                    {/* Info note */}
+                    <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-xl">
+                        <p className="text-xs text-blue-600 font-medium">ℹ️ Slots are auto-generated</p>
+                        <p className="text-xs text-blue-400 mt-0.5">12 slots per day · Mon–Sat · 9AM–9PM EST. Clients book directly; no manual setup needed.</p>
+                    </div>
                 </div>
             </div>
 

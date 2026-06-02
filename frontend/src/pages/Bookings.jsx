@@ -22,34 +22,8 @@ const shimmerCSS = `
     .skeleton-shimmer { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.6s ease-in-out infinite; border-radius: 6px; }
 `;
 
-// Select skeleton
 const SelectSk = () => (
     <div className="w-full h-11 rounded-xl skeleton-shimmer" />
-);
-
-// Calendar skeleton
-const CalendarSk = () => (
-    <div className="flex flex-col gap-3 items-center w-full">
-        <div className="w-full flex justify-between items-center">
-            <div className="h-4 w-6 rounded skeleton-shimmer" />
-            <div className="h-4 w-24 rounded skeleton-shimmer" />
-            <div className="h-4 w-6 rounded skeleton-shimmer" />
-        </div>
-        {/* Days header */}
-        <div className="grid grid-cols-7 gap-1 w-full">
-            {Array(7).fill(0).map((_, i) => (
-                <div key={i} className="h-6 rounded skeleton-shimmer" />
-            ))}
-        </div>
-        {/* Day cells */}
-        {Array(5).fill(0).map((_, row) => (
-            <div key={row} className="grid grid-cols-7 gap-1 w-full">
-                {Array(7).fill(0).map((_, col) => (
-                    <div key={col} className="h-8 w-8 rounded-full skeleton-shimmer mx-auto" />
-                ))}
-            </div>
-        ))}
-    </div>
 );
 
 function useReveal() {
@@ -64,10 +38,17 @@ function useReveal() {
     }, []);
 }
 
+// Days that are disabled in the calendar (Sunday = 0)
+const isDisabledDay = (date) => {
+    const day = date.getDay();
+    return day === 0; // Sunday off
+};
+
 const Bookings = () => {
     useReveal();
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [selectedSlotId, setSelectedSlotId] = useState(null);
+    // selectedSlotTime stores the UTC ISO startTime string of the chosen slot
+    const [selectedSlotTime, setSelectedSlotTime] = useState(null);
     const [specialRequest, setSpecialRequest] = useState("");
     const [bookingLoading, setBookingLoading] = useState(false);
     const [bookingSuccess, setBookingSuccess] = useState("");
@@ -93,24 +74,31 @@ const Bookings = () => {
     useEffect(() => { getCases(); fetchAllUserAppointments(); }, []);
     useEffect(() => {
         fetchSlotsByDate(selectedDate);
-        setSelectedSlotId(null);
+        setSelectedSlotTime(null);
         setBookingSuccess("");
         setBookingError("");
     }, [selectedDate]);
 
+    // Available slots = not booked (backend already filters for non-admins, but guard here too)
     const availableSlots = slots.filter(s => !s.isBooked);
     const isFirstSlotLoad = slotsLoading && slots.length === 0;
     const isFirstApptLoad = apptLoading && future.length === 0 && history.length === 0;
     const isFirstCaseLoad = caseLoading && cases.length === 0;
 
+    // Check if selected day is Sunday (off day)
+    const selectedDayOfWeek = selectedDate.getDay();
+    const isOffDay = selectedDayOfWeek === 0;
+
     const handleBook = async () => {
-        if (!selectedSlotId) { setBookingError("Please select a time slot."); return; }
-        if (!selectedCaseId) { setBookingError("Please select a case for this appointment."); return; }
+        if (!selectedSlotTime) { setBookingError("Please select a time slot."); return; }
+        if (!selectedCaseId)   { setBookingError("Please select a case for this appointment."); return; }
         setBookingError(""); setBookingSuccess(""); setBookingLoading(true);
-        const res = await bookAppointment(selectedSlotId, selectedCaseId, file);
+
+        // Pass the ISO startTime string — backend will find-or-create the slot
+        const res = await bookAppointment(selectedSlotTime, selectedCaseId, file);
         if (res.success) {
             setBookingSuccess("Appointment booked! Pending confirmation. A confirmation email will be sent once approved.");
-            setSelectedSlotId(null); setSpecialRequest(""); setFile(null);
+            setSelectedSlotTime(null); setSpecialRequest(""); setFile(null);
             fetchSlotsByDate(selectedDate); fetchAllUserAppointments();
         } else { setBookingError(res.error); }
         setBookingLoading(false);
@@ -143,7 +131,10 @@ const Bookings = () => {
             {/* Header */}
             <div className="mb-6 anim-slide">
                 <h5 className="text-xl font-black text-[#0A0F1C]">Book a Consultation</h5>
-                <p className="text-gray-400 text-sm mt-0.5">Select your case, pick a date, choose a time  it's that simple.</p>
+                <p className="text-gray-400 text-sm mt-0.5">
+                    Select your case, pick a date, choose a time — it's that simple.
+                    <span className="ml-2 text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">Mon–Sat · 9AM–9PM EST</span>
+                </p>
             </div>
 
             {/* Step 1 — Case */}
@@ -198,10 +189,19 @@ const Bookings = () => {
                 <div className="flex flex-col md:flex-row gap-4">
                     {/* Calendar */}
                     <div className="w-full md:w-1/2 bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col items-center">
-                        <p className="text-xs font-semibold text-gray-400 mb-3 self-start uppercase tracking-wider">Select Date</p>
-                        <DayPicker mode="single" selected={selectedDate} onSelect={(d) => d && setSelectedDate(d)}
-                            disabled={{ before: new Date() }}
-                            modifiersClassNames={{ selected: "bg-[#0A0F1C] text-white rounded-full", today: "font-bold text-[#0A0F1C]" }} />
+                        <p className="text-xs font-semibold text-gray-400 mb-1 self-start uppercase tracking-wider">Select Date</p>
+                        <p className="text-xs text-gray-400 mb-3 self-start">Mon–Sat only · Sundays unavailable</p>
+                        <DayPicker
+                            mode="single"
+                            selected={selectedDate}
+                            onSelect={(d) => d && setSelectedDate(d)}
+                            disabled={[{ before: new Date() }, isDisabledDay]}
+                            modifiersClassNames={{
+                                selected: "bg-[#0A0F1C] text-white rounded-full",
+                                today:    "font-bold text-[#0A0F1C]",
+                                disabled: "opacity-30 cursor-not-allowed",
+                            }}
+                        />
                     </div>
 
                     {/* Slots */}
@@ -211,16 +211,21 @@ const Bookings = () => {
                             {selectedDate.toLocaleDateString("en-US", { weekday: "long", day: "2-digit", month: "long" })}
                         </p>
 
-                        {isFirstSlotLoad ? (
+                        {isOffDay ? (
+                            <div className="text-center py-10 flex flex-col items-center gap-2">
+                                <div className="text-4xl">🗓️</div>
+                                <p className="text-sm text-gray-500 font-medium">Sundays are unavailable</p>
+                                <p className="text-xs text-gray-400">Please select a Monday–Saturday date.</p>
+                            </div>
+                        ) : isFirstSlotLoad ? (
                             <div className="grid grid-cols-2 gap-2">
                                 {Array(6).fill(0).map((_, i) => <BookingSlotSk key={i} />)}
                             </div>
                         ) : slotsLoading ? (
-                            /* Subtle refresh indicator when already have data */
                             <div className="grid grid-cols-2 gap-2 opacity-60">
                                 {availableSlots.length > 0
                                     ? availableSlots.map((slot) => (
-                                        <div key={slot._id} className="bg-green-50 border border-green-100 rounded-xl p-3 animate-pulse">
+                                        <div key={slot.startTime?.toISOString?.() || slot._id} className="bg-green-50 border border-green-100 rounded-xl p-3 animate-pulse">
                                             <p className="text-sm font-bold text-[#0A0F1C]">{formatTime(slot.startTime)}</p>
                                             <p className="text-xs mt-0.5 text-gray-400">to {formatTime(slot.endTime)}</p>
                                         </div>
@@ -232,16 +237,22 @@ const Bookings = () => {
                             <div className="text-center py-10 flex flex-col items-center gap-2">
                                 <div className="text-4xl">🗓️</div>
                                 <p className="text-sm text-gray-500 font-medium">No available slots for this date</p>
-                                <p className="text-xs text-gray-400">Try selecting a different date using the calendar.</p>
+                                <p className="text-xs text-gray-400">All slots are booked. Try a different date.</p>
                             </div>
                         ) : (
                             <>
-                                <p className="text-xs text-gray-400 mb-3">{availableSlots.length} slot{availableSlots.length !== 1 ? "s" : ""} available tap one to select</p>
+                                <p className="text-xs text-gray-400 mb-3">
+                                    {availableSlots.length} slot{availableSlots.length !== 1 ? "s" : ""} available · tap one to select
+                                </p>
                                 <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
                                     {availableSlots.map((slot) => {
-                                        const isSelected = selectedSlotId === slot._id;
+                                        // Use startTime ISO string as the key/identifier
+                                        const startISO = new Date(slot.startTime).toISOString();
+                                        const isSelected = selectedSlotTime === startISO;
                                         return (
-                                            <button key={slot._id} onClick={() => setSelectedSlotId(isSelected ? null : slot._id)}
+                                            <button
+                                                key={startISO}
+                                                onClick={() => setSelectedSlotTime(isSelected ? null : startISO)}
                                                 className={`p-3 rounded-xl border text-left transition-all duration-200 ${isSelected ? "bg-[#0A0F1C] border-[#0A0F1C] shadow-md scale-[1.02]" : "bg-green-50 border-green-100 hover:border-green-400 hover:shadow-sm"}`}>
                                                 <p className={`text-sm font-bold ${isSelected ? "text-white" : "text-[#0A0F1C]"}`}>{formatTime(slot.startTime)}</p>
                                                 <p className={`text-xs mt-0.5 ${isSelected ? "text-gray-300" : "text-gray-400"}`}>to {formatTime(slot.endTime)}</p>
@@ -282,14 +293,14 @@ const Bookings = () => {
                     <input type="text" placeholder="Special Request (Optional)" value={specialRequest}
                         onChange={(e) => setSpecialRequest(e.target.value)}
                         className="flex-1 p-3 border border-gray-200 rounded-xl outline-none text-sm focus:ring-2 focus:ring-[#0A0F1C] focus:border-transparent transition" />
-                    <button onClick={handleBook} disabled={bookingLoading || !selectedSlotId}
+                    <button onClick={handleBook} disabled={bookingLoading || !selectedSlotTime}
                         className="sm:w-52 text-sm font-semibold px-6 py-3 bg-[#0A0F1C] text-white rounded-xl hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap">
                         {bookingLoading ? "Booking..." : "→ Book Appointment"}
                     </button>
                 </div>
 
                 {/* Checklist */}
-                {(!selectedSlotId || !selectedCaseId) && (
+                {(!selectedSlotTime || !selectedCaseId) && (
                     <div className="text-xs text-gray-400 bg-gray-50 rounded-xl p-3 border border-gray-100 anim-in">
                         <p className="font-medium text-gray-500 mb-1.5">Before booking, make sure:</p>
                         <div className="flex flex-col gap-1">
@@ -299,9 +310,9 @@ const Bookings = () => {
                                 </span>
                                 Case selected
                             </p>
-                            <p className={`flex items-center gap-2 ${selectedSlotId ? "text-green-600" : "text-gray-400"}`}>
-                                <span className={`w-4 h-4 rounded-full border flex items-center justify-center text-xs ${selectedSlotId ? "bg-green-100 border-green-400" : "border-gray-300"}`}>
-                                    {selectedSlotId ? "✓" : ""}
+                            <p className={`flex items-center gap-2 ${selectedSlotTime ? "text-green-600" : "text-gray-400"}`}>
+                                <span className={`w-4 h-4 rounded-full border flex items-center justify-center text-xs ${selectedSlotTime ? "bg-green-100 border-green-400" : "border-gray-300"}`}>
+                                    {selectedSlotTime ? "✓" : ""}
                                 </span>
                                 Time slot selected
                             </p>
