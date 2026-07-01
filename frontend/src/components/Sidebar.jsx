@@ -5,6 +5,7 @@ import Icon4 from "../assests/Icon-3.png";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 import { useEffect, useRef } from "react";
+import logo from "../assests/logo.png";
 
 // Must match the navbar height exactly (py-3 + content = ~48px)
 const NAVBAR_H = 48;
@@ -30,10 +31,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, hideOnDesktop }) => {
     const isActive = (path) => location.pathname === path;
 
     const linkClass = (path) =>
-        `flex items-center space-x-3 px-3 py-2 rounded-lg font-medium cursor-pointer transition text-sm ${
-            isActive(path)
-                ? "bg-[#0A0F1C] text-white"
-                : "hover:bg-gray-100 text-gray-700"
+        `flex items-center space-x-3 px-3 py-2 rounded-lg font-medium cursor-pointer transition text-sm ${isActive(path)
+            ? "bg-[#0A0F1C] text-white"
+            : "hover:bg-gray-100 text-gray-700"
         }`;
 
     return (
@@ -78,11 +78,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, hideOnDesktop }) => {
                 {/* Brand */}
                 <div className="flex flex-col p-3 border-b border-gray-200 shrink-0">
                     <div className="flex justify-between items-center">
-                        <Link to="/" onClick={handleClose} className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-full bg-[#0A0F1C] flex items-center justify-center text-white font-bold text-sm shrink-0">
-                                C
-                            </div>
-                            <h5 className="font-bold text-base text-[#0A0F1C]">Cocolaw.ai</h5>
+                        {/* Logo */}
+                        <Link to="/" className="flex items-center space-x-2 shrink-0">
+                            <img
+                                src={logo}
+                                alt="Cocolaw.ai Logo"
+                                className="w-32 h-24 object-contain shrink-0"
+                            />
                         </Link>
                         <button
                             className="md:hidden w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 font-bold text-lg hover:bg-gray-200 transition"
@@ -103,19 +105,19 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, hideOnDesktop }) => {
                 <nav className="flex flex-col mt-3 text-sm space-y-0.5 flex-1 overflow-y-auto px-3 pb-2">
 
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1 pt-1 pb-0.5">Explore</p>
-                    <Link to="/"               onClick={handleClose} className={linkClass("/")}>
+                    <Link to="/" onClick={handleClose} className={linkClass("/")}>
                         <img className="w-4 h-4 opacity-70" src={Icon2} alt="" /><span>Home</span>
                     </Link>
                     <Link to="/practice-areas" onClick={handleClose} className={linkClass("/practice-areas")}>
                         <img className="w-4 h-4 opacity-70" src={Icon2} alt="" /><span>Practice Areas</span>
                     </Link>
-                    <Link to="/features"       onClick={handleClose} className={linkClass("/features")}>
+                    <Link to="/features" onClick={handleClose} className={linkClass("/features")}>
                         <img className="w-4 h-4 opacity-70" src={Icon2} alt="" /><span>Features</span>
                     </Link>
-                    <Link to="/aboutus"        onClick={handleClose} className={linkClass("/aboutus")}>
+                    <Link to="/aboutus" onClick={handleClose} className={linkClass("/aboutus")}>
                         <img className="w-4 h-4 opacity-70" src={Icon2} alt="" /><span>About Us</span>
                     </Link>
-                    <Link to="/contact"        onClick={handleClose} className={linkClass("/contact")}>
+                    <Link to="/contact" onClick={handleClose} className={linkClass("/contact")}>
                         <img className="w-4 h-4 opacity-70" src={Icon2} alt="" /><span>Contact</span>
                     </Link>
 
@@ -123,7 +125,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, hideOnDesktop }) => {
                     {isAdmin && (
                         <>
                             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1 pt-3 pb-0.5">Admin</p>
-                            <Link to="/dashboard"    onClick={handleClose} className={linkClass("/dashboard")}>
+                            <Link to="/dashboard" onClick={handleClose} className={linkClass("/dashboard")}>
                                 <img className="w-4 h-4 opacity-70" src={Icon1} alt="" /><span>Dashboard</span>
                             </Link>
                             <Link to="/appointments" onClick={handleClose} className={linkClass("/appointments")}>
@@ -139,7 +141,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, hideOnDesktop }) => {
                             <Link to="/client-dashboard" onClick={handleClose} className={linkClass("/client-dashboard")}>
                                 <img className="w-4 h-4 opacity-70" src={Icon1} alt="" /><span>Dashboard</span>
                             </Link>
-                            <Link to="/bookings"         onClick={handleClose} className={linkClass("/bookings")}>
+                            <Link to="/bookings" onClick={handleClose} className={linkClass("/bookings")}>
                                 <img className="w-4 h-4 opacity-70" src={Icon3} alt="" /><span>Bookings</span>
                             </Link>
                         </>
