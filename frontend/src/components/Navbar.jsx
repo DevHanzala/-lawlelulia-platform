@@ -1,5 +1,6 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import useAuthStore from "../store/authStore";
+import logo from "../assests/logo.png";
 
 const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
     const { user, isAuthenticated, logout } = useAuthStore();
@@ -16,35 +17,35 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
     const isActive = (path) => location.pathname === path;
 
     const navLinkClass = (path) =>
-        `transition text-xs font-semibold ${
-            isActive(path)
-                ? "text-white border-b border-white pb-0.5"
-                : "text-gray-400 hover:text-white"
+        `transition text-sm font-semibold ${isActive(path)
+            ? "text-white border-b border-white pb-0.5"
+            : "text-gray-400 hover:text-white"
         }`;
 
     return (
-        <nav className="w-full bg-[#0A0F1C] border-b border-gray-800 flex px-4 py-3 justify-between items-center sticky top-0 z-50">
+        <nav className="w-full bg-[#0A0F1C] border-b border-gray-800 flex px-4 py-0 justify-between items-center sticky top-0 z-50">
 
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2 shrink-0">
-                <div className="w-8 h-8 rounded-full bg-white flex justify-center items-center font-bold text-base text-[#0A0F1C] shrink-0">
-                    C
-                </div>
-                <span className="text-white font-bold text-base tracking-wide">Cocolaw.ai</span>
+                <img
+                    src={logo}
+                    alt="Cocolaw.ai Logo"
+                    className="w-32 h-24 object-contain shrink-0"
+                />
             </Link>
 
             {/* Desktop nav links */}
             <div className="hidden md:flex items-center space-x-6">
-                <Link to="/"               className={navLinkClass("/")}>Home</Link>
+                <Link to="/" className={navLinkClass("/")}>Home</Link>
                 <Link to="/practice-areas" className={navLinkClass("/practice-areas")}>Practice Areas</Link>
-                <Link to="/features"       className={navLinkClass("/features")}>Features</Link>
-                <Link to="/aboutus"        className={navLinkClass("/aboutus")}>About</Link>
-                <Link to="/contact"        className={navLinkClass("/contact")}>Contact</Link>
+                <Link to="/features" className={navLinkClass("/features")}>Features</Link>
+                <Link to="/aboutus" className={navLinkClass("/aboutus")}>About</Link>
+                <Link to="/contact" className={navLinkClass("/contact")}>Contact</Link>
 
                 {/* Admin-only */}
                 {isAdmin && (
                     <>
-                        <Link to="/dashboard"    className={navLinkClass("/dashboard")}>Dashboard</Link>
+                        <Link to="/dashboard" className={navLinkClass("/dashboard")}>Dashboard</Link>
                         <Link to="/appointments" className={navLinkClass("/appointments")}>Appointments</Link>
                     </>
                 )}
@@ -52,9 +53,9 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
                 {/* User-only */}
                 {authed && !isAdmin && (
                     <>
-                <Link to="/client-portal"  className={navLinkClass("/client-portal")}>Client Portal</Link>
-                        <Link to="/bookings"          className={navLinkClass("/bookings")}>Bookings</Link>
-                        <Link to="/client-dashboard"  className={navLinkClass("/client-dashboard")}>Dashboard</Link>
+                        <Link to="/client-portal" className={navLinkClass("/client-portal")}>Client Portal</Link>
+                        <Link to="/bookings" className={navLinkClass("/bookings")}>Bookings</Link>
+                        <Link to="/client-dashboard" className={navLinkClass("/client-dashboard")}>Dashboard</Link>
                     </>
                 )}
             </div>
@@ -70,9 +71,8 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
                         )}
                         <Link
                             to="/profile"
-                            className={`text-sm transition ${
-                                isActive("/profile") ? "text-white font-bold" : "text-gray-300 hover:text-white"
-                            }`}
+                            className={`text-sm transition ${isActive("/profile") ? "text-white font-bold" : "text-gray-300 hover:text-white"
+                                }`}
                         >
                             Welcome, <b>{user?.fullName?.split(" ")[0] || "User"}</b>
                         </Link>

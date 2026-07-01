@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { FaLinkedinIn, FaTwitter, FaFacebookF, FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
 import useAuthStore from "../store/authStore";
+import logo from "../assests/logo.png";
 
 const Footer = () => {
     const { user, isAuthenticated } = useAuthStore();
@@ -8,21 +9,21 @@ const Footer = () => {
     const isAdmin = authed && user?.role === "admin";
 
     const practiceAreas = [
-        { label: "Corporate Law",        hash: "corporate-law" },
-        { label: "Criminal Defense",     hash: "criminal-defense" },
-        { label: "Family Law",           hash: "family-law" },
-        { label: "Civil Litigation",     hash: "civil-litigation" },
+        { label: "Corporate Law", hash: "corporate-law" },
+        { label: "Criminal Defense", hash: "criminal-defense" },
+        { label: "Family Law", hash: "family-law" },
+        { label: "Civil Litigation", hash: "civil-litigation" },
         { label: "Intellectual Property", hash: "intellectual-property" },
     ];
 
     const company = [
-        { label: "FAQ",       path: "/faqs" },
-        { label: "Privacy Policy",  path: "/privacy" },
-        { label: "Contact Us",     path: "/contact" },
-        { label: "Feedback",       path: "/feedback" },
+        { label: "FAQ", path: "/faqs" },
+        { label: "Privacy Policy", path: "/privacy" },
+        { label: "Contact Us", path: "/contact" },
+        { label: "Feedback", path: "/feedback" },
     ];
 
-    
+
 
     return (
         <footer className="w-full text-white bg-[#0A0F1C]">
@@ -31,11 +32,13 @@ const Footer = () => {
             <div className="mx-auto px-6 md:px-10 lg:px-16 pt-10 pb-8 border-b border-gray-800">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-5">
                     <div className="max-w-sm">
-                        <Link to="/">
-                        <div className="flex items-center space-x-2 mb-3">
-                            <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center font-bold text-[#0A0F1C] text-lg shrink-0">C</div>
-                            <span className="font-bold text-xl tracking-wide">CoCoLaw.ai</span>
-                        </div>
+                        {/* Logo */}
+                        <Link to="/" className="flex items-center space-x-2 shrink-0">
+                            <img
+                                src={logo}
+                                alt="Cocolaw.ai Logo"
+                                className="w-32 h-24 object-contain shrink-0"
+                            />
                         </Link>
                         <p className="text-sm text-gray-400 leading-relaxed">
                             A modern law firm powered by intelligent technology. Strategic legal counsel  smarter, faster, better.
@@ -45,8 +48,8 @@ const Footer = () => {
                         <div className="flex space-x-2">
                             {[
                                 { icon: <FaLinkedinIn />, href: "https://linkedin.com" },
-                                { icon: <FaTwitter />,    href: "https://twitter.com" },
-                                { icon: <FaFacebookF />,  href: "https://facebook.com" },
+                                { icon: <FaTwitter />, href: "https://twitter.com" },
+                                { icon: <FaFacebookF />, href: "https://facebook.com" },
                             ].map((s, i) => (
                                 <a key={i} href={s.href} target="_blank" rel="noreferrer"
                                     className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-700 text-gray-400 hover:border-white hover:text-white transition text-xs">
@@ -73,11 +76,11 @@ const Footer = () => {
                         <h5 className="text-xs font-bold uppercase tracking-wider text-white mb-4">Quick Links</h5>
                         <div className="flex flex-col gap-2.5">
                             {[
-                                { label: "Features",       path: "/features" },
-                                { label: "Client Portal",  path: "/client-portal" },
-                                { label: "Contact",        path: "/contact" },
+                                { label: "Features", path: "/features" },
+                                { label: "Client Portal", path: "/client-portal" },
+                                { label: "Contact", path: "/contact" },
                                 ...(!isAdmin ? [{ label: "Book Appointment", path: "/bookings" }, { label: "My Dashboard", path: "/client-dashboard" }] : []),
-                                ...(isAdmin  ? [{ label: "Dashboard", path: "/dashboard" }, { label: "Appointments", path: "/appointments" }] : []),
+                                ...(isAdmin ? [{ label: "Dashboard", path: "/dashboard" }, { label: "Appointments", path: "/appointments" }] : []),
                             ].map((item) => (
                                 <Link key={item.path + item.label} to={item.path}
                                     className="text-sm text-gray-400 hover:text-white transition flex items-center gap-2 group">
@@ -114,14 +117,14 @@ const Footer = () => {
                                 </Link>
                             ))}
                         </div>
-                        
+
                     </div>
 
                     {/* Contact */}
                     <div>
                         <h5 className="text-xs font-bold uppercase tracking-wider text-white mb-4">Contact</h5>
                         <div className="flex flex-col gap-3">
-                            
+
                             <div className="flex items-start gap-2.5">
                                 <FaPhone className="text-gray-500 mt-0.5 shrink-0 text-xs" />
                                 <p className="text-sm text-gray-400"><a href="tel:+15551234567">+1 (555) 123-4567</a></p>
@@ -137,7 +140,7 @@ const Footer = () => {
                                     support@cocolaw.ai
                                 </a>
                             </div>
-                           
+
                         </div>
                     </div>
                 </div>
